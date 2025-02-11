@@ -1,0 +1,37 @@
+---
+title: mvgam_uti
+authors:
+  - name: Norah Jones
+    affiliation: The University
+    roles: writing
+    corresponding: true
+bibliography: references.bib
+---
+
+```{r}
+#| label: setup
+
+library(tidyverse)
+library(coretta2018itapol)
+data("dlc_voff")
+```
+
+```{r}
+dlc_voff |> 
+  filter(spline == "DLC_Tongue") |> 
+  ggplot(aes(X, Y, group = frame_id)) +
+  geom_path(alpha = 0.2) +
+  # coord_fixed() +
+  facet_wrap(vars(speaker), scales = "free")
+```
+
+
+```{r}
+dlc_voff |> 
+  filter(speaker == "pl04", spline == "DLC_Tongue") |> 
+  ggplot(aes(X, Y, colour = vowel, group = frame_id)) +
+  geom_path(alpha = 0.75) +
+  facet_grid(cols = vars(c2_place)) +
+  scale_color_brewer(palette = "Dark2")
+```
+

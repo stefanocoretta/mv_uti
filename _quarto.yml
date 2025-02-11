@@ -1,0 +1,24 @@
+project:
+  type: manuscript
+
+manuscript:
+  article: index.qmd
+
+format:
+  html:
+    comments:
+      hypothesis: true
+  docx: default
+  jats: default
+  pdf: default
+  tandf-pdf:
+    keep-tex: true
+
+  # (other formats)
+  # pdf: default
+
+execute:
+  freeze: true
+
+
+
