@@ -35,3 +35,165 @@ dlc_voff |>
   scale_color_brewer(palette = "Dark2")
 ```
 
+```{r}
+dlc_voff <- dlc_voff |> 
+  mutate(
+    vow_place = interaction(vowel, c2_place),
+    vow_place_lang = interaction(vowel, c2_place, language),
+    speaker = as.factor(speaker)
+  )
+```
+
+
+```{r}
+library(mgcv)
+
+voff_gam <- gam(
+  list(
+    X ~ vow_place_lang +
+      s(knot, by = vow_place_lang, k = 5) +
+      s(knot, speaker, by = vow_place, bs = "fs", m = 1),
+    Y ~ vow_place_lang +
+      s(knot, by = vow_place_lang, k = 5) +
+      s(knot, speaker, by = vow_place, bs = "fs", m = 1)
+  ),
+  data = dlc_voff,
+  family = mvn(d = 2)
+)
+
+saveRDS(voff_gam, "data/cache/voff_gam.rds")
+```
+
+```{r}
+frame_voff <- expand_grid(
+  speaker = unique(dlc_voff$speaker),
+  vow_place_lang = unique(dlc_voff$vow_place_lang),
+  knot = seq(0, 10, by = 0.1)
+) |> 
+  mutate(
+    vow_place = str_remove(vow_place_lang, "\\.Italian"),
+    vow_place = str_remove(vow_place, "\\.Polish"),
+  )
+
+excl <- c(
+  "s(knot,speaker):vow_placea.coronal",
+  "s(knot,speaker):vow_placeo.coronal",
+  "s(knot,speaker):vow_placeu.coronal",
+  "s(knot,speaker):vow_placea.velar",
+  "s(knot,speaker):vow_placeo.velar",
+  "s(knot,speaker):vow_placeu.velar",
+  "s.1(knot,speaker):vow_placea.coronal",
+  "s.1(knot,speaker):vow_placeo.coronal",
+  "s.1(knot,speaker):vow_placeu.coronal",
+  "s.1(knot,speaker):vow_placea.velar",
+  "s.1(knot,speaker):vow_placeo.velar",
+  "s.1(knot,speaker):vow_placeu.velar"
+)
+
+voff_gam_p <- predict(voff_gam, frame_voff, se.fit = TRUE, exclude = excl) |>
+  as.data.frame() |>
+  as_tibble()
+colnames(voff_gam_p) <- c("X", "Y", "X_se", "Y_se")
+
+voff_gam_p <- bind_cols(frame_voff, voff_gam_p) |> 
+  # pick any speaker, random effects have been removed
+  filter(speaker == "it01") |> 
+  mutate(
+    X_lo = X - (1.96 * X_se),
+    X_hi = X + (1.96 * X_se),
+    Y_lo = Y - (1.96 * Y_se),
+    Y_hi = Y + (1.96 * Y_se)
+  ) |> 
+  separate(vow_place_lang, c("vowel", "place", "language"))
+```
+
+```{r}
+voff_gam_p |> 
+  ggplot(aes(X, Y, colour = vowel)) +
+  geom_point() +
+  facet_grid(cols = vars(place), rows = vars(language)) +
+  coord_fixed()
+```
+
+
+```{r}
+voff_gam_p |> 
+  ggplot(aes(X, Y, colour = vowel)) +
+  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.25) +
+  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.25) +
+  geom_point(size = 3, alpha = 0.75) +
+  scale_color_brewer(type = "qual", palette = "Dark2") +
+  coord_fixed() +
+  facet_grid(cols = vars(place, vowel), rows = vars(language)) +
+  theme_light() +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+voff_gam_p |> 
+  ggplot(aes(knot, X)) +
+  geom_ribbon(aes(ymin = X_lo, ymax = X_hi, fill = vowel), alpha = 0.25) +
+  geom_point(aes(colour = vowel), size = 1, alpha = 0.75) +
+  scale_color_brewer(type = "qual", palette = "Dark2") +
+  facet_grid(cols = vars(place), rows = vars(language)) +
+  theme_light() +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+voff_gam_p |> 
+  ggplot(aes(knot, Y)) +
+  geom_ribbon(aes(ymin = Y_lo, ymax = Y_hi, fill = vowel), alpha = 0.25) +
+  geom_point(aes(colour = vowel), size = 1, alpha = 0.75) +
+  scale_color_brewer(type = "qual", palette = "Dark2") +
+  facet_grid(cols = vars(place), rows = vars(language)) +
+  theme_light() +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+pred_grid_a <- filter(
+  frame_voff, vow_place_lang == "a.coronal.Italian",
+  speaker == "it01"
+)
+pred_grid_b <- filter(
+  frame_voff, vow_place_lang == "o.coronal.Italian",
+  speaker == "it01"
+)
+
+pred_a <- predict.gam(voff_gam, pred_grid_a, type = "lpmatrix") |> 
+  as_tibble() |> 
+  mutate(
+    across(starts_with("s(knot,speaker)"), ~0)
+  ) |> 
+  as.matrix()
+pred_a[,1:870] <- 0
+
+pred_b <- predict.gam(voff_gam, pred_grid_b, type = "lpmatrix") |> 
+  as_tibble() |> 
+  mutate(
+    across(starts_with("s(knot,speaker)"), ~0)
+  ) |> 
+  as.matrix()
+pred_b[,1:870] <- 0
+
+pred_diff <- pred_a - pred_b
+diff <- as.vector(pred_diff %*% stats::coef(voff_gam))
+
+se <- sqrt(rowSums((pred_diff %*% stats::vcov(voff_gam)) * pred_diff))
+
+diff_out <- pred_grid_a
+diff_out$diff <- diff
+diff_out$se <- se
+diff_out$lower_ci <- diff - se * 1.96
+diff_out$upper_ci <- diff + se * 1.96
+```
+
+```{r}
+diff_out |> 
+  ggplot(aes(knot, diff)) +
+  geom_hline(yintercept = 0) +
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci), alpha = 0.5) +
+  geom_point()
+```
+
