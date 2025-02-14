@@ -386,13 +386,13 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "coretta2018itapol",
       "RemoteUsername": "stefanocoretta",
-      "RemotePkgRef": "stefanocoretta/coretta2018itapol@devel",
-      "RemoteRef": "devel",
+      "RemotePkgRef": "stefanocoretta/coretta2018itapol@c5db4598d44a42ab6d0610523edecdaa399df681",
+      "RemoteRef": "c5db4598d44a42ab6d0610523edecdaa399df681",
       "RemoteSha": "c5db4598d44a42ab6d0610523edecdaa399df681",
       "Requirements": [
         "R"
       ],
-      "Hash": "abf344ded4f167d1fc4bd053bccbb7d5"
+      "Hash": "eebe4046cf4436ad35303a5ca8b96b97"
     },
     "cpp11": {
       "Package": "cpp11",
@@ -1050,7 +1050,8 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "landmarkregUtils",
       "RemoteUsername": "uasolo",
-      "RemotePkgRef": "uasolo/landmarkregUtils",
+      "RemotePkgRef": "uasolo/landmarkregUtils@ec6be48fe86289b6302e5ba9141b1d6f15da0a4b",
+      "RemoteRef": "ec6be48fe86289b6302e5ba9141b1d6f15da0a4b",
       "RemoteSha": "ec6be48fe86289b6302e5ba9141b1d6f15da0a4b",
       "Requirements": [
         "dplyr",
@@ -1062,7 +1063,7 @@
         "tibble",
         "tidyr"
       ],
-      "Hash": "f2f8261f0816b781b1e7e286c9d84953"
+      "Hash": "45c782e22e23cc6915f972b714350c43"
     },
     "lattice": {
       "Package": "lattice",
