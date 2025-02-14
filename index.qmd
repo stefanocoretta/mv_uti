@@ -50,20 +50,26 @@ dlc_voff <- dlc_voff |>
 ```{r}
 library(mgcv)
 
-voff_gam <- gam(
-  list(
-    X ~ vow_place_lang +
-      s(knot, by = vow_place_lang, k = 5) +
-      s(knot, speaker, by = vow_place, bs = "fs", m = 1),
-    Y ~ vow_place_lang +
-      s(knot, by = vow_place_lang, k = 5) +
-      s(knot, speaker, by = vow_place, bs = "fs", m = 1)
-  ),
-  data = dlc_voff,
-  family = mvn(d = 2)
-)
+fi <- "data/cache/voff_gam.rds"
 
-saveRDS(voff_gam, "data/cache/voff_gam.rds")
+if (file.exists(fi)) {
+  voff_gam <- readRDS(fi)
+} else {
+  voff_gam <- gam(
+    list(
+      X ~ vow_place_lang +
+        s(knot, by = vow_place_lang, k = 5) +
+        s(knot, speaker, by = vow_place, bs = "fs", m = 1),
+      Y ~ vow_place_lang +
+        s(knot, by = vow_place_lang, k = 5) +
+        s(knot, speaker, by = vow_place, bs = "fs", m = 1)
+    ),
+    data = dlc_voff,
+    family = mvn(d = 2)
+  )
+  
+  saveRDS(voff_gam, fi)
+}
 ```
 
 ```{r}
@@ -303,3 +309,120 @@ PCscores |>
   scale_color_brewer(palette = "Dark2")
 ```
 
+## Emphaticness
+
+```{r}
+la <- readRDS("data/sakr2025/long.la.uti.cvc.df.usable.rds") |> 
+  filter(Time.In.Interval == "-35")
+```
+
+### FPCA
+
+```{r}
+library(fda)
+library(funData)
+library(MFPCA)
+# install.packages("devtools")
+# devtools::install_github("uasolo/landmarkregUtils")
+library(landmarkregUtils)
+```
+
+```{r}
+la_long <- la |> 
+  dplyr::filter(Current.Phone.Class == "Consonant") |> 
+  pivot_longer(c(X, Y), names_to = "dim") |> 
+  group_by(dim, Subject) |> 
+  mutate(
+    value = (value - mean(value)) / sd(value)
+  ) |> 
+  ungroup()
+
+# build a multiFunData object
+curvesFun2D <- lapply(c("X", "Y"), function(y)
+  long2irregFunData(la_long %>% filter(dim == {{y}}),
+                    id = "Unique.ID",
+                    time = "Knot",
+                    value = "value") %>% 
+    as.funData()
+) %>% 
+  multiFunData()
+
+# Compute FPCA
+nPC <- 5
+mfpca <- MFPCA(curvesFun2D,
+               M = nPC,
+               uniExpansions = list(list(type = "uFPCA"),list(type = "uFPCA"))
+               # uniExpansions = list(list(type = "uFPCA", 4),list(type = "uFPCA", 4))
+)
+
+# Prop of explained var
+mfpca$values  / sum( mfpca$values)
+```
+
+```{r}
+# scores st. dev.
+sdFun <- mfpca$values %>% sqrt()
+# PC curves to be plotted
+PCcurves <- expand_grid(PC = 1:nPC,
+                        dim = 1:2, 
+                        fractionOfStDev = seq(-1, 1, by=.25)) %>%
+  group_by(PC, dim, fractionOfStDev) %>%
+  reframe(
+    funData2long1(
+      mfpca$meanFunction[[dim]] +
+        fractionOfStDev * sdFun[PC] * mfpca$functions[[dim]][PC],
+      time= "knot", value = "value")
+  ) %>% 
+  mutate(dim = factor(dim, levels = c(2,1), labels = c('Y', 'X')))
+
+ggplot(PCcurves) +
+  aes(x = knot, y = value, group = fractionOfStDev, color = fractionOfStDev) +
+  geom_line() +
+  scale_color_gradient2(low = "blue", mid = "grey", high = "orangered",
+                        breaks = c(-1, 0 , 1)) +
+  facet_grid(dim ~ PC,
+             scales = "free_y",
+             labeller = labeller(PC = ~ str_glue("PC{.x}"))) + #,
+                                 # dim = Dimlabels)) +
+  labs(color = expression(frac(s[k], sigma[k]))) +
+  geom_line(data = PCcurves %>% filter(fractionOfStDev == 0), color = 'black', linewidth = 1.2) +
+  # mytheme +
+  theme(legend.position = "right",
+        axis.title.y = element_blank())
+```
+
+```{r}
+PCcurves_wide <- PCcurves |> 
+  pivot_wider(names_from = dim)
+
+PCcurves_wide |> 
+  ggplot(aes(x = X, y = Y, group = fractionOfStDev, color = fractionOfStDev)) +
+  geom_path() +
+  scale_color_gradient2(low = "#762a83", mid = "grey", high = "#1b7837", breaks = c(-1, 0 , 1)) +
+  facet_grid(cols = vars(PC), labeller = labeller(PC = ~ str_glue("PC{.x}"))) +
+  coord_fixed()
+```
+
+
+```{r}
+# collect PC scores
+PCscores <- mfpca$scores %>%
+  `colnames<-`( paste0("PC", 1:nPC)) %>%
+  as_tibble() %>%
+  bind_cols(la_long %>% distinct(Unique.ID, Consonant.Emphaticness, Vowel, Consonant.Manner, Vowel.Height, Vowel.Frontness, Subject), .)
+
+# scatterplot PC scores s1 and s2 by Category
+PCscores |> 
+  ggplot(aes(x = PC1, y = PC2, color = Consonant.Emphaticness)) +
+  geom_point() +
+  facet_grid(cols = vars(Vowel), rows = vars(Consonant.Manner)) +
+  scale_color_brewer(palette = "Dark2")
+
+PCscores |> 
+  ggplot(aes(x = PC1, y = PC2, colour = Consonant.Emphaticness, shape = Vowel, label = Vowel)) +
+  # geom_point() +
+  geom_text(size = 2) +
+  scale_color_brewer(palette = "Dark2") +
+  stat_ellipse() +
+  facet_wrap(vars(Subject))
+```
