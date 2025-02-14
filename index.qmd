@@ -126,6 +126,11 @@ voff_gam_p |>
 
 ```{r}
 voff_gam_p |> 
+  group_by(place, vowel, language) |> 
+  mutate(
+    Y_lo = ifelse(Y_lo > min(Y), Y_lo, NA),
+    X_hi = ifelse(X_hi < max(X), X_hi, NA),
+  ) |> 
   ggplot(aes(X, Y, colour = vowel)) +
   geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.25) +
   geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.25) +
