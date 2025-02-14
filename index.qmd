@@ -313,8 +313,109 @@ PCscores |>
 
 ```{r}
 la <- readRDS("data/sakr2025/long.la.uti.cvc.df.usable.rds") |> 
-  filter(Time.In.Interval == "-35")
+  filter(Time.In.Interval == "-35") |> 
+  mutate(
+    Subject = as.factor(Subject),
+    vow_emph = interaction(Vowel, Consonant.Emphaticness)
+  )
 ```
+
+
+### GAM
+
+```{r}
+library(mgcv)
+
+fi <- "data/cache/la_gam.rds"
+
+if (file.exists(fi)) {
+  la_gam <- readRDS(fi)
+} else {
+  la_gam <- gam(
+    list(
+      X ~ vow_emph +
+        s(Knot, by = vow_emph, k = 6) +
+        s(Knot, Subject, by = vow_emph, bs = "fs", m = 1),
+      Y ~ vow_emph +
+        s(Knot, by = vow_emph, k = 6) +
+        s(Knot, Subject, by = vow_emph, bs = "fs", m = 1)
+    ),
+    data = la,
+    family = mvn(d = 2)
+  )
+  
+  saveRDS(la_gam, fi)
+}
+```
+
+```{r}
+frame_la <- expand_grid(
+  Subject = unique(la$Subject),
+  vow_emph = unique(la$vow_emph),
+  Knot = seq(0, 10, by = 0.1)
+)
+
+excl <- c(
+  "s(Knot,Subject):vow_emphA.Emphatic",
+  "s(Knot,Subject):vow_emphE.Emphatic",
+  "s(Knot,Subject):vow_emphI.Emphatic",
+  "s(Knot,Subject):vow_emphO.Emphatic",
+  "s(Knot,Subject):vow_emphU.Emphatic",
+  "s.1(Knot,Subject):vow_emphA.Emphatic",
+  "s.1(Knot,Subject):vow_emphE.Emphatic",
+  "s.1(Knot,Subject):vow_emphI.Emphatic",
+  "s.1(Knot,Subject):vow_emphO.Emphatic",
+  "s.1(Knot,Subject):vow_emphU.Emphatic"
+)
+
+la_gam_p <- predict(la_gam, frame_la, se.fit = TRUE, exclude = excl) |>
+  as.data.frame() |>
+  as_tibble()
+colnames(la_gam_p) <- c("X", "Y", "X_se", "Y_se")
+
+la_gam_p <- bind_cols(frame_la, la_gam_p) |> 
+  # pick any speaker, random effects have been removed
+  filter(Subject == "Sak") |> 
+  mutate(
+    X_lo = X - (1.96 * X_se),
+    X_hi = X + (1.96 * X_se),
+    Y_lo = Y - (1.96 * Y_se),
+    Y_hi = Y + (1.96 * Y_se)
+  ) |> 
+  separate(vow_emph, c("Vowel", "Consonant.Emphaticness"))
+```
+
+```{r}
+la_gam_p |> 
+  ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
+  geom_point() +
+  facet_wrap(vars(Vowel)) +
+  coord_fixed()
+```
+
+```{r}
+la_gam_p_2 <- predict(la_gam, frame_la, se.fit = TRUE) |>
+  as.data.frame() |>
+  as_tibble()
+colnames(la_gam_p_2) <- c("X", "Y", "X_se", "Y_se")
+
+la_gam_p_2 <- bind_cols(frame_la, la_gam_p_2) |>
+  mutate(
+    X_lo = X - (1.96 * X_se),
+    X_hi = X + (1.96 * X_se),
+    Y_lo = Y - (1.96 * Y_se),
+    Y_hi = Y + (1.96 * Y_se)
+  ) |> 
+  separate(vow_emph, c("Vowel", "Consonant.Emphaticness"))
+```
+
+```{r}
+la_gam_p_2 |> 
+  ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
+  geom_point() +
+  facet_grid(cols = vars(Subject), rows = vars(Vowel))
+```
+
 
 ### FPCA
 
