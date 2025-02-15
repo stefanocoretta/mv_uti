@@ -370,7 +370,17 @@ excl <- c(
   "s.1(Knot,Subject):vow_emphE.Emphatic",
   "s.1(Knot,Subject):vow_emphI.Emphatic",
   "s.1(Knot,Subject):vow_emphO.Emphatic",
-  "s.1(Knot,Subject):vow_emphU.Emphatic"
+  "s.1(Knot,Subject):vow_emphU.Emphatic",
+  "s(Knot,Subject):vow_emphA.Plain",
+  "s(Knot,Subject):vow_emphE.Plain",
+  "s(Knot,Subject):vow_emphI.Plain",
+  "s(Knot,Subject):vow_emphO.Plain",
+  "s(Knot,Subject):vow_emphU.Plain",
+  "s.1(Knot,Subject):vow_emphA.Plain",
+  "s.1(Knot,Subject):vow_emphE.Plain",
+  "s.1(Knot,Subject):vow_emphI.Plain",
+  "s.1(Knot,Subject):vow_emphO.Plain",
+  "s.1(Knot,Subject):vow_emphU.Plain"
 )
 
 la_gam_p <- predict(la_gam, frame_la, se.fit = TRUE, exclude = excl) |>
@@ -394,9 +404,51 @@ la_gam_p <- bind_cols(frame_la, la_gam_p) |>
 la_gam_p |> 
   ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
   geom_point() +
-  facet_wrap(vars(Vowel)) +
-  coord_fixed()
+  facet_grid(cols = vars(Vowel)) +
+  coord_fixed() +
+  theme(legend.position = "bottom")
 ```
+
+```{r}
+la_gam_p |> 
+  group_by(Vowel, Consonant.Emphaticness) |> 
+  mutate(
+    Y_lo = ifelse(Y_lo > min(Y), Y_lo, NA),
+    X_hi = ifelse(X_hi < max(X), X_hi, NA),
+  ) |> 
+  ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
+  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.25, linewidth = 2.5) +
+  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.25, linewidth = 1) +
+  geom_point(size = 1, alpha = 0.75) +
+  scale_color_brewer(type = "qual", palette = "Dark2") +
+  coord_fixed() +
+  facet_grid(cols = vars(Vowel)) +
+  theme_light() +
+  theme(legend.position = "bottom")
+
+la_gam_p |> 
+  ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
+  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.25, linewidth = 2.5) +
+  # geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.25, linewidth = 1) +
+  geom_point(size = 1, alpha = 0.75) +
+  scale_color_brewer(type = "qual", palette = "Dark2") +
+  coord_fixed() +
+  facet_grid(cols = vars(Vowel)) +
+  theme_light() +
+  theme(legend.position = "bottom")
+
+la_gam_p |>
+  ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
+  # geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.25, linewidth = 2.5) +
+  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.25, linewidth = 1) +
+  geom_point(size = 1, alpha = 0.75) +
+  scale_color_brewer(type = "qual", palette = "Dark2") +
+  coord_fixed() +
+  facet_grid(cols = vars(Vowel)) +
+  theme_light() +
+  theme(legend.position = "bottom")
+```
+
 
 ```{r}
 la_gam_p_2 <- predict(la_gam, frame_la, se.fit = TRUE) |>
@@ -418,7 +470,8 @@ la_gam_p_2 <- bind_cols(frame_la, la_gam_p_2) |>
 la_gam_p_2 |> 
   ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
   geom_point() +
-  facet_grid(cols = vars(Subject), rows = vars(Vowel))
+  facet_grid(cols = vars(Subject), rows = vars(Vowel)) +
+  coord_fixed()
 ```
 
 
