@@ -602,3 +602,18 @@ PCscores |>
   stat_ellipse() +
   facet_wrap(vars(Subject))
 ```
+
+```{r}
+PCscores |> 
+  ggplot(aes(Vowel, PC1, colour = Consonant.Emphaticness)) +
+  geom_jitter(position = position_jitterdodge(), alpha = 0.5) +
+  scale_color_brewer(palette = "Dark2") +
+    facet_wrap(vars(Subject))
+
+PCscores |> 
+  ggplot(aes(Vowel, PC2, colour = Consonant.Emphaticness)) +
+  geom_jitter(position = position_jitterdodge(), alpha = 0.5) +
+  scale_color_brewer(palette = "Dark2") +
+    facet_wrap(vars(Subject))
+```
+
