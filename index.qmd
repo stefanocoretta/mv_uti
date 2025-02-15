@@ -319,6 +319,17 @@ la_gam_p |>
   facet_grid(cols = vars(Vowel)) +
   coord_fixed() +
   theme(legend.position = "bottom")
+
+la_gam_p |> 
+  ggplot(aes(Knot, X, colour = Consonant.Emphaticness)) +
+  geom_point() +
+  facet_grid(rows = vars(Vowel)) +
+  theme(legend.position = "bottom")
+la_gam_p |> 
+  ggplot(aes(Knot, Y, colour = Consonant.Emphaticness)) +
+  geom_point() +
+  facet_grid(rows = vars(Vowel)) +
+  theme(legend.position = "bottom")
 ```
 
 ```{r}
@@ -385,6 +396,55 @@ la_gam_p_2 |>
   facet_grid(cols = vars(Subject), rows = vars(Vowel)) +
   coord_fixed()
 ```
+
+```{r}
+pred_grid_a <- filter(
+  frame_la, vow_emph == "A.Plain",
+  Subject == "Sak"
+)
+pred_grid_b <- filter(
+  frame_la, vow_emph == "A.Emphatic",
+  Subject == "Sak"
+)
+
+pred_a <- predict.gam(la_gam, pred_grid_a, type = "lpmatrix") |> 
+  as_tibble() |> 
+  mutate(
+    across(starts_with("s(knot,Subject)"), ~0)
+  ) |> 
+  as.matrix()
+# pred_a[,301:603] <- 0
+pred_a[,1:300] <- 0
+
+pred_b <- predict.gam(la_gam, pred_grid_b, type = "lpmatrix") |> 
+  as_tibble() |> 
+  mutate(
+    across(starts_with("s(knot,Subject)"), ~0)
+  ) |> 
+  as.matrix()
+# pred_b[,301:603] <- 0
+pred_b[,1:300] <- 0
+
+pred_diff <- pred_a - pred_b
+diff <- as.vector(pred_diff %*% stats::coef(la_gam))
+
+se <- sqrt(rowSums((pred_diff %*% stats::vcov(la_gam)) * pred_diff))
+
+diff_out <- pred_grid_a
+diff_out$diff <- diff
+diff_out$se <- se
+diff_out$lower_ci <- diff - se * 1.96
+diff_out$upper_ci <- diff + se * 1.96
+```
+
+```{r}
+diff_out |> 
+  ggplot(aes(Knot, diff)) +
+  geom_hline(yintercept = 0) +
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci), alpha = 0.5) +
+  geom_point()
+```
+
 
 ## FPCA
 
