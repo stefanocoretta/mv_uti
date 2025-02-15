@@ -167,6 +167,16 @@ voff_gam_p |>
 ```
 
 ```{r}
+frame_voff <- expand_grid(
+  speaker = unique(dlc_voff$speaker),
+  vow_place_lang = unique(dlc_voff$vow_place_lang),
+  knot = 0:10
+) |> 
+  mutate(
+    vow_place = str_remove(vow_place_lang, "\\.Italian"),
+    vow_place = str_remove(vow_place, "\\.Polish"),
+  )
+
 pred_grid_a <- filter(
   frame_voff, vow_place_lang == "a.coronal.Italian",
   speaker == "it01"
@@ -398,12 +408,18 @@ la_gam_p_2 |>
 ```
 
 ```{r}
+frame_la <- expand_grid(
+  Subject = unique(la$Subject),
+  vow_emph = unique(la$vow_emph),
+  Knot = 3:11
+)
+
 pred_grid_a <- filter(
-  frame_la, vow_emph == "A.Plain",
+  frame_la, vow_emph == "E.Plain",
   Subject == "Sak"
 )
 pred_grid_b <- filter(
-  frame_la, vow_emph == "A.Emphatic",
+  frame_la, vow_emph == "E.Emphatic",
   Subject == "Sak"
 )
 
