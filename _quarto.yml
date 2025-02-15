@@ -8,14 +8,15 @@ format:
   html:
     comments:
       hypothesis: true
-  docx: default
-  jats: default
-  pdf: default
+    include-in-header:
+    - text: |
+        <style>
+        .quarto-notebook .cell-container .cell-decorator {
+          display: none;
+        }
+        </style>
   tandf-pdf:
     keep-tex: true
-
-  # (other formats)
-  # pdf: default
 
 execute:
   freeze: true
