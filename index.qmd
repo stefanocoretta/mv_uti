@@ -231,6 +231,14 @@ la |>
   facet_wrap(vars(Subject), scales = "free")
 ```
 
+```{r}
+table(la$Knot)
+
+la_f <- la |> 
+  # Include only Knot 2-11
+  filter(Knot > 2)
+```
+
 
 ```{r}
 library(mgcv)
@@ -243,13 +251,13 @@ if (file.exists(fi)) {
   la_gam <- gam(
     list(
       X ~ vow_emph +
-        s(Knot, by = vow_emph, k = 6) +
-        s(Knot, Subject, by = vow_emph, bs = "fs", m = 1),
+        s(Knot, by = vow_emph, k = 5) +
+        s(Knot, Subject, by = vow_emph, bs = "fs", m = 1, k = 5),
       Y ~ vow_emph +
-        s(Knot, by = vow_emph, k = 6) +
-        s(Knot, Subject, by = vow_emph, bs = "fs", m = 1)
+        s(Knot, by = vow_emph, k = 5) +
+        s(Knot, Subject, by = vow_emph, bs = "fs", m = 1, k = 5)
     ),
-    data = la,
+    data = la_f,
     family = mvn(d = 2)
   )
   
@@ -261,7 +269,7 @@ if (file.exists(fi)) {
 frame_la <- expand_grid(
   Subject = unique(la$Subject),
   vow_emph = unique(la$vow_emph),
-  Knot = seq(0, 10, by = 0.1)
+  Knot = seq(3, 11, by = 0.1)
 )
 
 excl <- c(
@@ -496,7 +504,7 @@ library(landmarkregUtils)
 ```
 
 ```{r}
-la_long <- la |> 
+la_long <- la_f |> 
   dplyr::filter(Current.Phone.Class == "Consonant") |> 
   pivot_longer(c(X, Y), names_to = "dim") |> 
   group_by(dim, Subject) |> 
@@ -516,10 +524,10 @@ curvesFun2D <- lapply(c("X", "Y"), function(y)
   multiFunData()
 
 # Compute FPCA
-nPC <- 5
+nPC <- 2
 mfpca <- MFPCA(curvesFun2D,
                M = nPC,
-               uniExpansions = list(list(type = "uFPCA"),list(type = "uFPCA"))
+               uniExpansions = list(list(type = "uFPCA", 8),list(type = "uFPCA", 8))
                # uniExpansions = list(list(type = "uFPCA", 4),list(type = "uFPCA", 4))
 )
 
