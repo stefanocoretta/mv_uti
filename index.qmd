@@ -12,6 +12,7 @@ bibliography: references.bib
 #| label: setup
 
 library(tidyverse)
+library(plotly)
 library(coretta2018itapol)
 data("dlc_voff")
 ```
@@ -21,12 +22,14 @@ data("dlc_voff")
 ### CV coarticulation
 
 ```{r}
-dlc_voff |> 
+p <- dlc_voff |> 
   filter(spline == "DLC_Tongue") |> 
-  ggplot(aes(X, Y, group = frame_id)) +
+  ggplot(aes(X, Y, group = frame_id, text = frame_id)) +
   geom_path(alpha = 0.2) +
-  # coord_fixed() +
-  facet_wrap(vars(speaker), scales = "free")
+  coord_fixed() +
+  facet_wrap(vars(speaker))
+
+ggplotly(p, tooltip = "text")
 ```
 
 
@@ -39,13 +42,46 @@ dlc_voff |>
   scale_color_brewer(palette = "Dark2")
 ```
 
+
 ```{r}
-dlc_voff <- dlc_voff |> 
+dlc_voff_f <- dlc_voff |> 
+  filter(
+    X > -100,
+    !(frame_id %in% c(110, 266, 289, 325, 398, 410, 415, 422, 801, 1134)),
+  ) |> 
   mutate(
     vow_place = interaction(vowel, c2_place),
     vow_place_lang = interaction(vowel, c2_place, language),
     speaker = as.factor(speaker)
-  )
+  ) |> 
+  group_by(speaker) |> 
+  mutate(
+    X_z = (X - mean(X)) / sd(X),
+    Y_z = (Y - mean(Y)) / sd(Y),
+  ) |> 
+  ungroup()
+```
+
+```{r}
+dlc_voff_f |>
+  filter(spline == "DLC_Tongue") |> 
+  ggplot(aes(X_z, Y_z, group = frame_id)) +
+  geom_path(alpha = 0.2) +
+  coord_fixed() +
+  facet_wrap(vars(speaker), ncol = 6)
+```
+
+```{r}
+dlc_voff_f |>
+  filter(spline == "DLC_Tongue") |> 
+  ggplot(aes(knot, X_z, group = frame_id)) +
+  geom_path(alpha = 0.2) +
+  facet_wrap(vars(speaker), ncol = 6)
+dlc_voff_f |>
+  filter(spline == "DLC_Tongue") |> 
+  ggplot(aes(knot, Y_z, group = frame_id)) +
+  geom_path(alpha = 0.2) +
+  facet_wrap(vars(speaker), ncol = 6)
 ```
 
 
@@ -59,14 +95,14 @@ if (file.exists(fi)) {
 } else {
   voff_gam <- gam(
     list(
-      X ~ vow_place_lang +
+      X_z ~ vow_place_lang +
         s(knot, by = vow_place_lang, k = 5) +
         s(knot, speaker, by = vow_place, bs = "fs", m = 1),
-      Y ~ vow_place_lang +
+      Y_z ~ vow_place_lang +
         s(knot, by = vow_place_lang, k = 5) +
         s(knot, speaker, by = vow_place, bs = "fs", m = 1)
     ),
-    data = dlc_voff,
+    data = dlc_voff_f,
     family = mvn(d = 2)
   )
   
@@ -76,8 +112,8 @@ if (file.exists(fi)) {
 
 ```{r}
 frame_voff <- expand_grid(
-  speaker = unique(dlc_voff$speaker),
-  vow_place_lang = unique(dlc_voff$vow_place_lang),
+  speaker = unique(dlc_voff_f$speaker),
+  vow_place_lang = unique(dlc_voff_f$vow_place_lang),
   knot = seq(0, 10, by = 0.1)
 ) |> 
   mutate(
@@ -139,7 +175,7 @@ voff_gam_p |>
   geom_point(size = 3, alpha = 0.75) +
   scale_color_brewer(type = "qual", palette = "Dark2") +
   coord_fixed() +
-  facet_grid(cols = vars(place, vowel), rows = vars(language)) +
+  facet_grid(cols = vars(place), rows = vars(language)) +
   theme_light() +
   theme(legend.position = "bottom")
 ```
@@ -168,8 +204,8 @@ voff_gam_p |>
 
 ```{r}
 frame_voff <- expand_grid(
-  speaker = unique(dlc_voff$speaker),
-  vow_place_lang = unique(dlc_voff$vow_place_lang),
+  speaker = unique(dlc_voff_f$speaker),
+  vow_place_lang = unique(dlc_voff_f$vow_place_lang),
   knot = 0:10
 ) |> 
   mutate(
@@ -182,7 +218,7 @@ pred_grid_a <- filter(
   speaker == "it01"
 )
 pred_grid_b <- filter(
-  frame_voff, vow_place_lang == "o.coronal.Italian",
+  frame_voff, vow_place_lang == "u.coronal.Italian",
   speaker == "it01"
 )
 
@@ -245,9 +281,18 @@ la |>
 table(la$Knot)
 
 la_f <- la |> 
-  # Include only Knot 2-11
+  # Include only Knot 3-11
   filter(Knot > 2)
 ```
+
+```{r}
+la_f |> 
+  ggplot(aes(X, Y, group = Unique.ID)) +
+  geom_path(alpha = 0.2) +
+  # coord_fixed() +
+  facet_wrap(vars(Subject), scales = "free")
+```
+
 
 
 ```{r}
@@ -277,8 +322,8 @@ if (file.exists(fi)) {
 
 ```{r}
 frame_la <- expand_grid(
-  Subject = unique(la$Subject),
-  vow_emph = unique(la$vow_emph),
+  Subject = unique(la_f$Subject),
+  vow_emph = unique(la_f$vow_emph),
   Knot = seq(3, 11, by = 0.1)
 )
 
@@ -345,17 +390,17 @@ la_gam_p |>
 ```{r}
 la_gam_p |> 
   group_by(Vowel, Consonant.Emphaticness) |> 
-  mutate(
-    Y_lo = ifelse(Y_lo > min(Y), Y_lo, NA),
-    X_hi = ifelse(X_hi < max(X), X_hi, NA),
-  ) |> 
+  # mutate(
+  #   Y_lo = ifelse(Y_lo > min(Y), Y_lo, NA),
+  #   X_hi = ifelse(X_hi < max(X), X_hi, NA),
+  # ) |>
   ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
-  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.25, linewidth = 2.5) +
-  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.25, linewidth = 1) +
+  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.05, linewidth = 2.5) +
+  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.05, linewidth = 1) +
   geom_point(size = 1, alpha = 0.75) +
   scale_color_brewer(type = "qual", palette = "Dark2") +
   coord_fixed() +
-  facet_grid(cols = vars(Vowel)) +
+  facet_wrap(vars(Vowel), ncol = 3) +
   theme_light() +
   theme(legend.position = "bottom")
 
@@ -366,7 +411,7 @@ la_gam_p |>
   geom_point(size = 1, alpha = 0.75) +
   scale_color_brewer(type = "qual", palette = "Dark2") +
   coord_fixed() +
-  facet_grid(cols = vars(Vowel)) +
+  facet_wrap(vars(Vowel), ncol = 3) +
   theme_light() +
   theme(legend.position = "bottom")
 
@@ -377,7 +422,7 @@ la_gam_p |>
   geom_point(size = 1, alpha = 0.75) +
   scale_color_brewer(type = "qual", palette = "Dark2") +
   coord_fixed() +
-  facet_grid(cols = vars(Vowel)) +
+  facet_wrap(vars(Vowel), ncol = 3) +
   theme_light() +
   theme(legend.position = "bottom")
 ```
@@ -402,7 +447,9 @@ la_gam_p_2 <- bind_cols(frame_la, la_gam_p_2) |>
 ```{r}
 la_gam_p_2 |> 
   ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
-  geom_point() +
+  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.5) +
+  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.5) +
+  # geom_point() +
   facet_grid(cols = vars(Subject), rows = vars(Vowel)) +
   coord_fixed()
 ```
