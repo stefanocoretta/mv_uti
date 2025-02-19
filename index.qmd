@@ -21,68 +21,6 @@ data("dlc_voff")
 
 ### CV coarticulation
 
-```{r}
-p <- dlc_voff |> 
-  filter(spline == "DLC_Tongue") |> 
-  ggplot(aes(X, Y, group = frame_id, text = frame_id)) +
-  geom_path(alpha = 0.2) +
-  coord_fixed() +
-  facet_wrap(vars(speaker))
-
-ggplotly(p, tooltip = "text")
-```
-
-
-```{r}
-dlc_voff |> 
-  filter(speaker == "pl04", spline == "DLC_Tongue") |> 
-  ggplot(aes(X, Y, colour = vowel, group = frame_id)) +
-  geom_path(alpha = 0.75) +
-  facet_grid(cols = vars(c2_place)) +
-  scale_color_brewer(palette = "Dark2")
-```
-
-
-```{r}
-dlc_voff_f <- dlc_voff |> 
-  filter(
-    X > -100,
-    !(frame_id %in% c(110, 266, 289, 325, 398, 410, 415, 422, 801, 1134)),
-  ) |> 
-  mutate(
-    vow_place = interaction(vowel, c2_place),
-    vow_place_lang = interaction(vowel, c2_place, language),
-    speaker = as.factor(speaker)
-  ) |> 
-  group_by(speaker) |> 
-  mutate(
-    X_z = (X - mean(X)) / sd(X),
-    Y_z = (Y - mean(Y)) / sd(Y),
-  ) |> 
-  ungroup()
-```
-
-```{r}
-dlc_voff_f |>
-  filter(spline == "DLC_Tongue") |> 
-  ggplot(aes(X_z, Y_z, group = frame_id)) +
-  geom_path(alpha = 0.2) +
-  coord_fixed() +
-  facet_wrap(vars(speaker), ncol = 6)
-```
-
-```{r}
-dlc_voff_f |>
-  filter(spline == "DLC_Tongue") |> 
-  ggplot(aes(knot, X_z, group = frame_id)) +
-  geom_path(alpha = 0.2) +
-  facet_wrap(vars(speaker), ncol = 6)
-dlc_voff_f |>
-  filter(spline == "DLC_Tongue") |> 
-  ggplot(aes(knot, Y_z, group = frame_id)) +
-  geom_path(alpha = 0.2) +
-  facet_wrap(vars(speaker), ncol = 6)
-```
 
 
 ```{r}
@@ -260,38 +198,7 @@ diff_out |>
 
 ### Emphaticness
 
-```{r}
-la <- readRDS("data/sakr2025/long.la.uti.cvc.df.usable.rds") |> 
-  filter(Time.In.Interval == "-35") |> 
-  mutate(
-    Subject = as.factor(Subject),
-    vow_emph = interaction(Vowel, Consonant.Emphaticness)
-  )
-```
 
-```{r}
-la |> 
-  ggplot(aes(X, Y, group = Unique.ID)) +
-  geom_path(alpha = 0.2) +
-  # coord_fixed() +
-  facet_wrap(vars(Subject), scales = "free")
-```
-
-```{r}
-table(la$Knot)
-
-la_f <- la |> 
-  # Include only Knot 3-11
-  filter(Knot > 2)
-```
-
-```{r}
-la_f |> 
-  ggplot(aes(X, Y, group = Unique.ID)) +
-  geom_path(alpha = 0.2) +
-  # coord_fixed() +
-  facet_wrap(vars(Subject), scales = "free")
-```
 
 
 

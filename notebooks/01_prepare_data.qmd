@@ -1,0 +1,142 @@
+---
+title: "Prepare data"
+author: "Stefano Coretta"
+---
+
+## Setup
+
+```{r}
+#| label: setup
+
+library(tidyverse)
+library(plotly)
+```
+
+## Coretta 2018
+
+The package `coretta2018itapol` can be installed from GitHub `stefanocoretta/coretta2018itapol@devel` (the `devel` branch contains the necessary data which is not yet available in `main`). The `dlc_voff` tibble has DLC spline data from the timepoint corresponding to the acoustically determined VC boundary in the CVCV target words.
+
+```{r}
+#| label: setup
+
+library(coretta2018itapol)
+data("dlc_voff")
+```
+
+We can ggplotly to determine the `frame_id` of data to be excluded (hovering over a contour shows the `frame_id`).
+
+```{r}
+#| label: fig-dlc-voff-all
+p <- dlc_voff |> 
+  filter(spline == "DLC_Tongue") |> 
+  ggplot(aes(X, Y, group = frame_id, text = frame_id)) +
+  geom_path(alpha = 0.2) +
+  coord_fixed() +
+  facet_wrap(vars(speaker))
+
+ggplotly(p, tooltip = "text")
+```
+
+The following shows the tongue contours of participant PL04.
+
+```{r}
+#| label: fig-dlc-voff-pl04
+
+dlc_voff |> 
+  filter(speaker == "pl04", spline == "DLC_Tongue") |> 
+  ggplot(aes(X, Y, colour = vowel, group = frame_id)) +
+  geom_path(alpha = 0.75) +
+  facet_grid(cols = vars(c2_place)) +
+  scale_color_brewer(palette = "Dark2")
+```
+
+Let's filter the data to remove wrongly tracked tongue contours. The filtered data is saved in `dlc-voff-f`. We also create two new columns as the interaction of exisiting columns, we calculate within-speaker z-scores for X/Y coordinates, and we convert speaker to a factor (needed for `mgcv::gam()`).
+
+```{r}
+#| label: dlc-voff-f
+dlc_voff_f <- dlc_voff |> 
+  filter(
+    X > -100,
+    !(frame_id %in% c(110, 266, 289, 325, 398, 410, 415, 422, 801, 1134)),
+  ) |> 
+  mutate(
+    vow_place = interaction(vowel, c2_place),
+    vow_place_lang = interaction(vowel, c2_place, language),
+    speaker = as.factor(speaker)
+  ) |> 
+  group_by(speaker) |> 
+  mutate(
+    X_z = (X - mean(X)) / sd(X),
+    Y_z = (Y - mean(Y)) / sd(Y),
+  ) |> 
+  ungroup()
+```
+
+This is the filtered data.
+
+```{r}
+#| label: fig-dlc-voff-f
+dlc_voff_f |>
+  filter(spline == "DLC_Tongue") |> 
+  ggplot(aes(X_z, Y_z, group = frame_id)) +
+  geom_path(alpha = 0.2) +
+  coord_fixed() +
+  facet_wrap(vars(speaker), ncol = 5)
+```
+
+We also plot X and Y coordinates along `knot` separately.
+
+```{r}
+#| label: fig-dlc-voff-xz
+dlc_voff_f |>
+  filter(spline == "DLC_Tongue") |> 
+  ggplot(aes(knot, X_z, group = frame_id)) +
+  geom_path(alpha = 0.2) +
+  facet_wrap(vars(speaker), ncol = 5)
+```
+
+```{r}
+#| label: fig-dlc-voff-yz
+dlc_voff_f |>
+  filter(spline == "DLC_Tongue") |> 
+  ggplot(aes(knot, Y_z, group = frame_id)) +
+  geom_path(alpha = 0.2) +
+  facet_wrap(vars(speaker), ncol = 5)
+```
+
+## Sakr 2025
+
+Data from Sakr 2025 is in `data/sakr2025`.
+
+```{r}
+la <- readRDS("data/sakr2025/long.la.uti.cvc.df.usable.rds") |> 
+  filter(Time.In.Interval == "-35") |> 
+  mutate(
+    Subject = as.factor(Subject),
+    vow_emph = interaction(Vowel, Consonant.Emphaticness)
+  )
+```
+
+```{r}
+la |> 
+  ggplot(aes(X, Y, group = Unique.ID)) +
+  geom_path(alpha = 0.2) +
+  # coord_fixed() +
+  facet_wrap(vars(Subject), scales = "free")
+```
+
+```{r}
+table(la$Knot)
+
+la_f <- la |> 
+  # Include only Knot 3-11
+  filter(Knot > 2)
+```
+
+```{r}
+la_f |> 
+  ggplot(aes(X, Y, group = Unique.ID)) +
+  geom_path(alpha = 0.2) +
+  # coord_fixed() +
+  facet_wrap(vars(Subject), scales = "free")
+```
