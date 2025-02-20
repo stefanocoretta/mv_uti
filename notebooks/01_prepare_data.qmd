@@ -116,28 +116,18 @@ dlc_emph <- readRDS("data/sakr2025/dlc_emph.rds") |>
     participant = as.factor(participant),
     vow_emph = interaction(vowel, emph)
   )
-```
-
-```{r}
-dlc_emph |> 
-  ggplot(aes(X, Y, group = frame_id)) +
-  geom_path(alpha = 0.2) +
-  coord_fixed() +
-  facet_wrap(vars(participant))
-```
-
-```{r}
 table(dlc_emph$knot)
-
-dlc_emph_f <- dlc_emph |> 
-  # Include only Knot 3-11
-  filter(knot > 1)
 ```
 
 ```{r}
-dlc_emph_f |> 
-  ggplot(aes(X, Y, group = frame_id, colour = emph)) +
+#| label: fig-dlc-emph
+p <- dlc_emph|> 
+  ggplot(aes(X, Y, group = frame_id, colour = emph, text = frame_id)) +
   geom_path(alpha = 0.5) +
   coord_fixed() +
   facet_grid(rows = vars(participant), cols = vars(vowel))
+
+ggplotly(p, tooltip = "text")
 ```
+
+
