@@ -109,34 +109,35 @@ dlc_voff_f |>
 Data from Sakr 2025 is in `data/sakr2025`.
 
 ```{r}
-la <- readRDS("data/sakr2025/long.la.uti.cvc.df.usable.rds") |> 
-  filter(Time.In.Interval == "-35") |> 
+#| label: dlc-emph
+
+dlc_emph <- readRDS("data/sakr2025/dlc_emph.rds") |>
   mutate(
-    Subject = as.factor(Subject),
-    vow_emph = interaction(Vowel, Consonant.Emphaticness)
+    participant = as.factor(participant),
+    vow_emph = interaction(vowel, emph)
   )
 ```
 
 ```{r}
-la |> 
-  ggplot(aes(X, Y, group = Unique.ID)) +
+dlc_emph |> 
+  ggplot(aes(X, Y, group = frame_id)) +
   geom_path(alpha = 0.2) +
-  # coord_fixed() +
-  facet_wrap(vars(Subject), scales = "free")
+  coord_fixed() +
+  facet_wrap(vars(participant))
 ```
 
 ```{r}
-table(la$Knot)
+table(dlc_emph$knot)
 
-la_f <- la |> 
+dlc_emph_f <- dlc_emph |> 
   # Include only Knot 3-11
-  filter(Knot > 2)
+  filter(knot > 1)
 ```
 
 ```{r}
-la_f |> 
-  ggplot(aes(X, Y, group = Unique.ID)) +
-  geom_path(alpha = 0.2) +
-  # coord_fixed() +
-  facet_wrap(vars(Subject), scales = "free")
+dlc_emph_f |> 
+  ggplot(aes(X, Y, group = frame_id, colour = emph)) +
+  geom_path(alpha = 0.5) +
+  coord_fixed() +
+  facet_grid(rows = vars(participant), cols = vars(vowel))
 ```
