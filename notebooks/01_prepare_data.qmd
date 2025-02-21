@@ -60,6 +60,7 @@ dlc_voff_f <- dlc_voff |>
   filter(
     X > -100,
     !(frame_id %in% c(110, 266, 289, 325, 398, 410, 415, 422, 801, 1134)),
+    spline == "DLC_Tongue"
   ) |> 
   mutate(
     vow_place = interaction(vowel, c2_place),
@@ -147,7 +148,17 @@ Let's filter tracking errors.
 dlc_emph_f <- dlc_emph |> 
   filter(
     !(frame_id %in% c(1309, 1557, 1073, 74, 1306, 1688, 1648, 1651, 233, 195, 192, 215, 357, 223))
-  )
+  ) |> 
+  mutate(
+    vow_emph = interaction(vow_emph),
+    participant = as.factor(participant)
+  ) |> 
+  group_by(participant) |> 
+  mutate(
+    X_z = (X - mean(X)) / sd(X),
+    Y_z = (Y - mean(Y)) / sd(Y),
+  ) |> 
+  ungroup()
 ```
 
 ```{r}
