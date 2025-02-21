@@ -440,6 +440,7 @@ dlc_voff_long <- dlc_voff_f |>
 ```
 
 ```{r}
+#| label: voff-curves
 # build a multiFunData object
 curves_fun_2d <- lapply(
   c("X_z", "Y_z"),
@@ -457,6 +458,7 @@ curves_fun_2d <- lapply(
 ```
 
 ```{r}
+#| label: voff-mfpca
 # Compute FPCA
 n_pc <- 2
 mfpca <- MFPCA(
@@ -468,10 +470,11 @@ mfpca <- MFPCA(
 
 ```{r}
 # Prop of explained var
-mfpca$values  / sum( mfpca$values)
+mfpca$values  / sum(mfpca$values)
 ```
 
 ```{r}
+#| label: pc-curves
 # scores st. dev.
 sd_fun <- sqrt(mfpca$values)
 
@@ -495,6 +498,7 @@ pc_curves <- expand_grid(
 ```
 
 ```{r}
+#| label: fig-pc-curves
 pc_curves |> 
   ggplot(aes(
     x = knot, y = value, group = sd_frac, color = sd_frac
@@ -561,87 +565,118 @@ pc_scores |>
 ### Emphaticness
 
 ```{r}
-library(fda)
-library(funData)
-library(MFPCA)
-# install.packages("devtools")
-# devtools::install_github("uasolo/landmarkregUtils")
-library(landmarkregUtils)
-```
-
-```{r}
-la_long <- la_f |> 
-  dplyr::filter(Current.Phone.Class == "Consonant") |> 
-  pivot_longer(c(X, Y), names_to = "dim") |> 
+#| label: dlc-emph-long
+dlc_emph_long <- dlc_emph_f |> 
+  pivot_longer(c(X_z, Y_z), names_to = "dim") |> 
   group_by(dim, participant) |> 
   mutate(
     value = (value - mean(value)) / sd(value)
   ) |> 
   ungroup()
+```
 
+```{r}
+#| label: emph-curves
 # build a multiFunData object
-curves_fun_2d <- lapply(c("X", "Y"), function(y)
-  long2irregFunData(la_long |> filter(dim == {{y}}),
-                    id = "Unique.ID",
-                    time = "Knot",
-                    value = "value") |> 
+curves_fun_2d <- lapply(
+  c("X_z", "Y_z"),
+  function(y) {
+    long2irregFunData(
+      dlc_emph_long |> filter(dim == {{y}}),
+      id = "frame_id",
+      time = "knot",
+      value = "value"
+    ) |> 
     as.funData()
+  }
 ) |> 
   multiFunData()
+```
 
+```{r}
+#| label: emph-mfpca
 # Compute FPCA
 n_pc <- 2
-mfpca <- MFPCA(curves_fun_2d,
-               M = n_pc,
-               uniExpansions = list(list(type = "uFPCA", 8),list(type = "uFPCA", 8))
-               # uniExpansions = list(list(type = "uFPCA", 4),list(type = "uFPCA", 4))
+mfpca <- MFPCA(
+  curves_fun_2d,
+  M = n_pc,
+  uniExpansions = list(list(type = "uFPCA"), list(type = "uFPCA"))
 )
+```
 
+```{r}
 # Prop of explained var
 mfpca$values  / sum( mfpca$values)
 ```
 
 ```{r}
+#| label: emph-pc-curves
 # scores st. dev.
-sd_fun <- mfpca$values |> sqrt()
+sd_fun <- sqrt(mfpca$values)
+
 # PC curves to be plotted
-pc_curves <- expand_grid(PC = 1:n_pc,
-                        dim = 1:2, 
-                        sd_frac = seq(-1, 1, by=.25)) |>
-  group_by(PC, dim, sd_frac) |>
+pc_curves <- expand_grid(
+  PC = 1:n_pc,
+  dim = 1:2, 
+  sd_frac = seq(-1, 1, by=.25)
+) |> 
+  group_by(PC, dim, sd_frac) |> 
   reframe(
     funData2long1(
       mfpca$meanFunction[[dim]] +
         sd_frac * sd_fun[PC] * mfpca$functions[[dim]][PC],
-      time= "knot", value = "value")
+      time= "knot", value = "value"
+    )
   ) |> 
-  mutate(dim = factor(dim, levels = c(2,1), labels = c('Y', 'X')))
-
-ggplot(pc_curves) +
-  aes(x = knot, y = value, group = sd_frac, color = sd_frac) +
-  geom_line() +
-  scale_color_gradient2(low = "blue", mid = "grey", high = "orangered",
-                        breaks = c(-1, 0 , 1)) +
-  facet_grid(dim ~ PC,
-             scales = "free_y",
-             labeller = labeller(PC = ~ str_glue("PC{.x}"))) + #,
-                                 # dim = Dimlabels)) +
-  labs(color = expression(frac(s[k], sigma[k]))) +
-  geom_line(data = pc_curves |> filter(sd_frac == 0), color = 'black', linewidth = 1.2) +
-  # mytheme +
-  theme(legend.position = "right",
-        axis.title.y = element_blank())
+  mutate(
+    dim = factor(dim, levels = c(2,1), labels = c('Y_z', 'X_z'))
+  )
 ```
 
 ```{r}
+#| label: fig-emph-pc-curves
+pc_curves |> 
+  ggplot(aes(
+    x = knot, y = value, group = sd_frac, color = sd_frac
+  )) +
+  geom_line() +
+  scale_color_gradient2(
+    low = "#762a83", mid = "grey", high = "#1b7837",
+    breaks = c(-1, 0 , 1)
+  ) +
+  facet_grid(
+    cols = vars(PC), rows = vars(dim),
+    scales = "free_y",
+    labeller = labeller(PC = ~str_glue("PC{.x}"))
+  ) +
+  labs(color = expression(frac(s[k], sigma[k]))) +
+  geom_line(
+    data = pc_curves |> filter(sd_frac == 0),
+    color = 'black', linewidth = 1.2
+  )
+```
+
+```{r}
+#| label: emph-pc-curves-wide
+
 pc_curves_wide <- pc_curves |> 
   pivot_wider(names_from = dim)
+```
+
+```{r}
+#| label: fig-emph-curves-wide
 
 pc_curves_wide |> 
-  ggplot(aes(x = X, y = Y, group = sd_frac, color = sd_frac)) +
+  ggplot(aes(x = X_z, y = Y_z, group = sd_frac, color = sd_frac)) +
   geom_path() +
-  scale_color_gradient2(low = "#762a83", mid = "grey", high = "#1b7837", breaks = c(-1, 0 , 1)) +
-  facet_grid(cols = vars(PC), labeller = labeller(PC = ~ str_glue("PC{.x}"))) +
+  scale_color_gradient2(
+    low = "#762a83", mid = "grey", high = "#1b7837",
+    breaks = c(-1, 0 , 1)
+  ) +
+  facet_wrap(
+    vars(PC),
+    labeller = labeller(PC = ~str_glue("PC{.x}"))
+  ) +
   coord_fixed()
 ```
 
@@ -651,7 +686,7 @@ pc_curves_wide |>
 pc_scores <- mfpca$scores |>
   `colnames<-`( paste0("PC", 1:n_pc)) |>
   as_tibble() |>
-  bind_cols(la_long |> distinct(Unique.ID, emph, vowel, Consonant.Manner, vowel.Height, vowel.Frontness, participant), .)
+  bind_cols(dlc_emph_long |> distinct(Unique.ID, emph, vowel, Consonant.Manner, vowel.Height, vowel.Frontness, participant), .)
 
 # scatterplot PC scores s1 and s2 by Category
 pc_scores |> 
