@@ -10,6 +10,7 @@ author: "Stefano Coretta"
 
 library(tidyverse)
 library(plotly)
+library(coretta2018itapol)
 ```
 
 ## Coretta 2018
@@ -17,16 +18,17 @@ library(plotly)
 The package `coretta2018itapol` can be installed from GitHub `stefanocoretta/coretta2018itapol@devel` (the `devel` branch contains the necessary data which is not yet available in `main`). The `dlc_voff` tibble has DLC spline data from the timepoint corresponding to the acoustically determined VC boundary in the CVCV target words.
 
 ```{r}
-#| label: setup
+#| label: dlc-voff
 
-library(coretta2018itapol)
 data("dlc_voff")
 ```
+
 
 We can ggplotly to determine the `frame_id` of data to be excluded (hovering over a contour shows the `frame_id`).
 
 ```{r}
 #| label: fig-dlc-voff-all
+
 p <- dlc_voff |> 
   filter(spline == "DLC_Tongue") |> 
   ggplot(aes(X, Y, group = frame_id, text = frame_id)) +
@@ -103,6 +105,13 @@ dlc_voff_f |>
   geom_path(alpha = 0.2) +
   facet_wrap(vars(speaker), ncol = 5)
 ```
+
+```{r}
+#| label: save-voff-f
+
+saveRDS(dlc_voff_f, "data/coretta2018/dlc_voff_f.rds")
+```
+
 
 ## Sakr 2025
 

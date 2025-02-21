@@ -409,15 +409,14 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "coretta2018itapol",
       "RemoteUsername": "stefanocoretta",
-      "RemotePkgRef": "stefanocoretta/coretta2018itapol@c5db4598d44a42ab6d0610523edecdaa399df681",
-      "RemoteRef": "c5db4598d44a42ab6d0610523edecdaa399df681",
+      "RemoteRepo": "coretta2018itapol",
+      "RemoteRef": "devel",
       "RemoteSha": "c5db4598d44a42ab6d0610523edecdaa399df681",
       "Requirements": [
         "R"
       ],
-      "Hash": "eebe4046cf4436ad35303a5ca8b96b97"
+      "Hash": "564a41dfcbcecc2375197f69c1f18916"
     },
     "cpp11": {
       "Package": "cpp11",
