@@ -417,6 +417,7 @@ diff_out |>
 ### CV coarticulation
 
 ```{r}
+#| label: attach-fda
 library(fda)
 library(funData)
 library(MFPCA)
@@ -426,94 +427,133 @@ library(landmarkregUtils)
 ```
 
 ```{r}
-dlc_voff_long <- dlc_voff |> 
-  dplyr::filter(spline == "DLC_Tongue") |> 
-  dplyr::select(X, Y, frame_id, knot, vowel, c2_place, language, speaker) |> 
-  pivot_longer(c(X, Y), names_to = "dim") |> 
+#| label: dlc-voff-long
+
+dlc_voff_long <- dlc_voff_f |> 
+  dplyr::select(X_z, Y_z, frame_id, knot, vowel, c2_place, language, speaker) |> 
+  pivot_longer(c(X_z, Y_z), names_to = "dim") |> 
   group_by(dim, speaker) |> 
   mutate(
     value = (value - mean(value)) / sd(value)
   ) |> 
   ungroup()
+```
 
+```{r}
 # build a multiFunData object
-curvesFun2D <- lapply(c("X", "Y"), function(y)
-  long2irregFunData(dlc_voff_long %>% filter(dim == {{y}}),
-                    id = "frame_id",
-                    time = "knot",
-                    value = "value") %>% 
+curves_fun_2d <- lapply(
+  c("X_z", "Y_z"),
+  function(y) {
+    long2irregFunData(
+      dlc_voff_long |> filter(dim == {{y}}),
+      id = "frame_id",
+      time = "knot",
+      value = "value"
+    ) |> 
     as.funData()
-) %>% 
+  }
+) |> 
   multiFunData()
+```
 
+```{r}
 # Compute FPCA
-nPC <- 2
-mfpca <- MFPCA(curvesFun2D,
-               M = nPC,
-               uniExpansions = list(list(type = "uFPCA"),list(type = "uFPCA"))
+n_pc <- 2
+mfpca <- MFPCA(
+  curves_fun_2d,
+  M = n_pc,
+  uniExpansions = list(list(type = "uFPCA"), list(type = "uFPCA"))
 )
+```
 
+```{r}
 # Prop of explained var
 mfpca$values  / sum( mfpca$values)
 ```
 
 ```{r}
 # scores st. dev.
-sdFun <- mfpca$values %>% sqrt()
+sd_fun <- sqrt(mfpca$values)
+
 # PC curves to be plotted
-PCcurves <- expand_grid(PC = 1:nPC,
-                        dim = 1:2, 
-                        fractionOfStDev = seq(-1, 1, by=.25)) %>%
-  group_by(PC, dim, fractionOfStDev) %>%
+pc_curves <- expand_grid(
+  PC = 1:n_pc,
+  dim = 1:2, 
+  sd_frac = seq(-1, 1, by=.25)
+) |> 
+  group_by(PC, dim, sd_frac) |> 
   reframe(
     funData2long1(
       mfpca$meanFunction[[dim]] +
-        fractionOfStDev * sdFun[PC] * mfpca$functions[[dim]][PC],
-      time= "knot", value = "value")
-  ) %>% 
-  mutate(dim = factor(dim, levels = c(2,1), labels = c('Y', 'X')))
-
-ggplot(PCcurves) +
-  aes(x = knot, y = value, group = fractionOfStDev, color = fractionOfStDev) +
-  geom_line() +
-  scale_color_gradient2(low = "blue", mid = "grey", high = "orangered",
-                        breaks = c(-1, 0 , 1)) +
-  facet_grid(dim ~ PC,
-             scales = "free_y",
-             labeller = labeller(PC = ~ str_glue("PC{.x}"))) + #,
-                                 # dim = Dimlabels)) +
-  labs(color = expression(frac(s[k], sigma[k]))) +
-  geom_line(data = PCcurves %>% filter(fractionOfStDev == 0), color = 'black', linewidth = 1.2) +
-  # mytheme +
-  theme(legend.position = "right",
-        axis.title.y = element_blank())
+        sd_frac * sd_fun[PC] * mfpca$functions[[dim]][PC],
+      time= "knot", value = "value"
+    )
+  ) |> 
+  mutate(
+    dim = factor(dim, levels = c(2,1), labels = c('Y_z', 'X_z'))
+  )
 ```
 
 ```{r}
-PCcurves_wide <- PCcurves |> 
-  pivot_wider(names_from = dim)
+pc_curves |> 
+  ggplot(aes(
+    x = knot, y = value, group = sd_frac, color = sd_frac
+  )) +
+  geom_line() +
+  scale_color_gradient2(
+    low = "#762a83", mid = "grey", high = "#1b7837",
+    breaks = c(-1, 0 , 1)
+  ) +
+  facet_grid(
+    cols = vars(PC), rows = vars(dim),
+    scales = "free_y",
+    labeller = labeller(PC = ~str_glue("PC{.x}"))
+  ) +
+  labs(color = expression(frac(s[k], sigma[k]))) +
+  geom_line(
+    data = pc_curves |> filter(sd_frac == 0),
+    color = 'black', linewidth = 1.2
+  )
+```
 
-PCcurves_wide |> 
-  ggplot(aes(x = X, y = Y, group = fractionOfStDev, color = fractionOfStDev)) +
+```{r}
+#| label: pc-curves-wide
+
+pc_curves_wide <- pc_curves |> 
+  pivot_wider(names_from = dim)
+```
+
+```{r}
+#| label: fig-curves-wide
+
+pc_curves_wide |> 
+  ggplot(aes(x = X_z, y = Y_z, group = sd_frac, color = sd_frac)) +
   geom_path() +
-  scale_color_gradient2(low = "#762a83", mid = "grey", high = "#1b7837", breaks = c(-1, 0 , 1)) +
-  facet_wrap(vars(PC), labeller = labeller(PC = ~ str_glue("PC{.x}"))) +
+  scale_color_gradient2(
+    low = "#762a83", mid = "grey", high = "#1b7837",
+    breaks = c(-1, 0 , 1)
+  ) +
+  facet_wrap(
+    vars(PC),
+    labeller = labeller(PC = ~str_glue("PC{.x}"))
+  ) +
   coord_fixed()
 ```
 
 
 ```{r}
 # collect PC scores
-PCscores <- mfpca$scores %>%
-  `colnames<-`( paste0("PC", 1:nPC)) %>%
-  as_tibble() %>%
-  bind_cols(dlc_voff_long %>% distinct(frame_id, vowel, c2_place, language), .)
+pc_scores <- mfpca$scores |>
+  `colnames<-`( paste0("PC", 1:n_pc)) |>
+  as_tibble() |>
+  bind_cols(dlc_voff_long |> distinct(frame_id, vowel, c2_place, language))
 
 # scatterplot PC scores s1 and s2 by Category
-PCscores |> 
+pc_scores |> 
   filter(PC2 < 0.5) |>
   ggplot(aes(x = PC1, y = PC2, color = vowel)) +
   geom_point() +
+  stat_ellipse() +
   facet_grid(cols = vars(c2_place), rows = vars(language)) +
   scale_color_brewer(palette = "Dark2")
 ```
@@ -540,19 +580,19 @@ la_long <- la_f |>
   ungroup()
 
 # build a multiFunData object
-curvesFun2D <- lapply(c("X", "Y"), function(y)
-  long2irregFunData(la_long %>% filter(dim == {{y}}),
+curves_fun_2d <- lapply(c("X", "Y"), function(y)
+  long2irregFunData(la_long |> filter(dim == {{y}}),
                     id = "Unique.ID",
                     time = "Knot",
-                    value = "value") %>% 
+                    value = "value") |> 
     as.funData()
-) %>% 
+) |> 
   multiFunData()
 
 # Compute FPCA
-nPC <- 2
-mfpca <- MFPCA(curvesFun2D,
-               M = nPC,
+n_pc <- 2
+mfpca <- MFPCA(curves_fun_2d,
+               M = n_pc,
                uniExpansions = list(list(type = "uFPCA", 8),list(type = "uFPCA", 8))
                # uniExpansions = list(list(type = "uFPCA", 4),list(type = "uFPCA", 4))
 )
@@ -563,22 +603,22 @@ mfpca$values  / sum( mfpca$values)
 
 ```{r}
 # scores st. dev.
-sdFun <- mfpca$values %>% sqrt()
+sd_fun <- mfpca$values |> sqrt()
 # PC curves to be plotted
-PCcurves <- expand_grid(PC = 1:nPC,
+pc_curves <- expand_grid(PC = 1:n_pc,
                         dim = 1:2, 
-                        fractionOfStDev = seq(-1, 1, by=.25)) %>%
-  group_by(PC, dim, fractionOfStDev) %>%
+                        sd_frac = seq(-1, 1, by=.25)) |>
+  group_by(PC, dim, sd_frac) |>
   reframe(
     funData2long1(
       mfpca$meanFunction[[dim]] +
-        fractionOfStDev * sdFun[PC] * mfpca$functions[[dim]][PC],
+        sd_frac * sd_fun[PC] * mfpca$functions[[dim]][PC],
       time= "knot", value = "value")
-  ) %>% 
+  ) |> 
   mutate(dim = factor(dim, levels = c(2,1), labels = c('Y', 'X')))
 
-ggplot(PCcurves) +
-  aes(x = knot, y = value, group = fractionOfStDev, color = fractionOfStDev) +
+ggplot(pc_curves) +
+  aes(x = knot, y = value, group = sd_frac, color = sd_frac) +
   geom_line() +
   scale_color_gradient2(low = "blue", mid = "grey", high = "orangered",
                         breaks = c(-1, 0 , 1)) +
@@ -587,18 +627,18 @@ ggplot(PCcurves) +
              labeller = labeller(PC = ~ str_glue("PC{.x}"))) + #,
                                  # dim = Dimlabels)) +
   labs(color = expression(frac(s[k], sigma[k]))) +
-  geom_line(data = PCcurves %>% filter(fractionOfStDev == 0), color = 'black', linewidth = 1.2) +
+  geom_line(data = pc_curves |> filter(sd_frac == 0), color = 'black', linewidth = 1.2) +
   # mytheme +
   theme(legend.position = "right",
         axis.title.y = element_blank())
 ```
 
 ```{r}
-PCcurves_wide <- PCcurves |> 
+pc_curves_wide <- pc_curves |> 
   pivot_wider(names_from = dim)
 
-PCcurves_wide |> 
-  ggplot(aes(x = X, y = Y, group = fractionOfStDev, color = fractionOfStDev)) +
+pc_curves_wide |> 
+  ggplot(aes(x = X, y = Y, group = sd_frac, color = sd_frac)) +
   geom_path() +
   scale_color_gradient2(low = "#762a83", mid = "grey", high = "#1b7837", breaks = c(-1, 0 , 1)) +
   facet_grid(cols = vars(PC), labeller = labeller(PC = ~ str_glue("PC{.x}"))) +
@@ -608,19 +648,19 @@ PCcurves_wide |>
 
 ```{r}
 # collect PC scores
-PCscores <- mfpca$scores %>%
-  `colnames<-`( paste0("PC", 1:nPC)) %>%
-  as_tibble() %>%
-  bind_cols(la_long %>% distinct(Unique.ID, emph, vowel, Consonant.Manner, vowel.Height, vowel.Frontness, participant), .)
+pc_scores <- mfpca$scores |>
+  `colnames<-`( paste0("PC", 1:n_pc)) |>
+  as_tibble() |>
+  bind_cols(la_long |> distinct(Unique.ID, emph, vowel, Consonant.Manner, vowel.Height, vowel.Frontness, participant), .)
 
 # scatterplot PC scores s1 and s2 by Category
-PCscores |> 
+pc_scores |> 
   ggplot(aes(x = PC1, y = PC2, color = emph)) +
   geom_point() +
   facet_grid(cols = vars(vowel), rows = vars(Consonant.Manner)) +
   scale_color_brewer(palette = "Dark2")
 
-PCscores |> 
+pc_scores |> 
   ggplot(aes(x = PC1, y = PC2, colour = emph, shape = vowel, label = vowel)) +
   # geom_point() +
   geom_text(size = 2) +
@@ -630,13 +670,13 @@ PCscores |>
 ```
 
 ```{r}
-PCscores |> 
+pc_scores |> 
   ggplot(aes(vowel, PC1, colour = emph)) +
   geom_jitter(position = position_jitterdodge(), alpha = 0.5) +
   scale_color_brewer(palette = "Dark2") +
     facet_wrap(vars(participant))
 
-PCscores |> 
+pc_scores |> 
   ggplot(aes(vowel, PC2, colour = emph)) +
   geom_jitter(position = position_jitterdodge(), alpha = 0.5) +
   scale_color_brewer(palette = "Dark2") +
