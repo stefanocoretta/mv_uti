@@ -130,7 +130,7 @@ table(dlc_emph$knot)
 
 ```{r}
 #| label: fig-dlc-emph
-p <- dlc_emph|> 
+p <- dlc_emph |> 
   ggplot(aes(X, Y, group = frame_id, colour = emph, text = frame_id)) +
   geom_path(alpha = 0.5) +
   coord_fixed() +
@@ -139,4 +139,33 @@ p <- dlc_emph|>
 ggplotly(p, tooltip = "text")
 ```
 
+Let's filter tracking errors.
+
+```{r}
+#| label: dlc-emph-f
+
+dlc_emph_f <- dlc_emph |> 
+  filter(
+    !(frame_id %in% c(1309, 1557, 1073, 74, 1306, 1688, 1648, 1651, 233, 195, 192, 215, 357, 223))
+  )
+```
+
+```{r}
+#| label: fig-dlc-emph-f
+p <- dlc_emph_f |> 
+  ggplot(aes(X, Y, group = frame_id, colour = emph, text = frame_id)) +
+  geom_path(alpha = 0.5) +
+  coord_fixed() +
+  facet_grid(rows = vars(participant), cols = vars(vowel))
+
+ggplotly(p, tooltip = "text")
+```
+
+Finally save filtered data.
+
+```{r}
+#| label: save-dlc-emph-f
+
+saveRDS(dlc_emph_f, "data/sakr2025/dlc_emph_f.rds")
+```
 
