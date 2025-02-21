@@ -12,18 +12,46 @@ bibliography: references.bib
 #| label: setup
 
 library(tidyverse)
-library(plotly)
-library(coretta2018itapol)
-data("dlc_voff")
+theme_set(theme_light())
 ```
 
 ## GAM
 
 ### CV coarticulation
 
+```{r}
+#| label: dlc-voff
+
+dlc_voff_f <- readRDS("data/coretta2018/dlc_voff_f.rds") |> 
+  
+```
+
+```{r}
+#| label: fig-voff
+
+dlc_voff_f |> 
+  ggplot(aes(X_z, Y_z, group = frame_id)) +
+  geom_path(alpha = 0.5) +
+  coord_fixed() +
+  facet_wrap(vars(speaker), ncol = 5)
+```
+
+```{r}
+#| label: fig-pl04
+#| fig-cap: "Tongue contours of PL04 (Polish) taken from the offset of vowels followed by coronal or velar stops. Tip is on the right."
+dlc_voff_f |> 
+  filter(speaker == "pl04") |> 
+  ggplot(aes(X_z, Y_z, group = frame_id, colour = vowel)) +
+  geom_path(alpha = 0.5) +
+  coord_fixed() +
+  facet_grid(cols = vars(c2_place)) +
+  labs(x = "X (z-scores)", "Y (z-scores)")
+```
 
 
 ```{r}
+#| label: voff-gam
+
 library(mgcv)
 
 fi <- "data/cache/voff_gam.rds"
@@ -49,6 +77,8 @@ if (file.exists(fi)) {
 ```
 
 ```{r}
+#| label: voff-pred
+
 frame_voff <- expand_grid(
   speaker = unique(dlc_voff_f$speaker),
   vow_place_lang = unique(dlc_voff_f$vow_place_lang),
@@ -92,15 +122,25 @@ voff_gam_p <- bind_cols(frame_voff, voff_gam_p) |>
 ```
 
 ```{r}
+#| label: fig-voff-pred
+#| fig-cap: "Predicted tongue contours based on a multivariate GAM. Uncertainty not shown."
 voff_gam_p |> 
   ggplot(aes(X, Y, colour = vowel)) +
-  geom_point() +
+  geom_point(alpha = 0.5) +
   facet_grid(cols = vars(place), rows = vars(language)) +
-  coord_fixed()
+  coord_fixed() +
+  labs(
+    x = "X (z-scores)",
+    y = "Y (z-scores)"
+  )
 ```
 
 
 ```{r}
+#| label: fig-voff-ci
+#| fig-cap: "Predicted tongue contours based on a multivariate GAM, with 95% Confidence Intervals."
+#| warning: false
+
 voff_gam_p |> 
   group_by(place, vowel, language) |> 
   mutate(
@@ -108,9 +148,9 @@ voff_gam_p |>
     X_hi = ifelse(X_hi < max(X), X_hi, NA),
   ) |> 
   ggplot(aes(X, Y, colour = vowel)) +
-  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.25) +
-  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.25) +
-  geom_point(size = 3, alpha = 0.75) +
+  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.5) +
+  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.5) +
+  geom_point(size = 1, alpha = 0.75) +
   scale_color_brewer(type = "qual", palette = "Dark2") +
   coord_fixed() +
   facet_grid(cols = vars(place), rows = vars(language)) +
@@ -118,33 +158,15 @@ voff_gam_p |>
   theme(legend.position = "bottom")
 ```
 
-```{r}
-voff_gam_p |> 
-  ggplot(aes(knot, X)) +
-  geom_ribbon(aes(ymin = X_lo, ymax = X_hi, fill = vowel), alpha = 0.25) +
-  geom_point(aes(colour = vowel), size = 1, alpha = 0.75) +
-  scale_color_brewer(type = "qual", palette = "Dark2") +
-  facet_grid(cols = vars(place), rows = vars(language)) +
-  theme_light() +
-  theme(legend.position = "bottom")
-```
 
-```{r}
-voff_gam_p |> 
-  ggplot(aes(knot, Y)) +
-  geom_ribbon(aes(ymin = Y_lo, ymax = Y_hi, fill = vowel), alpha = 0.25) +
-  geom_point(aes(colour = vowel), size = 1, alpha = 0.75) +
-  scale_color_brewer(type = "qual", palette = "Dark2") +
-  facet_grid(cols = vars(place), rows = vars(language)) +
-  theme_light() +
-  theme(legend.position = "bottom")
-```
+
+
 
 ```{r}
 frame_voff <- expand_grid(
   speaker = unique(dlc_voff_f$speaker),
   vow_place_lang = unique(dlc_voff_f$vow_place_lang),
-  knot = 0:10
+  knot = seq(0, 10)
 ) |> 
   mutate(
     vow_place = str_remove(vow_place_lang, "\\.Italian"),
@@ -198,207 +220,181 @@ diff_out |>
 
 ### Emphaticness
 
+```{r}
+#| label: dlc-emph
 
-
-
+dlc_emph_f <- readRDS("data/sakr2025/dlc_emph_f.rds")
+```
 
 ```{r}
+#| label: emph-gam
+
 library(mgcv)
 
-fi <- "data/cache/la_gam.rds"
+fi <- "data/cache/emph_gam.rds"
 
 if (file.exists(fi)) {
-  la_gam <- readRDS(fi)
+  emph_gam <- readRDS(fi)
 } else {
-  la_gam <- gam(
+  emph_gam <- gam(
     list(
-      X ~ vow_emph +
-        s(Knot, by = vow_emph, k = 5) +
-        s(Knot, Subject, by = vow_emph, bs = "fs", m = 1, k = 5),
-      Y ~ vow_emph +
-        s(Knot, by = vow_emph, k = 5) +
-        s(Knot, Subject, by = vow_emph, bs = "fs", m = 1, k = 5)
+      X_z ~ vow_emph +
+        s(knot, by = vow_emph, k = 5) +
+        s(knot, participant, by = vow_emph, bs = "fs", m = 1, k = 5),
+      Y_z ~ vow_emph +
+        s(knot, by = vow_emph, k = 5) +
+        s(knot, participant, by = vow_emph, bs = "fs", m = 1, k = 5)
     ),
-    data = la_f,
+    data = dlc_emph_f,
     family = mvn(d = 2)
   )
   
-  saveRDS(la_gam, fi)
+  saveRDS(emph_gam, fi)
 }
 ```
 
 ```{r}
-frame_la <- expand_grid(
-  Subject = unique(la_f$Subject),
-  vow_emph = unique(la_f$vow_emph),
-  Knot = seq(3, 11, by = 0.1)
+#| label: emph-pred
+
+frame_emph <- expand_grid(
+  participant = unique(dlc_emph_f$participant),
+  vow_emph = unique(dlc_emph_f$vow_emph),
+  knot = seq(0, 10, by = 0.1)
 )
 
 excl <- c(
-  "s(Knot,Subject):vow_emphA.Emphatic",
-  "s(Knot,Subject):vow_emphE.Emphatic",
-  "s(Knot,Subject):vow_emphI.Emphatic",
-  "s(Knot,Subject):vow_emphO.Emphatic",
-  "s(Knot,Subject):vow_emphU.Emphatic",
-  "s.1(Knot,Subject):vow_emphA.Emphatic",
-  "s.1(Knot,Subject):vow_emphE.Emphatic",
-  "s.1(Knot,Subject):vow_emphI.Emphatic",
-  "s.1(Knot,Subject):vow_emphO.Emphatic",
-  "s.1(Knot,Subject):vow_emphU.Emphatic",
-  "s(Knot,Subject):vow_emphA.Plain",
-  "s(Knot,Subject):vow_emphE.Plain",
-  "s(Knot,Subject):vow_emphI.Plain",
-  "s(Knot,Subject):vow_emphO.Plain",
-  "s(Knot,Subject):vow_emphU.Plain",
-  "s.1(Knot,Subject):vow_emphA.Plain",
-  "s.1(Knot,Subject):vow_emphE.Plain",
-  "s.1(Knot,Subject):vow_emphI.Plain",
-  "s.1(Knot,Subject):vow_emphO.Plain",
-  "s.1(Knot,Subject):vow_emphU.Plain"
+  "s(Knot,participant):vow_emphA.Emphatic",
+  "s(Knot,participant):vow_emphE.Emphatic",
+  "s(Knot,participant):vow_emphI.Emphatic",
+  "s(Knot,participant):vow_emphO.Emphatic",
+  "s(Knot,participant):vow_emphU.Emphatic",
+  "s.1(Knot,participant):vow_emphA.Emphatic",
+  "s.1(Knot,participant):vow_emphE.Emphatic",
+  "s.1(Knot,participant):vow_emphI.Emphatic",
+  "s.1(Knot,participant):vow_emphO.Emphatic",
+  "s.1(Knot,participant):vow_emphU.Emphatic",
+  "s(Knot,participant):vow_emphA.Plain",
+  "s(Knot,participant):vow_emphE.Plain",
+  "s(Knot,participant):vow_emphI.Plain",
+  "s(Knot,participant):vow_emphO.Plain",
+  "s(Knot,participant):vow_emphU.Plain",
+  "s.1(Knot,participant):vow_emphA.Plain",
+  "s.1(Knot,participant):vow_emphE.Plain",
+  "s.1(Knot,participant):vow_emphI.Plain",
+  "s.1(Knot,participant):vow_emphO.Plain",
+  "s.1(Knot,participant):vow_emphU.Plain"
 )
 
-la_gam_p <- predict(la_gam, frame_la, se.fit = TRUE, exclude = excl) |>
+emph_gam_p <- predict(emph_gam, frame_emph, se.fit = TRUE, exclude = excl) |>
   as.data.frame() |>
   as_tibble()
-colnames(la_gam_p) <- c("X", "Y", "X_se", "Y_se")
+colnames(emph_gam_p) <- c("X", "Y", "X_se", "Y_se")
 
-la_gam_p <- bind_cols(frame_la, la_gam_p) |> 
+emph_gam_p <- bind_cols(frame_emph, emph_gam_p) |> 
   # pick any speaker, random effects have been removed
-  filter(Subject == "Sak") |> 
+  filter(participant == "Sak") |> 
   mutate(
     X_lo = X - (1.96 * X_se),
     X_hi = X + (1.96 * X_se),
     Y_lo = Y - (1.96 * Y_se),
     Y_hi = Y + (1.96 * Y_se)
   ) |> 
-  separate(vow_emph, c("Vowel", "Consonant.Emphaticness"))
+  separate(vow_emph, c("vowel", "emph"))
 ```
 
 ```{r}
-la_gam_p |> 
-  ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
-  geom_point() +
-  facet_grid(cols = vars(Vowel)) +
-  coord_fixed() +
-  theme(legend.position = "bottom")
+#| label: fig-emph-pred
 
-la_gam_p |> 
-  ggplot(aes(Knot, X, colour = Consonant.Emphaticness)) +
+emph_gam_p |> 
+  ggplot(aes(X, Y, colour = emph)) +
   geom_point() +
-  facet_grid(rows = vars(Vowel)) +
-  theme(legend.position = "bottom")
-la_gam_p |> 
-  ggplot(aes(Knot, Y, colour = Consonant.Emphaticness)) +
-  geom_point() +
-  facet_grid(rows = vars(Vowel)) +
+  facet_grid(cols = vars(vowel)) +
+  coord_fixed() +
   theme(legend.position = "bottom")
 ```
 
 ```{r}
-la_gam_p |> 
-  group_by(Vowel, Consonant.Emphaticness) |> 
-  # mutate(
-  #   Y_lo = ifelse(Y_lo > min(Y), Y_lo, NA),
-  #   X_hi = ifelse(X_hi < max(X), X_hi, NA),
-  # ) |>
-  ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
-  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.05, linewidth = 2.5) +
-  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.05, linewidth = 1) +
-  geom_point(size = 1, alpha = 0.75) +
-  scale_color_brewer(type = "qual", palette = "Dark2") +
-  coord_fixed() +
-  facet_wrap(vars(Vowel), ncol = 3) +
-  theme_light() +
-  theme(legend.position = "bottom")
+#| label: fig-emph-ci
 
-la_gam_p |> 
-  ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
-  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.25, linewidth = 2.5) +
-  # geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.25, linewidth = 1) +
+emph_gam_p |> 
+  ggplot(aes(X, Y, colour = emph)) +
+  geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.25) +
+  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.25) +
   geom_point(size = 1, alpha = 0.75) +
   scale_color_brewer(type = "qual", palette = "Dark2") +
   coord_fixed() +
-  facet_wrap(vars(Vowel), ncol = 3) +
-  theme_light() +
-  theme(legend.position = "bottom")
-
-la_gam_p |>
-  ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
-  # geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.25, linewidth = 2.5) +
-  geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.25, linewidth = 1) +
-  geom_point(size = 1, alpha = 0.75) +
-  scale_color_brewer(type = "qual", palette = "Dark2") +
-  coord_fixed() +
-  facet_wrap(vars(Vowel), ncol = 3) +
+  facet_grid(cols = vars(vowel)) +
   theme_light() +
   theme(legend.position = "bottom")
 ```
 
 
 ```{r}
-la_gam_p_2 <- predict(la_gam, frame_la, se.fit = TRUE) |>
+#| label: emph-part
+emph_gam_p_2 <- predict(emph_gam, frame_emph, se.fit = TRUE) |>
   as.data.frame() |>
   as_tibble()
-colnames(la_gam_p_2) <- c("X", "Y", "X_se", "Y_se")
+colnames(emph_gam_p_2) <- c("X", "Y", "X_se", "Y_se")
 
-la_gam_p_2 <- bind_cols(frame_la, la_gam_p_2) |>
+emph_gam_p_2 <- bind_cols(frame_emph, emph_gam_p_2) |>
   mutate(
     X_lo = X - (1.96 * X_se),
     X_hi = X + (1.96 * X_se),
     Y_lo = Y - (1.96 * Y_se),
     Y_hi = Y + (1.96 * Y_se)
   ) |> 
-  separate(vow_emph, c("Vowel", "Consonant.Emphaticness"))
+  separate(vow_emph, c("vowel", "emph"))
 ```
 
 ```{r}
-la_gam_p_2 |> 
-  ggplot(aes(X, Y, colour = Consonant.Emphaticness)) +
+#| label: fig-emph-part
+emph_gam_p_2 |> 
+  ggplot(aes(X, Y, colour = emph)) +
   geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.5) +
   geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.5) +
   # geom_point() +
-  facet_grid(cols = vars(Subject), rows = vars(Vowel)) +
+  facet_grid(rows = vars(participant), cols = vars(vowel)) +
   coord_fixed()
 ```
 
 ```{r}
-frame_la <- expand_grid(
-  Subject = unique(la$Subject),
-  vow_emph = unique(la$vow_emph),
-  Knot = 3:11
+frame_emph <- expand_grid(
+  participant = unique(dlc_emph_f$participant),
+  vow_emph = unique(dlc_emph_f$vow_emph),
+  knot = 0:10
 )
 
 pred_grid_a <- filter(
-  frame_la, vow_emph == "E.Plain",
-  Subject == "Sak"
+  frame_emph, vow_emph == "E.plain",
+  participant == "Sak"
 )
 pred_grid_b <- filter(
-  frame_la, vow_emph == "E.Emphatic",
-  Subject == "Sak"
+  frame_emph, vow_emph == "E.emphatic",
+  participant == "Sak"
 )
 
-pred_a <- predict.gam(la_gam, pred_grid_a, type = "lpmatrix") |> 
+pred_a <- predict.gam(emph_gam, pred_grid_a, type = "lpmatrix") |> 
   as_tibble() |> 
   mutate(
-    across(starts_with("s(knot,Subject)"), ~0)
+    across(starts_with("s(knot,participant)"), ~0)
   ) |> 
   as.matrix()
 # pred_a[,301:603] <- 0
 pred_a[,1:300] <- 0
 
-pred_b <- predict.gam(la_gam, pred_grid_b, type = "lpmatrix") |> 
+pred_b <- predict.gam(emph_gam, pred_grid_b, type = "lpmatrix") |> 
   as_tibble() |> 
   mutate(
-    across(starts_with("s(knot,Subject)"), ~0)
+    across(starts_with("s(knot,participant)"), ~0)
   ) |> 
   as.matrix()
 # pred_b[,301:603] <- 0
 pred_b[,1:300] <- 0
 
 pred_diff <- pred_a - pred_b
-diff <- as.vector(pred_diff %*% stats::coef(la_gam))
+diff <- as.vector(pred_diff %*% stats::coef(emph_gam))
 
-se <- sqrt(rowSums((pred_diff %*% stats::vcov(la_gam)) * pred_diff))
+se <- sqrt(rowSums((pred_diff %*% stats::vcov(emph_gam)) * pred_diff))
 
 diff_out <- pred_grid_a
 diff_out$diff <- diff
@@ -409,7 +405,7 @@ diff_out$upper_ci <- diff + se * 1.96
 
 ```{r}
 diff_out |> 
-  ggplot(aes(Knot, diff)) +
+  ggplot(aes(knot, diff)) +
   geom_hline(yintercept = 0) +
   geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci), alpha = 0.5) +
   geom_point()
@@ -537,7 +533,7 @@ library(landmarkregUtils)
 la_long <- la_f |> 
   dplyr::filter(Current.Phone.Class == "Consonant") |> 
   pivot_longer(c(X, Y), names_to = "dim") |> 
-  group_by(dim, Subject) |> 
+  group_by(dim, participant) |> 
   mutate(
     value = (value - mean(value)) / sd(value)
   ) |> 
@@ -615,35 +611,35 @@ PCcurves_wide |>
 PCscores <- mfpca$scores %>%
   `colnames<-`( paste0("PC", 1:nPC)) %>%
   as_tibble() %>%
-  bind_cols(la_long %>% distinct(Unique.ID, Consonant.Emphaticness, Vowel, Consonant.Manner, Vowel.Height, Vowel.Frontness, Subject), .)
+  bind_cols(la_long %>% distinct(Unique.ID, emph, vowel, Consonant.Manner, vowel.Height, vowel.Frontness, participant), .)
 
 # scatterplot PC scores s1 and s2 by Category
 PCscores |> 
-  ggplot(aes(x = PC1, y = PC2, color = Consonant.Emphaticness)) +
+  ggplot(aes(x = PC1, y = PC2, color = emph)) +
   geom_point() +
-  facet_grid(cols = vars(Vowel), rows = vars(Consonant.Manner)) +
+  facet_grid(cols = vars(vowel), rows = vars(Consonant.Manner)) +
   scale_color_brewer(palette = "Dark2")
 
 PCscores |> 
-  ggplot(aes(x = PC1, y = PC2, colour = Consonant.Emphaticness, shape = Vowel, label = Vowel)) +
+  ggplot(aes(x = PC1, y = PC2, colour = emph, shape = vowel, label = vowel)) +
   # geom_point() +
   geom_text(size = 2) +
   scale_color_brewer(palette = "Dark2") +
   stat_ellipse() +
-  facet_wrap(vars(Subject))
+  facet_wrap(vars(participant))
 ```
 
 ```{r}
 PCscores |> 
-  ggplot(aes(Vowel, PC1, colour = Consonant.Emphaticness)) +
+  ggplot(aes(vowel, PC1, colour = emph)) +
   geom_jitter(position = position_jitterdodge(), alpha = 0.5) +
   scale_color_brewer(palette = "Dark2") +
-    facet_wrap(vars(Subject))
+    facet_wrap(vars(participant))
 
 PCscores |> 
-  ggplot(aes(Vowel, PC2, colour = Consonant.Emphaticness)) +
+  ggplot(aes(vowel, PC2, colour = emph)) +
   geom_jitter(position = position_jitterdodge(), alpha = 0.5) +
   scale_color_brewer(palette = "Dark2") +
-    facet_wrap(vars(Subject))
+    facet_wrap(vars(participant))
 ```
 
