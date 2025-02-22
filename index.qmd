@@ -682,38 +682,37 @@ pc_curves_wide |>
 
 
 ```{r}
+#| label: emph-pc-scores
 # collect PC scores
 pc_scores <- mfpca$scores |>
   `colnames<-`( paste0("PC", 1:n_pc)) |>
   as_tibble() |>
-  bind_cols(dlc_emph_long |> distinct(Unique.ID, emph, vowel, Consonant.Manner, vowel.Height, vowel.Frontness, participant), .)
+  bind_cols(dlc_emph_long |> distinct(frame_id, emph, vowel, participant))
+```
 
-# scatterplot PC scores s1 and s2 by Category
-pc_scores |> 
-  ggplot(aes(x = PC1, y = PC2, color = emph)) +
-  geom_point() +
-  facet_grid(cols = vars(vowel), rows = vars(Consonant.Manner)) +
-  scale_color_brewer(palette = "Dark2")
+```{r}
+#| label: fig-emph-speakers
 
 pc_scores |> 
-  ggplot(aes(x = PC1, y = PC2, colour = emph, shape = vowel, label = vowel)) +
-  # geom_point() +
-  geom_text(size = 2) +
+  ggplot(aes(x = PC1, y = PC2, colour = emph, label = vowel)) +
+  geom_point(alpha = 0.5) +
   scale_color_brewer(palette = "Dark2") +
   stat_ellipse() +
-  facet_wrap(vars(participant))
+  facet_grid(cols = vars(participant), rows = vars(vowel))
 ```
 
 ```{r}
 pc_scores |> 
   ggplot(aes(vowel, PC1, colour = emph)) +
-  geom_jitter(position = position_jitterdodge(), alpha = 0.5) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2), alpha = 0.25) +
   scale_color_brewer(palette = "Dark2") +
     facet_wrap(vars(participant))
+```
 
+```{r}
 pc_scores |> 
   ggplot(aes(vowel, PC2, colour = emph)) +
-  geom_jitter(position = position_jitterdodge(), alpha = 0.5) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2), alpha = 0.25) +
   scale_color_brewer(palette = "Dark2") +
     facet_wrap(vars(participant))
 ```
