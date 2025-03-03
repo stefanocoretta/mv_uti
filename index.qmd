@@ -15,14 +15,55 @@ library(tidyverse)
 theme_set(theme_light())
 ```
 
+## Introduction
+
+Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows researchers to image the shape of the tongue during speech at medium temporal resolution (30-100 frames per second, XXX). Typically, the midsagittal contour of the tongue is imaged, although 3D systems exist \[XXX\]. Recent developments in machine learning assisted image processing has enabled faster tracking of estimated points on the tongue contour [@wrench2022].
+
+@wrench2022 have trained a DeepLabCut model to estimate and track specific flesh points on the tongue contour and anatomical landmarks as captured by UTI. The model estimates 11 "knots" from the vallecula to the tongue tip, plus three muscular-skeletal knots, the hyoid bone, the mandible base and and the mental spine where the short tendon attaches. See @fig-knots for a schematic illustration of the position of the tracked knots.
+
+![Schematic representation of the knots tracked by DeepLabCut.](img/sensors-22-01133-g002.jpg){#fig-knots fig-align="center"}
+
 ## GAM
+
+Generalised additive models (GAMs) are an extension of generalised models that allow flexible modelling of non-linear effects [@hastie1986; @wood2006]. GAMs are built upon smoothing splines functions, the components of which are multiplied by estimated coefficients to reconstruct an arbitrary time-changing curve. For a thorough introduction to GAMs we refer the reader to [@soskuthy2017a; @soskuthy2021; @pedersen2019; @wieling2018].
+
+The data tracked by DeepLabCut consists of the position on the horizontal (*x*) and vertical (*y*) axes of the fourteen knots. In this tutorial, we will focus on modelling the tongue contour based on the 11 knots from the vallecula to the tongue tip. @fig-tongue illustrates the reconstructed tongue contour on the basis of the 11 knots: the shown tongue is from the offset of a vowel \[o\] followed by \[t\], uttered by a Polish speaker (see below for details on the data).
+
+```{r}
+#| label: fig-tongue
+#| fig-cap: "The eleven knots on the tongue contour taken from the offset of [o] followed by [t] (Polish speaker PL04, tongue tip to the right)."
+dlc_voff_f <- readRDS("data/coretta2018/dlc_voff_f.rds")
+
+dlc_voff_f |> 
+  filter(speaker == "pl04", frame_id == 432) |> 
+  ggplot(aes(X, Y, group = frame_id)) +
+  geom_point() +
+  geom_path() +
+  coord_fixed() +
+  labs(x = "X (mm)", y = "Y (mm)")
+```
+
+```{r}
+#| label: fig-tongue-xy
+#| fig-cap: "The horizontal and vertical positions of the elevel knots (same data as @fig-tongue)."
+dlc_voff_f |> 
+  filter(speaker == "pl04", frame_id == 432) |> 
+  select(knot, X, Y) |> 
+  pivot_longer(c(X,Y)) |> 
+  ggplot(aes(knot + 1, value)) +
+  geom_point() +
+  geom_path() +
+  facet_grid(rows = vars(name)) +
+  scale_x_continuous(breaks = 1:11) +
+  labs(x = "Knot", y = "Position (mm)")
+```
 
 ### CV coarticulation
 
 ```{r}
 #| label: dlc-voff
 
-dlc_voff_f <- readRDS("data/coretta2018/dlc_voff_f.rds") |> 
+dlc_voff_f <- readRDS("data/coretta2018/dlc_voff_f.rds")
   
 ```
 
@@ -47,7 +88,6 @@ dlc_voff_f |>
   facet_grid(cols = vars(c2_place)) +
   labs(x = "X (z-scores)", "Y (z-scores)")
 ```
-
 
 ```{r}
 #| label: voff-gam
@@ -135,7 +175,6 @@ voff_gam_p |>
   )
 ```
 
-
 ```{r}
 #| label: fig-voff-ci
 #| fig-cap: "Predicted tongue contours based on a multivariate GAM, with 95% Confidence Intervals."
@@ -157,10 +196,6 @@ voff_gam_p |>
   theme_light() +
   theme(legend.position = "bottom")
 ```
-
-
-
-
 
 ```{r}
 frame_voff <- expand_grid(
@@ -328,7 +363,6 @@ emph_gam_p |>
   theme(legend.position = "bottom")
 ```
 
-
 ```{r}
 #| label: emph-part
 emph_gam_p_2 <- predict(emph_gam, frame_emph, se.fit = TRUE) |>
@@ -410,7 +444,6 @@ diff_out |>
   geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci), alpha = 0.5) +
   geom_point()
 ```
-
 
 ## FPCA
 
@@ -543,7 +576,6 @@ pc_curves_wide |>
   ) +
   coord_fixed()
 ```
-
 
 ```{r}
 # collect PC scores
@@ -680,7 +712,6 @@ pc_curves_wide |>
   coord_fixed()
 ```
 
-
 ```{r}
 #| label: emph-pc-scores
 # collect PC scores
@@ -716,4 +747,3 @@ pc_scores |>
   scale_color_brewer(palette = "Dark2") +
     facet_wrap(vars(participant))
 ```
-
