@@ -13,6 +13,7 @@ bibliography: references.bib
 
 library(tidyverse)
 theme_set(theme_light())
+library(knitr)
 ```
 
 ## Introduction
@@ -43,6 +44,8 @@ dlc_voff_f |>
   labs(x = "X (mm)", y = "Y (mm)")
 ```
 
+The same data is shown in @fig-tongue-xy, but in a different format. Instead of a Cartesian coordinate system of X and Y values, the plot has knot number on the *x*-axis and X/Y coordinates on the *y*-axis. The X/Y coordinates thus form "trajectories" along the knots. These trajectories are the ones that can be modelled using GAMs and Functional Principal Component Analysis (FPCA). In this section, we will illustrate GAMs applied to the X/Y trajectories along the knots and how we can reconstruct the tongue contour from the modelled trajectories. We will use data from two case studies of coarticulation: vowel consonant (VC) coarticulation based on C place in Italian and Polish, and consonantal articulation of plain vs emphatic consonants in Lebanese Arabic.
+
 ```{r}
 #| label: fig-tongue-xy
 #| fig-cap: "The horizontal and vertical positions of the elevel knots (same data as @fig-tongue)."
@@ -58,21 +61,37 @@ dlc_voff_f |>
   labs(x = "Knot", y = "Position (mm)")
 ```
 
-### CV coarticulation
+### VC coarticulation
+
+The data of the first case study, @coretta2018f, comes from @coretta2020b and have been discussed in @coretta2020 (the analysis concerned the position of the tongue root during the duration of vowels followed by voiceless or voiced stops; in this paper we focus on tongue contours at the vowel offset). The materials are /pVCV/ words embedded in a frame sentence (*Dico X lentamente* 'I say X slowly' in Italian and *Mówię X teraz* 'I say X now' in Polish). In the /pVCV/ words, C was /t, d, k, ɡ/ and V was /a, o, u/ (in each word, the two vowels where identical, so for example *pata, poto, putu*). The data analysed here is from 9 speakers of Italian and 6 speakers of Polish (other speakers were not included due to the difficulty in processing their data with DeepLabCut).
+
+\[XXX Processing of data with DLC and filtering. Link to notebook\].
+
+The following code chunk reads the filtered data. A sample of the data is shown in @tbl-dlc-voff.
 
 ```{r}
 #| label: dlc-voff
+#| message: false
+#| echo: true
 
 dlc_voff_f <- readRDS("data/coretta2018/dlc_voff_f.rds")
   
 ```
 
 ```{r}
+#| label: tbl-dlc-voff
+#| tbl-cap: "A sample of the VC coarticulation data from @coretta2018f."
+
+head(dlc_voff_f |> select(speaker, word, X, Y, knot, knot_label)) |> kable()
+```
+
+```{r}
 #| label: fig-voff
+#| fig-cap: "Tongue contours of 9 Italian speakers and6 Polish speakers, taken from the offset of the first vowel in /pCVCV/ target words."
 
 dlc_voff_f |> 
   ggplot(aes(X_z, Y_z, group = frame_id)) +
-  geom_path(alpha = 0.5) +
+  geom_path(alpha = 0.25) +
   coord_fixed() +
   facet_wrap(vars(speaker), ncol = 5)
 ```
@@ -80,6 +99,7 @@ dlc_voff_f |>
 ```{r}
 #| label: fig-pl04
 #| fig-cap: "Tongue contours of PL04 (Polish) taken from the offset of vowels followed by coronal or velar stops. Tip is on the right."
+
 dlc_voff_f |> 
   filter(speaker == "pl04") |> 
   ggplot(aes(X_z, Y_z, group = frame_id, colour = vowel)) +
