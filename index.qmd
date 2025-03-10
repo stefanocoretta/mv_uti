@@ -67,7 +67,7 @@ The data of the first case study, @coretta2018f, comes from @coretta2020b and ha
 
 \[XXX Processing of data with DLC and filtering. Link to notebook\].
 
-The following code chunk reads the filtered data. A sample of the data is shown in @tbl-dlc-voff.
+The following code chunk reads the filtered data. A sample of the data is shown in @tbl-dlc-voff. @fig-voff shows the tongue contours for each individual speaker. It is possible to notice clusters of different contours, related to each of the vowels /a, o, u/. @fig-pl04 zooms in on PL04 (Polish): the contours of each vowel are coloured separately, and two panels separate tongue contours taken at the offset of vowels followed by coronal (/t, d/) and velar stops (/k, ɡ/). Crucially, the variation in tongue shape at vowel offset (or closure onset) across vowels contexts is higher in the coronal than in the velar contexts. This is not surprising, giving the greater involvement of the tongue body and dorsum (the relevant articulators of vowel production) in velar than in coronal stops.
 
 ```{r}
 #| label: dlc-voff
