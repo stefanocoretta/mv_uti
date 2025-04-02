@@ -1,6 +1,14 @@
 {
   "index.qmd": {
     "index.html": "6c52af28",
-    "index.tex": "339a6c3d"
+    "index.tex": "339a6c3d",
+    "index.embed.ipynb": "dd40dc5b",
+    "index.out.ipynb": "57378030",
+    "index-preview.html": "ee8f4454"
+  },
+  "notebooks/01_prepare_data.qmd": {
+    "01_prepare_data.embed.ipynb": "e780de26",
+    "01_prepare_data.out.ipynb": "145dd379",
+    "01_prepare_data-preview.html": "fd410dd2"
   }
 }
