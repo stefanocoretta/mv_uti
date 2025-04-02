@@ -51,7 +51,7 @@ The same data is shown in @fig-tongue-xy, but in a different format. Instead of 
 #| fig-cap: "The horizontal and vertical positions of the elevel knots (same data as @fig-tongue)."
 dlc_voff_f |> 
   filter(speaker == "pl04", frame_id == 432) |> 
-  select(knot, X, Y) |> 
+  dplyr::select(knot, X, Y) |> 
   pivot_longer(c(X,Y)) |> 
   ggplot(aes(knot + 1, value)) +
   geom_point() +
@@ -469,39 +469,47 @@ diff_out |>
 
 ### CV coarticulation
 
+We will apply Multivariate Functional Principal Component Analysis (MFPCA). The following code has been adapted from @gubian2024. The packages below are needed to run MFPCA (except landmarkregUtils, they are available on CRAN).
+
 ```{r}
 #| label: attach-fda
+#| message: false
+
 library(fda)
 library(funData)
 library(MFPCA)
-# install.packages("devtools")
-# devtools::install_github("uasolo/landmarkregUtils")
+# install.packages("remotes")
+# remotes::install_github("uasolo/landmarkregUtils")
 library(landmarkregUtils)
 ```
+
+The format required to work through MFPCA is a "long" format with one column containing the coordinate labels (*x* or *y* coordinate) and another with the coordinate values. We can easily pivot the data with `pivot_longer()`. Note that we are using the *z*-scored coordinate values (`X_z` and `Y_z`). If you are not unsure about what the code in this section, it is always useful to inspect intermediate and final output.
 
 ```{r}
 #| label: dlc-voff-long
 
 dlc_voff_long <- dlc_voff_f |> 
+  # Select relevant columns
   dplyr::select(X_z, Y_z, frame_id, knot, vowel, c2_place, language, speaker) |> 
-  pivot_longer(c(X_z, Y_z), names_to = "dim") |> 
-  group_by(dim, speaker) |> 
-  mutate(
-    value = (value - mean(value)) / sd(value)
-  ) |> 
-  ungroup()
+  # Pivot data to longer format. Saves coordinate labels to column `dim`
+  pivot_longer(c(X_z, Y_z), names_to = "dim")
 ```
+
+In the second step, we create a `multiFunData` object: this is a special type of list object, with the observations of the two coordinates (`X_z` and `Y_z`) as two matrices of dimension $N \cdot 11$, where $N$ is the number of tongue contours and $11$ is for the 11 knots returned by DLC. Three columns in the data are used to create the `multiFunData` object: one column with the id of each contour (in our data, `frame_id`), a time or series column (`knot`) and the column with the coordinate values (`value`).
 
 ```{r}
 #| label: voff-curves
-# build a multiFunData object
+
 curves_fun_2d <- lapply(
   c("X_z", "Y_z"),
   function(y) {
     long2irregFunData(
       dlc_voff_long |> filter(dim == {{y}}),
+      # Tongue contour ID
       id = "frame_id",
+      # Knot column
       time = "knot",
+      # X/Y coordinate values
       value = "value"
     ) |> 
     as.funData()
@@ -510,10 +518,15 @@ curves_fun_2d <- lapply(
   multiFunData()
 ```
 
+Once we have our `multFunData` object, we can use the `MFPCA()` function to compute an MFPCA. In this tutorial we will compute the first two PCs, but you can compute up to $K-1$ PCs where $K$ is the number of DLC knots in the data.
+
 ```{r}
 #| label: voff-mfpca
-# Compute FPCA
+
+# Number of PC to compute
 n_pc <- 2
+
+# Compute MFPCA
 mfpca <- MFPCA(
   curves_fun_2d,
   M = n_pc,
@@ -521,37 +534,53 @@ mfpca <- MFPCA(
 )
 ```
 
+We can quickly calculate the proportion of explained variance of each PC with the following code. PC1 and PC2 together explain almost 100% of the variance in our data. The higher the variance explained, the better the variance patterns in the data are captured.
+
 ```{r}
-# Prop of explained var
+#| label: prop-var
+
+# Proportion of explained variance
 mfpca$values  / sum(mfpca$values)
 ```
 
+The best way to assess the effect of the PC scores on the shape of the tongue contours is to plot the predicted tongue contours based on a set of representative PC scores. In order to be able to plot the predicted contours, we need to calculate them from the MFPCA object. Gubian suggests plotting predicted curves at score intervals based on fractions of the scores standard deviation. This is what the following code does.
+
 ```{r}
 #| label: pc-curves
-# scores st. dev.
+
+# Ge the PC score SD
 sd_fun <- sqrt(mfpca$values)
 
 # PC curves to be plotted
 pc_curves <- expand_grid(
   PC = 1:n_pc,
-  dim = 1:2, 
-  sd_frac = seq(-1, 1, by=.25)
-) |> 
-  group_by(PC, dim, sd_frac) |> 
+  dim = 1:2,
+  # Set the SD fraction, from -1 SD to +1 SD, with increments by 0.25
+  sd_frac = seq(-1, 1, by = 0.25)
+) |>
+  group_by(PC, dim, sd_frac) |>
+  # We can now calculate the predicted contour with funData2long1().
+  # reframe() is needed because the funData2long1() function returns a data frame
+  # the has more rows than the original.
   reframe(
     funData2long1(
       mfpca$meanFunction[[dim]] +
         sd_frac * sd_fun[PC] * mfpca$functions[[dim]][PC],
-      time= "knot", value = "value"
+      time = "knot", value = "value"
     )
   ) |> 
+  # We relabel the dimensions
   mutate(
-    dim = factor(dim, levels = c(2,1), labels = c('Y_z', 'X_z'))
+    dim = factor(dim, levels = c(2, 1), labels = c('Y_z', 'X_z'))
   )
 ```
 
+The created data frame `pc_curves` has the predicted values of the X and Y coordinates *along the knots*. This is the same structure as @fig-tongue-xy, with the knot number on the *x*-axis and the coordinates on the *y*-axis. Of course, what we are after is the X/Y plot of the tongue contours, rather than the knot/coordinate plot as needed to fit an MFPCA. For the sake of clarity, we first plot the predicted curves for X and Y separately. @fig-pc-curves shows these. The plot is composed of four panels: the top two are the predicted curves along knot number for the Y coordinates (based on PC1 in the left panel and PC2 in the right panel). Interpreting the effect of the PCs on the X and Y coordinates separately allows one to observe vertical (Y coordinate) and horizontal (X coordinate) differences in tongue position independently. However, note that the vector of muscle contractions in the tongue are not simply along a vertical/horizontal axis [@honda1996; @wrench2024]. Looking at a full tongue contour (in an X/Y coordinates plot) will generally prove to be more straightforward.
+
 ```{r}
 #| label: fig-pc-curves
+#| fig-cap: "Predicted curves along knot number for X and Y coordinates, as obtained from an MFPCA."
+
 pc_curves |> 
   ggplot(aes(
     x = knot, y = value, group = sd_frac, color = sd_frac
@@ -573,6 +602,8 @@ pc_curves |>
   )
 ```
 
+In order to plot tongue contours in the X/Y coordinate system, we simply need to pivot the data to a wider format.
+
 ```{r}
 #| label: pc-curves-wide
 
@@ -581,7 +612,8 @@ pc_curves_wide <- pc_curves |>
 ```
 
 ```{r}
-#| label: fig-curves-wide
+#| label: fig-contours
+#| fig-cap: "Predicted tongue contours as obtained from an MFPCA."
 
 pc_curves_wide |> 
   ggplot(aes(x = X_z, y = Y_z, group = sd_frac, color = sd_frac)) +
