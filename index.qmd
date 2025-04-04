@@ -556,7 +556,7 @@ The best way to assess the effect of the PC scores on the shape of the tongue co
 ```{r}
 #| label: pc-curves
 
-# Ge the PC score SD
+# Get the PC score SD
 sd_fun <- sqrt(mfpca$values)
 
 # PC curves to be plotted
@@ -669,8 +669,12 @@ Once one has established which patterns each PC is capturing, PC scores can be s
 
 ### Emphaticness
 
+In this section we will run an MFPCA analysis on the Lebanese Arabic data. Since the procedure is the same as in the previous section, the code will not be shown here, but can be viewed in the article notebook, at XXX.
+
 ```{r}
 #| label: dlc-emph-long
+#| include: false
+
 dlc_emph_long <- dlc_emph_f |> 
   pivot_longer(c(X_z, Y_z), names_to = "dim") |> 
   group_by(dim, participant) |> 
@@ -682,14 +686,18 @@ dlc_emph_long <- dlc_emph_f |>
 
 ```{r}
 #| label: emph-curves
-# build a multiFunData object
+#| include: false
+
 curves_fun_2d <- lapply(
   c("X_z", "Y_z"),
   function(y) {
     long2irregFunData(
       dlc_emph_long |> filter(dim == {{y}}),
+      # Tongue contour ID
       id = "frame_id",
+      # Knot column
       time = "knot",
+      # X/Y coordinate values
       value = "value"
     ) |> 
     as.funData()
@@ -700,8 +708,12 @@ curves_fun_2d <- lapply(
 
 ```{r}
 #| label: emph-mfpca
-# Compute FPCA
+#| include: false
+
+# Number of PC to compute
 n_pc <- 2
+
+# Compute MFPCA
 mfpca <- MFPCA(
   curves_fun_2d,
   M = n_pc,
@@ -711,22 +723,30 @@ mfpca <- MFPCA(
 
 ```{r}
 #| label: emph-prop-var
+#| include: false
+
 # Proportion of explained variance
 mfpca$values  / sum(mfpca$values)
 ```
 
 ```{r}
 #| label: emph-pc-curves
-# scores st. dev.
+#| include: false
+
+# Get the PC score SD
 sd_fun <- sqrt(mfpca$values)
 
 # PC curves to be plotted
 pc_curves <- expand_grid(
   PC = 1:n_pc,
-  dim = 1:2, 
+  dim = 1:2,
+  # Set the SD fraction, from -1 SD to +1 SD, with increments by 0.25
   sd_frac = seq(-1, 1, by = 0.25)
-) |> 
-  group_by(PC, dim, sd_frac) |> 
+) |>
+  group_by(PC, dim, sd_frac) |>
+  # We can now calculate the predicted contour with funData2long1().
+  # reframe() is needed because the funData2long1() function returns a data frame
+  # the has more rows than the original.
   reframe(
     funData2long1(
       mfpca$meanFunction[[dim]] +
@@ -734,6 +754,7 @@ pc_curves <- expand_grid(
       time = "knot", value = "value"
     )
   ) |> 
+  # We relabel the dimensions
   mutate(
     dim = factor(dim, levels = c(2,1), labels = c('Y_z', 'X_z'))
   )
@@ -741,6 +762,8 @@ pc_curves <- expand_grid(
 
 ```{r}
 #| label: fig-emph-pc-curves
+#| include: false
+
 pc_curves |> 
   ggplot(aes(
     x = knot, y = value, group = sd_frac, color = sd_frac
@@ -764,13 +787,17 @@ pc_curves |>
 
 ```{r}
 #| label: emph-pc-curves-wide
+#| include: false
 
 pc_curves_wide <- pc_curves |> 
   pivot_wider(names_from = dim)
 ```
 
+@fig-emph-curves-wide illustrates the reconstructed tongue contours (taken from 35 ms before the CV boundary) in Lebanese Arabic, based on the MFPCA. PC1 captures the low-back/high-front diagonal movement. PC2, on the other hand, seems to be restricted to high/low movement at the back of the oral cavity.
+
 ```{r}
 #| label: fig-emph-curves-wide
+#| fig-cap: "Predicted tongue contours of Lebanese Arabic coronal consonants as obtained from an MFPCA."
 
 pc_curves_wide |> 
   ggplot(aes(x = X_z, y = Y_z, group = sd_frac, color = sd_frac)) +
@@ -788,7 +815,8 @@ pc_curves_wide |>
 
 ```{r}
 #| label: emph-pc-scores
-# collect PC scores
+#| include: false
+
 pc_scores <- mfpca$scores |>
   `colnames<-`( paste0("PC", 1:n_pc)) |>
   as_tibble() |>
