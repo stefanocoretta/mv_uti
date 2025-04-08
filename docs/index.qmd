@@ -1,5 +1,5 @@
 ---
-title: "Multivariate analyses of tongue contours from ultrasound tongue imaging [v0.1]"
+title: "Multivariate analyses of tongue contours from ultrasound tongue imaging [Draft v0.1]"
 authors:
   - name: Stefano Coretta
     affiliation: University of Edinburgh
