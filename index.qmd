@@ -1,5 +1,5 @@
 ---
-title: "Multivariate analyses of tongue contours from ultrasound tongue imaging [Draft v0.1]"
+title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.2"
 authors:
   - name: Stefano Coretta
     affiliation: University of Edinburgh
@@ -12,23 +12,26 @@ authors:
     orcid: 0000-0003-3813-2669
     roles: [data curation, methodology, writing, editing]
 bibliography: references.bib
-execute: 
-  echo: true
 citation:
   url: "https://stefanocoretta.github.io/mv_uti/"
 google-scholar: true
 date: "08 April 2025"
 ---
 
+# Introduction
+
 ```{r}
 #| label: setup
+#| include: false
 
 library(tidyverse)
 theme_set(theme_light())
 library(knitr)
 ```
 
-## Introduction
+::: callout-warning
+This is a "living" draft, meaning it is work in progress. While the code is fully functional and usable, we will be updating the textual explanation and might make minor changes to the code to improve clarity. Please, if using in research, cite the version you have consulted. The version of the draft is given in the title as "Draft vX.X" where "X" are incremental digits. See citation recommendation at the bottom of the document.
+:::
 
 Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows researchers to image the shape of the tongue during speech at medium temporal resolution (30-100 frames per second, XXX). Typically, the midsagittal contour of the tongue is imaged, although 3D systems exist \[XXX\]. Recent developments in machine learning assisted image processing has enabled faster tracking of estimated points on the tongue contour [@wrench2022].
 
@@ -36,7 +39,7 @@ Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows research
 
 ![Schematic representation of the knots tracked by DeepLabCut. CC-BY Wrench and Balch-Tomes [@wrench2024].](img/sensors-22-01133-g002.jpg){#fig-knots fig-align="center"}
 
-## GAM
+# GAM
 
 Generalised additive models (GAMs) are an extension of generalised models that allow flexible modelling of non-linear effects [@hastie1986; @wood2006]. GAMs are built upon smoothing splines functions, the components of which are multiplied by estimated coefficients to reconstruct an arbitrary time-changing curve. For a thorough introduction to GAMs we refer the reader to [@soskuthy2017a; @soskuthy2021; @pedersen2019; @wieling2018].
 
@@ -73,7 +76,7 @@ dlc_voff_f |>
   labs(x = "Knot", y = "Position (mm)")
 ```
 
-### VC coarticulation
+## VC coarticulation
 
 The data of the first case study, @coretta2018f, comes from @coretta2020b and have been discussed in @coretta2020 (the analysis concerned the position of the tongue root during the duration of vowels followed by voiceless or voiced stops; in this paper we focus on tongue contours at the vowel offset). The materials are /pVCV/ words embedded in a frame sentence (*Dico X lentamente* 'I say X slowly' in Italian and *Mówię X teraz* 'I say X now' in Polish). In the /pVCV/ words, C was /t, d, k, ɡ/ and V was /a, o, u/ (in each word, the two vowels where identical, so for example *pata, poto, putu*). The data analysed here is from 9 speakers of Italian and 6 speakers of Polish (other speakers were not included due to the difficulty in processing their data with DeepLabCut).
 
@@ -121,13 +124,38 @@ dlc_voff_f |>
   labs(x = "X (z-scores)", "Y (z-scores)")
 ```
 
+We can now run a multivariate GAM to model the tongue contours. A multivariate GAM can be fitted by providing model formulae for each outcome variable (in our case, `X_z` and `Y_z`) in a list. For example `list(y ~ s(x), w ~ s(x))` would instruct `mgcv::gam()` to fit a bivariate GAM with the two outcome variables `y` and `w`. The required family is `mvn` for "multivariate normal": `mvn(d = 2)` indicates a bivariate family (a multivariate family with two dimensions, i.e. two outcome variables). In the model below, we are fitting a multivariate GAM to the *z*-scored X and Y coordinates. For both outcome variables, we include a smooth over knot (`s(knot, ...)`) with a `by` variable `vow_place_lang`: this variable is built from an interaction of vowel, place and language. (XXX note on categorical interactions in GAMs). We set `k` to 5: this will usually be sufficient for X/Y coordinates of tongue contours, since they are by nature not very "wiggly" (which would require a higher `k`). We also include a factor smooth over knot for speaker (the equivalent of a non-linear random effect) with `s(knot, speaker, ...)`: since language is a between-speaker variable, we use `vow_place` as the `by` variable (`vow_place` is the interaction of vowel and place).
+
+```{r}
+#| label: voff-gam-code
+#| eval: false
+#| echo: true
+
+library(mgcv)
+
+voff_gam <- gam(
+  list(
+    X_z ~ vow_place_lang +
+      s(knot, by = vow_place_lang, k = 5) +
+      s(knot, speaker, by = vow_place, bs = "fs", m = 1),
+    Y_z ~ vow_place_lang +
+      s(knot, by = vow_place_lang, k = 5) +
+      s(knot, speaker, by = vow_place, bs = "fs", m = 1)
+  ),
+  data = dlc_voff_f,
+  family = mvn(d = 2)
+)
+```
+
 ```{r}
 #| label: voff-gam
+#| include: false
 
 library(mgcv)
 
 fi <- "data/cache/voff_gam.rds"
 
+# Manual cache
 if (file.exists(fi)) {
   voff_gam <- readRDS(fi)
 } else {
@@ -148,19 +176,39 @@ if (file.exists(fi)) {
 }
 ```
 
-```{r}
-#| label: voff-pred
+The model summary is not particular insightful. What we are normally interested in is the reconstructed tongue contours and in which locations they are similar of different across conditions. To the best of our knowledge, there isn't a straightforward way to compute sensible measures of comparison, given the multidimensional nature of the model (i.e., only one or the other outcome can be inspected at a time; moreover, difference smooths, like in @soskuthy2017a and @wieling2018, represent the difference of the *sum* of the outcome variables, rather than each outcome separately, Michele Gubian pers. comm.) We thus recommend to plot the predicted tongue contours and base any further inference on impressionistic observations on such predicted contours. Alas, there is also no straightforward way to plot predicted tongue contours, but to extract the predictions following a step-by-step procedure, like the one illustrated in the following paragraphs.
 
+First off, one has to create a grid of predictor values to obtain predictions for. We do this with `expand_grid()` in the following code chunk. We start with unique values of `speaker`, `vow_place` and `knot` (rather than just using integers for the knots, we predict along increments of 0.1 from 0 to 10 for a more refined tongue contour). We then create the required column `vow_place_lang` by appending the language name based on the speaker ID. Note that all variables included as predictors in the model must be included in the prediction grid.
+
+```{r}
+#| label: frame-voff
+#| echo: true
+
+# Create a grid of values to predict for
 frame_voff <- expand_grid(
+  # All the speakers
   speaker = unique(dlc_voff_f$speaker),
-  vow_place_lang = unique(dlc_voff_f$vow_place_lang),
+  # All vowel/place combinations
+  vow_place = unique(dlc_voff_f$vow_place),
+  # Knots from 0 to 10 by increments of 0.1
+  # This gives us greater resolution along the tongue contour than just using 10 knots
   knot = seq(0, 10, by = 0.1)
 ) |> 
   mutate(
-    vow_place = str_remove(vow_place_lang, "\\.Italian"),
-    vow_place = str_remove(vow_place, "\\.Polish"),
+    vow_place_lang = case_when(
+      str_detect(speaker, "it") ~ paste0(vow_place, ".Italian"),
+      str_detect(speaker, "pl") ~ paste0(vow_place, ".Polish")
+    )
   )
+```
 
+With the prediction grid `frame_voff` we can now extract predictions from the model `voff_gam` with `predict()`. This function requires the GAM model object (`voff_gam`) and the prediction grid (`frame_off`). We also obtain the standard error of the prediction which we will use to calculate Confidence Intervals in the next step. Since we have used factor smooths for speaker, we now have to manually exclude these smooths from the prediction to obtain a "population" level prediction. We do this by listing the smooths to be removed in `excl`: note that the smooths must be named as they are in the summary of the model, so always check the summary to ensure you list all of the factor smooths. Finally, we rename the columns with the name of the outcome variables.
+
+```{r}
+#| label: voff-gam-p
+#| echo: true
+
+# List of factor smooths, to be excluded from prediction
 excl <- c(
   "s(knot,speaker):vow_placea.coronal",
   "s(knot,speaker):vow_placeo.coronal",
@@ -176,26 +224,41 @@ excl <- c(
   "s.1(knot,speaker):vow_placeu.velar"
 )
 
+# Get prediction from model voff_gam
 voff_gam_p <- predict(voff_gam, frame_voff, se.fit = TRUE, exclude = excl) |>
   as.data.frame() |>
   as_tibble()
+
+# Rename columns
 colnames(voff_gam_p) <- c("X", "Y", "X_se", "Y_se")
+```
+
+Now we have to join the prediction in `voff_gam_p` with the prediction frame, so that we have all the predictor values in the same data frame. We do so here with `bind_cols()` from the dplyr package. Note that `voff_gam_p` contains predictions for each level of the factor smooths, despite these being excluded from prediction. If you inspect the predictions for different speakers, you will find that they are the same for the same levels of `vow_place_lang`: this is because the effects of the factor smooths were removed, so `speaker` has no effect on the predicted values. This means that you can pick any Italian and Polish speaker in the predicted data frame. We do so by filtering with `filter(speaker %in% c("it01", "pl02"))`, but any other speaker would lead to the same output. We also calculate the lower and upper limits of 95% Confidence intervals (CI) for each coordinate. Note that you should interpret these CI with a grain of salt, because they are not truly multivariate, but rather represent the CI on each coordinate axis independently.
+
+```{r}
+#| label: voff-gam-p-2
+#| echo: true
 
 voff_gam_p <- bind_cols(frame_voff, voff_gam_p) |> 
-  # pick any speaker, random effects have been removed
-  filter(speaker == "it01") |> 
+  # pick any Italian and Polish speaker, random effects have been removed
+  filter(speaker %in% c("it01", "pl02")) |> 
+  # Calculate 95% CIs of X and Y
   mutate(
     X_lo = X - (1.96 * X_se),
     X_hi = X + (1.96 * X_se),
     Y_lo = Y - (1.96 * Y_se),
     Y_hi = Y + (1.96 * Y_se)
   ) |> 
+  # Separate column into individual variables, for plotting later
   separate(vow_place_lang, c("vowel", "place", "language"))
 ```
+
+@fig-voff-pred and @fig-voff-ci show the predicted tongue contours based on the `voff_gam` model, without and with 95% CIs respectively. As mentioned earlier, there isn't a straightforward way to obtain any statistical measure of the difference between the contours on the multivariate plane, so we must be content with the figure.
 
 ```{r}
 #| label: fig-voff-pred
 #| fig-cap: "Predicted tongue contours based on a multivariate GAM. Uncertainty not shown."
+
 voff_gam_p |> 
   ggplot(aes(X, Y, colour = vowel)) +
   geom_point(alpha = 0.5) +
@@ -229,66 +292,11 @@ voff_gam_p |>
   theme(legend.position = "bottom")
 ```
 
-```{r}
-frame_voff <- expand_grid(
-  speaker = unique(dlc_voff_f$speaker),
-  vow_place_lang = unique(dlc_voff_f$vow_place_lang),
-  knot = seq(0, 10)
-) |> 
-  mutate(
-    vow_place = str_remove(vow_place_lang, "\\.Italian"),
-    vow_place = str_remove(vow_place, "\\.Polish"),
-  )
-
-pred_grid_a <- filter(
-  frame_voff, vow_place_lang == "a.coronal.Italian",
-  speaker == "it01"
-)
-pred_grid_b <- filter(
-  frame_voff, vow_place_lang == "u.coronal.Italian",
-  speaker == "it01"
-)
-
-pred_a <- predict.gam(voff_gam, pred_grid_a, type = "lpmatrix") |> 
-  as_tibble() |> 
-  mutate(
-    across(starts_with("s(knot,speaker)"), ~0)
-  ) |> 
-  as.matrix()
-pred_a[,1:870] <- 0
-
-pred_b <- predict.gam(voff_gam, pred_grid_b, type = "lpmatrix") |> 
-  as_tibble() |> 
-  mutate(
-    across(starts_with("s(knot,speaker)"), ~0)
-  ) |> 
-  as.matrix()
-pred_b[,1:870] <- 0
-
-pred_diff <- pred_a - pred_b
-diff <- as.vector(pred_diff %*% stats::coef(voff_gam))
-
-se <- sqrt(rowSums((pred_diff %*% stats::vcov(voff_gam)) * pred_diff))
-
-diff_out <- pred_grid_a
-diff_out$diff <- diff
-diff_out$se <- se
-diff_out$lower_ci <- diff - se * 1.96
-diff_out$upper_ci <- diff + se * 1.96
-```
-
-```{r}
-diff_out |> 
-  ggplot(aes(knot, diff)) +
-  geom_hline(yintercept = 0) +
-  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci), alpha = 0.5) +
-  geom_point()
-```
-
-### Emphaticness
+## Emphaticness
 
 ```{r}
 #| label: dlc-emph
+#| echo: true
 
 dlc_emph_f <- readRDS("data/sakr2025/dlc_emph_f.rds")
 ```
@@ -423,63 +431,9 @@ emph_gam_p_2 |>
   coord_fixed()
 ```
 
-```{r}
-frame_emph <- expand_grid(
-  participant = unique(dlc_emph_f$participant),
-  vow_emph = unique(dlc_emph_f$vow_emph),
-  knot = 0:10
-)
+# FPCA
 
-pred_grid_a <- filter(
-  frame_emph, vow_emph == "E.plain",
-  participant == "Sak"
-)
-pred_grid_b <- filter(
-  frame_emph, vow_emph == "E.emphatic",
-  participant == "Sak"
-)
-
-pred_a <- predict.gam(emph_gam, pred_grid_a, type = "lpmatrix") |> 
-  as_tibble() |> 
-  mutate(
-    across(starts_with("s(knot,participant)"), ~0)
-  ) |> 
-  as.matrix()
-# pred_a[,301:603] <- 0
-pred_a[,1:300] <- 0
-
-pred_b <- predict.gam(emph_gam, pred_grid_b, type = "lpmatrix") |> 
-  as_tibble() |> 
-  mutate(
-    across(starts_with("s(knot,participant)"), ~0)
-  ) |> 
-  as.matrix()
-# pred_b[,301:603] <- 0
-pred_b[,1:300] <- 0
-
-pred_diff <- pred_a - pred_b
-diff <- as.vector(pred_diff %*% stats::coef(emph_gam))
-
-se <- sqrt(rowSums((pred_diff %*% stats::vcov(emph_gam)) * pred_diff))
-
-diff_out <- pred_grid_a
-diff_out$diff <- diff
-diff_out$se <- se
-diff_out$lower_ci <- diff - se * 1.96
-diff_out$upper_ci <- diff + se * 1.96
-```
-
-```{r}
-diff_out |> 
-  ggplot(aes(knot, diff)) +
-  geom_hline(yintercept = 0) +
-  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci), alpha = 0.5) +
-  geom_point()
-```
-
-## FPCA
-
-### VC coarticulation
+## VC coarticulation
 
 We will apply Multivariate Functional Principal Component Analysis (MFPCA). The following code has been adapted from @gubian2024. The packages below are needed to run MFPCA (except landmarkregUtils, they are available on CRAN).
 
@@ -671,7 +625,7 @@ pc_scores |>
 
 Once one has established which patterns each PC is capturing, PC scores can be submitted to further statistical modelling, like for example regression models where the PC scores are outcome variables and several predictors are include to assess possible differences in PC scores.
 
-### Emphaticness
+## Emphaticness
 
 In this section we will run an MFPCA analysis on the Lebanese Arabic data. Since the procedure is the same as in the previous section, the code will not be shown here, but can be viewed in the article notebook, at XXX.
 
