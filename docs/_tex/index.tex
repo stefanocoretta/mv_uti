@@ -254,7 +254,7 @@ Coretta. Email: \href{mailto:s.coretta@ed.ac.uk}{\nolinkurl{s.coretta@ed.ac.uk}}
 
 \section{Introduction}\label{introduction}
 
-\begin{tcolorbox}[enhanced jigsaw, breakable, titlerule=0mm, opacityback=0, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, colback=white, colframe=quarto-callout-warning-color-frame, opacitybacktitle=0.6, arc=.35mm, toprule=.15mm, rightrule=.15mm, left=2mm, coltitle=black, toptitle=1mm, colbacktitle=quarto-callout-warning-color!10!white, bottomtitle=1mm, leftrule=.75mm, bottomrule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, colback=white, coltitle=black, bottomrule=.15mm, toprule=.15mm, colframe=quarto-callout-warning-color-frame, bottomtitle=1mm, toptitle=1mm, left=2mm, arc=.35mm, leftrule=.75mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, opacitybacktitle=0.6, titlerule=0mm, rightrule=.15mm, opacityback=0, colbacktitle=quarto-callout-warning-color!10!white, breakable]
 
 This is a ``living'' draft, meaning it is work in progress. While the
 code is fully functional and usable, we will be updating the textual
@@ -272,9 +272,9 @@ temporal resolution (30-100 frames per second, XXX). Typically, the
 midsagittal contour of the tongue is imaged, although 3D systems exist
 {[}XXX{]}. Recent developments in machine learning assisted image
 processing has enabled faster tracking of estimated points on the tongue
-contour (A. Wrench and Balch-Tomes 2022).
+contour (Wrench and Balch-Tomes 2022).
 
-A. Wrench and Balch-Tomes (2022) have trained a DeepLabCut model to
+Wrench and Balch-Tomes (2022) have trained a DeepLabCut model to
 estimate and track specific flesh points on the tongue contour and
 anatomical landmarks as captured by UTI. The model estimates 11
 ``knots'' from the vallecula to the tongue tip, plus three
@@ -291,7 +291,7 @@ for a schematic illustration of the position of the tracked knots.
 }
 
 \caption{\label{fig-knots}Schematic representation of the knots tracked
-by DeepLabCut. CC-BY Wrench and Balch-Tomes (A. A. Wrench 2024).}
+by DeepLabCut. CC-BY Wrench and Balch-Tomes (Wrench 2024).}
 
 \end{figure}%
 
@@ -379,7 +379,18 @@ data analysed here is from 9 speakers of Italian and 6 speakers of
 Polish (other speakers were not included due to the difficulty in
 processing their data with DeepLabCut).
 
-{[}XXX Processing of data with DLC and filtering. Link to notebook{]}.
+Ultrasound tongue imaging was obtained with the set up by Articulate
+Assistant Advanced™ (AAA, Ltd 2011). Spline data was extracted using a
+custom DeepLabCut (DLC) model developed by Wrench and Balch-Tomes
+(2022). When exporting from AAA™, the data was rotated based on the bite
+plane, obtained with the imaging of a bite plate (Scobbie et al. 2011),
+so that the bite plane is horizontal: this allows for a common
+coordinate system where vertical and horizontal movement are comparable
+across speakers. Once the DLC data was imported in R, we manually
+removed tracking errors and we calculated \emph{z}-scores within each
+speaker (the difference between the value and the mean, divided by the
+standard deviation). These steps are documented in the paper's notebook
+\href{notebooks/01_prepare_data.qmd}{Prepare data}.
 
 The following code chunk reads the filtered data. A sample of the data
 is shown in Table~\ref{tbl-dlc-voff}. Figure~\ref{fig-voff} shows the
@@ -853,9 +864,9 @@ Interpreting the effect of the PCs on the X and Y coordinates separately
 allows one to observe vertical (Y coordinate) and horizontal (X
 coordinate) differences in tongue position independently. However, note
 that the vector of muscle contractions in the tongue are not simply
-along a vertical/horizontal axis (Honda 1996; A. A. Wrench 2024).
-Looking at a full tongue contour (in an X/Y coordinates plot) will
-generally prove to be more straightforward.
+along a vertical/horizontal axis (Honda 1996; Wrench 2024). Looking at a
+full tongue contour (in an X/Y coordinates plot) will generally prove to
+be more straightforward.
 
 \phantomsection\label{cell-fig-pc-curves}
 \begin{figure}[H]
@@ -1074,11 +1085,20 @@ Honda, Kiyoshi. 1996. {``Organization of Tongue Articulation for
 Vowels.''} \emph{Journal of Phonetics} 24 (1): 3952.
 \url{https://doi.org/10.1006/jpho.1996.0004}.
 
+\bibitem[\citeproctext]{ref-ltd2011}
+Ltd, Articulate Instruments. 2011. {``Articulate Assistant Advanced User
+Guide. {Version} 2.16.''}
+
 \bibitem[\citeproctext]{ref-pedersen2019}
 Pedersen, Eric J., David L. Miller, Gavin L. Simpson, and Noam Ross.
 2019. {``Hierarchical Generalized Additive Models in Ecology: An
 Introduction with Mgcv.''} \emph{PeerJ} 7: e6876.
 \url{https://doi.org/10.7717/peerj.6876}.
+
+\bibitem[\citeproctext]{ref-scobbie2011}
+Scobbie, James M., Eleanor Lawson, Steve Cowen, Joanne Cleland, and Alan
+A. Wrench. 2011. {``A Common Co-Ordinate System for Mid-Sagittal
+Articulatory Measurement.''} In, 14.
 
 \bibitem[\citeproctext]{ref-soskuthy2021}
 Sóskuthy, Márton. 2021a. {``Evaluating Generalised Additive Mixed
@@ -1101,7 +1121,7 @@ Wood, Simon. 2006. \emph{Generalized Additive Models: An Introduction
 with r}. CRC Press.
 
 \bibitem[\citeproctext]{ref-wrench2024}
-Wrench, Alan A. 2024. {``The Compartmental Tongue.''} \emph{Journal of
+Wrench, Alan. 2024. {``The Compartmental Tongue.''} \emph{Journal of
 Speech, Language, and Hearing Research} 67 (10S): 38873913.
 \url{https://doi.org/10.1044/2024_jslhr-23-00125}.
 
