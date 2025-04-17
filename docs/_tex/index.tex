@@ -229,7 +229,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.2},
+  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.3},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -239,7 +239,7 @@
 
 
 \title{Multivariate analyses of tongue contours from ultrasound tongue
-imaging. Draft v0.2}
+imaging. Draft v0.3}
 \author{Stefano
 Coretta$\textsuperscript{1}$~\orcidlink{0000-0001-9627-5532}, Georges
 Sakr$\textsuperscript{1}$~\orcidlink{0000-0003-3813-2669}}
@@ -254,7 +254,7 @@ Coretta. Email: \href{mailto:s.coretta@ed.ac.uk}{\nolinkurl{s.coretta@ed.ac.uk}}
 
 \section{Introduction}\label{introduction}
 
-\begin{tcolorbox}[enhanced jigsaw, colback=white, coltitle=black, bottomrule=.15mm, toprule=.15mm, colframe=quarto-callout-warning-color-frame, bottomtitle=1mm, toptitle=1mm, left=2mm, arc=.35mm, leftrule=.75mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, opacitybacktitle=0.6, titlerule=0mm, rightrule=.15mm, opacityback=0, colbacktitle=quarto-callout-warning-color!10!white, breakable]
+\begin{tcolorbox}[enhanced jigsaw, titlerule=0mm, bottomrule=.15mm, left=2mm, colback=white, breakable, toptitle=1mm, colframe=quarto-callout-warning-color-frame, opacityback=0, colbacktitle=quarto-callout-warning-color!10!white, opacitybacktitle=0.6, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, leftrule=.75mm, bottomtitle=1mm, arc=.35mm, rightrule=.15mm, coltitle=black, toprule=.15mm]
 
 This is a ``living'' draft, meaning it is work in progress. While the
 code is fully functional and usable, we will be updating the textual
@@ -268,19 +268,28 @@ document.
 
 Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows
 researchers to image the shape of the tongue during speech at medium
-temporal resolution (30-100 frames per second, XXX). Typically, the
-midsagittal contour of the tongue is imaged, although 3D systems exist
-{[}XXX{]}. Recent developments in machine learning assisted image
-processing has enabled faster tracking of estimated points on the tongue
-contour (Wrench and Balch-Tomes 2022).
+temporal resolution (30-100 frames per second, Epstein and Stone 2005;
+Stone 2005). Typically, the midsagittal contour of the tongue is imaged,
+although 3D systems exist (Lulich, Berkson, and Jong 2018). Recent
+developments in machine learning assisted image processing has enabled
+faster tracking of estimated points on the tongue contour (Wrench and
+Balch-Tomes 2022).
 
-Wrench and Balch-Tomes (2022) have trained a DeepLabCut model to
+Wrench and Balch-Tomes (2022) have trained a DeepLabCut (DLC) model to
 estimate and track specific flesh points on the tongue contour and
 anatomical landmarks as captured by UTI. The model estimates 11
 ``knots'' from the vallecula to the tongue tip, plus three
 muscular-skeletal knots, the hyoid bone, the mandible base and and the
 mental spine where the short tendon attaches. See Figure~\ref{fig-knots}
-for a schematic illustration of the position of the tracked knots.
+for a schematic illustration of the position of the tracked knots. An
+advantage of DLC tracked data over the traditional fan-line coordinate
+system is that (in theory) specific (moving) flesh points are tracked
+rather than simply he intersection of the tongue contour with fixed
+radii from the fan-line system. This makes DLC tracked data resemble
+data obtain with electromagnetic articulography (EMA). The downside is
+that the tongue contour is represented by 11 freely moving points. The
+11 knots can move in any direction in the midsagittal two-dimensional
+space captured by UTI.
 
 \begin{figure}
 
@@ -295,7 +304,58 @@ by DeepLabCut. CC-BY Wrench and Balch-Tomes (Wrench 2024).}
 
 \end{figure}%
 
-\section{GAM}\label{gam}
+Classical ways to analyse tongue contour data obtained from a fan-line
+system, like SS-ANOVA (Davidson 2006; Chen and Lin 2011) and Generalised
+Additive Models using polar coordinates (Coretta 2018b, n.d.), are not
+appropriate with DLC tracked data due to the tongue contour ``curling''
+onto itself along the root. This is illustrated in
+Figure~\ref{fig-curl}: the plot shows the DLC tracked points (in black)
+of the data from a Polish speaker and the traced tongue contours based
+on the points (see Section~\ref{sec-gam-vc-coart} for details on the
+data). The contours clearly curl onto themselves along the root (on the
+left of the contour). The red smooths represent a LOESS smooth
+calculated for Y along X: clearly this approach clearly miscalculates
+the smooth for the back half of the tongue, simply because of the same X
+value there are two Y values and the procedure returns something like an
+average of the two values. Generalised Additive Models (introduced in
+the following section) work on the same principle and hence would
+produce the same type of error. Using polar coordinates would not solve
+the problem: while a fan-line system lends itself easily to using polar
+coordinates (since the origin of the probe can be used to approximate
+the origin of the coordinate system), this can not be done with DLC data
+because there is in reality no single origin in the actual tongue
+anatomy from which vectors of displacement radiate that would work for
+all tracked points.
+
+\phantomsection\label{cell-fig-curl}
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-curl-1.pdf}}
+
+}
+
+\caption{\label{fig-curl}Illustrating tongue contours curling up along
+the root. The estimated smooths in red fail to capture the curl.}
+
+\end{figure}%
+
+\textsubscript{Source:
+\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
+Notebook}}
+
+In this tutorial, we introduce two alternative methods to analyse
+DLC-tracked tongue contour data: Multivariate Generalised Additive
+Models (Section~\ref{sec-gam}) and Multivariate Functional Principal
+Component Analysis (Section~\ref{sec-fpca}). We will present the pros
+and cons of each method in \textbf{?@sec-procons}, but to summarise we
+are inclined to recommend Multivariate Functional Principal Component
+Analysis over Multivariate Generalised Additive Models due to the
+substantial computational overhead and reduced practical utility of the
+latter over the former.
+
+\section{Multivariate Generalised Additive Models}\label{sec-gam}
 
 Generalised additive models (GAMs) are an extension of generalised
 models that allow flexible modelling of non-linear effects (Hastie and
@@ -312,7 +372,7 @@ based on the 11 knots from the vallecula to the tongue tip.
 Figure~\ref{fig-tongue} illustrates the reconstructed tongue contour on
 the basis of the 11 knots: the shown tongue is from the offset of a
 vowel {[}o{]} followed by {[}t{]}, uttered by a Polish speaker (see
-below for details on the data).
+Section~\ref{sec-gam-vc-coart}).
 
 \phantomsection\label{cell-fig-tongue}
 \begin{figure}[H]
@@ -364,9 +424,9 @@ the elevel knots (same data as Figure~\ref{fig-tongue}).}
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
-\subsection{VC coarticulation}\label{vc-coarticulation}
+\subsection{VC coarticulation}\label{sec-gam-vc-coart}
 
-The data of the first case study, Coretta (2018), comes from Coretta
+The data of the first case study, Coretta (2018a), comes from Coretta
 (2020b) and have been discussed in Coretta (2020a) (the analysis
 concerned the position of the tongue root during the duration of vowels
 followed by voiceless or voiced stops; in this paper we focus on tongue
@@ -418,7 +478,7 @@ Notebook}}
 \begin{longtable}[]{@{}llrrrl@{}}
 
 \caption{\label{tbl-dlc-voff}A sample of the VC coarticulation data from
-Coretta (2018).}
+Coretta (2018a).}
 
 \tabularnewline
 
@@ -778,9 +838,10 @@ Notebook}}
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
-\section{FPCA}\label{fpca}
+\section{Multivariate Functional Principal Component
+Analysis}\label{sec-fpca}
 
-\subsection{VC coarticulation}\label{vc-coarticulation-1}
+\subsection{VC coarticulation}\label{vc-coarticulation}
 
 We will apply Multivariate Functional Principal Component Analysis
 (MFPCA). The following code has been adapted from Gubian (2024). The
@@ -1056,10 +1117,19 @@ Notebook}}
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-chen2011}
+Chen, Yu, and Hua Lin. 2011. {``Analysing Tongue Shape and Movement in
+Vowel Production Using SS-ANOVA in Ultrasound Imaging.''} In, 1721.
+
 \bibitem[\citeproctext]{ref-coretta2018f}
-Coretta, Stefano. 2018. {``An Exploratory Study of the Voicing Effect in
-Italian and Polish {[}Data V1.0.0{]}.''}
+Coretta, Stefano. 2018a. {``An Exploratory Study of the Voicing Effect
+in Italian and Polish {[}Data V1.0.0{]}.''}
 \url{https://doi.org/10.17605/OSF.IO/8ZHKU}.
+
+\bibitem[\citeproctext]{ref-coretta2018c}
+---------. 2018b. {``Using Generalised Additive Models (GAM) with Polar
+Coordinates for Assessing Tongue Contours.''}
+\url{https://stefanocoretta.github.io/rticulate/articles/polar-gams.html}.
 
 \bibitem[\citeproctext]{ref-coretta2020}
 ---------. 2020a. {``Longer Vowel Duration Correlates with Greater
@@ -1070,6 +1140,23 @@ of America} 147: 245259. \url{https://doi.org/10.1121/10.0000556}.
 \bibitem[\citeproctext]{ref-coretta2020b}
 ---------. 2020b. {``Vowel Duration and Consonant Voicing: A Production
 Study.''} PhD thesis.
+
+\bibitem[\citeproctext]{ref-coretta2019g}
+---------. n.d. {``Assessing Mid-Saggital Tongue Contours in Polar
+Coordinates Using Generalised Additive (Mixed) Models.''}
+\url{https://doi.org/10.31219/osf.io/q6vzb}.
+
+\bibitem[\citeproctext]{ref-davidson2006}
+Davidson, Lisa. 2006. {``Comparing Tongue Shapes from Ultrasound Imaging
+Using Smoothing Spline Analysis of Variance.''} \emph{The Journal of the
+Acoustical Society of America} 120 (1): 407415.
+\url{https://doi.org/10.1121/1.2205133}.
+
+\bibitem[\citeproctext]{ref-epstein2005}
+Epstein, Melissa A., and Maureen Stone. 2005. {``The Tongue Stops Here:
+Ultrasound Imaging of the Palate.''} \emph{The Journal of the Acoustical
+Society of America} 118 (4): 21282131.
+\url{https://doi.org/10.1121/1.2031977}.
 
 \bibitem[\citeproctext]{ref-gubian2024}
 Gubian, Michele. 2024. \emph{Workshop on Functional PCA for Phonetics
@@ -1088,6 +1175,12 @@ Vowels.''} \emph{Journal of Phonetics} 24 (1): 3952.
 \bibitem[\citeproctext]{ref-ltd2011}
 Ltd, Articulate Instruments. 2011. {``Articulate Assistant Advanced User
 Guide. {Version} 2.16.''}
+
+\bibitem[\citeproctext]{ref-lulich2018}
+Lulich, Steven M., Kelly H. Berkson, and Kenneth de Jong. 2018.
+{``Acquiring and Visualizing 3d/4d Ultrasound Recordings of Tongue
+Motion.''} \emph{Journal of Phonetics} 71: 410424.
+\url{https://doi.org/10.1016/j.wocn.2018.10.001}.
 
 \bibitem[\citeproctext]{ref-pedersen2019}
 Pedersen, Eric J., David L. Miller, Gavin L. Simpson, and Noam Ross.
@@ -1109,6 +1202,11 @@ Phonetics} 84: 101017. \url{https://doi.org/10.1016/j.wocn.2020.101017}.
 ---------. 2021b. {``Generalised Additive Mixed Models for Dynamic
 Analysis in Linguistics: A Practical Introduction.''}
 \url{https://doi.org/10.48550/arXiv.1703.05339}.
+
+\bibitem[\citeproctext]{ref-stone2005}
+Stone, Maureen. 2005. {``A Guide to Analysing Tongue Motion from
+Ultrasound Images.''} \emph{Clinical Linguistics \& Phonetics} 19 (6-7):
+455501. \url{https://doi.org/10.1080/02699200500113558}.
 
 \bibitem[\citeproctext]{ref-wieling2018}
 Wieling, Martijn. 2018. {``Analyzing Dynamic Phonetic Data Using

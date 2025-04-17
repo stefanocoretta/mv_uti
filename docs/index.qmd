@@ -1,5 +1,5 @@
 ---
-title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.2"
+title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.3"
 authors:
   - name: Stefano Coretta
     affiliation: University of Edinburgh
@@ -33,22 +33,42 @@ library(knitr)
 This is a "living" draft, meaning it is work in progress. While the code is fully functional and usable, we will be updating the textual explanation and might make minor changes to the code to improve clarity. Please, if using in research, cite the version you have consulted. The version of the draft is given in the title as "Draft vX.X" where "X" are incremental digits. See citation recommendation at the bottom of the document.
 :::
 
-Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows researchers to image the shape of the tongue during speech at medium temporal resolution (30-100 frames per second, XXX). Typically, the midsagittal contour of the tongue is imaged, although 3D systems exist \[XXX\]. Recent developments in machine learning assisted image processing has enabled faster tracking of estimated points on the tongue contour [@wrench2022].
+Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows researchers to image the shape of the tongue during speech at medium temporal resolution [30-100 frames per second, @epstein2005; @stone2005]. Typically, the midsagittal contour of the tongue is imaged, although 3D systems exist [@lulich2018]. Recent developments in machine learning assisted image processing has enabled faster tracking of estimated points on the tongue contour [@wrench2022].
 
-@wrench2022 have trained a DeepLabCut model to estimate and track specific flesh points on the tongue contour and anatomical landmarks as captured by UTI. The model estimates 11 "knots" from the vallecula to the tongue tip, plus three muscular-skeletal knots, the hyoid bone, the mandible base and and the mental spine where the short tendon attaches. See @fig-knots for a schematic illustration of the position of the tracked knots.
+@wrench2022 have trained a DeepLabCut (DLC) model to estimate and track specific flesh points on the tongue contour and anatomical landmarks as captured by UTI. The model estimates 11 "knots" from the vallecula to the tongue tip, plus three muscular-skeletal knots, the hyoid bone, the mandible base and and the mental spine where the short tendon attaches. See @fig-knots for a schematic illustration of the position of the tracked knots. An advantage of DLC tracked data over the traditional fan-line coordinate system is that (in theory) specific (moving) flesh points are tracked rather than simply he intersection of the tongue contour with fixed radii from the fan-line system. This makes DLC tracked data resemble data obtain with electromagnetic articulography (EMA). The downside is that the tongue contour is represented by 11 freely moving points. The 11 knots can move in any direction in the midsagittal two-dimensional space captured by UTI.
 
 ![Schematic representation of the knots tracked by DeepLabCut. CC-BY Wrench and Balch-Tomes [@wrench2024].](img/sensors-22-01133-g002.jpg){#fig-knots fig-align="center"}
 
-# GAM
+Classical ways to analyse tongue contour data obtained from a fan-line system, like SS-ANOVA [@davidson2006; @chen2011] and Generalised Additive Models using polar coordinates [@coretta2018c; @coretta2019g], are not appropriate with DLC tracked data due to the tongue contour "curling" onto itself along the root. This is illustrated in @fig-curl: the plot shows the DLC tracked points (in black) of the data from a Polish speaker and the traced tongue contours based on the points (see @sec-gam-vc-coart for details on the data). The contours clearly curl onto themselves along the root (on the left of the contour). The red smooths represent a LOESS smooth calculated for Y along X: clearly this approach clearly miscalculates the smooth for the back half of the tongue, simply because of the same X value there are two Y values and the procedure returns something like an average of the two values. Generalised Additive Models (introduced in the following section) work on the same principle and hence would produce the same type of error. Using polar coordinates would not solve the problem: while a fan-line system lends itself easily to using polar coordinates (since the origin of the probe can be used to approximate the origin of the coordinate system), this can not be done with DLC data because there is in reality no single origin in the actual tongue anatomy from which vectors of displacement radiate that would work for all tracked points.
+
+```{r}
+#| label: fig-curl
+#| fig-cap: "Illustrating tongue contours curling up along the root. The estimated smooths in red fail to capture the curl."
+
+dlc_voff_f <- readRDS("data/coretta2018/dlc_voff_f.rds")
+
+dlc_voff_f |> 
+  filter(speaker == "pl04") |> 
+  ggplot(aes(X, Y)) +
+  geom_point(alpha = 0.25) +
+  geom_path(aes(group = frame_id), alpha = 0.25) +
+  geom_smooth(colour = "red", method = "loess", formula = "y ~ x") +
+  coord_fixed() +
+  facet_grid(vowel ~ c2) +
+  theme(legend.position = "none")
+```
+
+In this tutorial, we introduce two alternative methods to analyse DLC-tracked tongue contour data: Multivariate Generalised Additive Models (@sec-gam) and Multivariate Functional Principal Component Analysis (@sec-fpca). We will present the pros and cons of each method in @sec-procons, but to summarise we are inclined to recommend Multivariate Functional Principal Component Analysis over Multivariate Generalised Additive Models due to the substantial computational overhead and reduced practical utility of the latter over the former.
+
+# Multivariate Generalised Additive Models {#sec-gam}
 
 Generalised additive models (GAMs) are an extension of generalised models that allow flexible modelling of non-linear effects [@hastie1986; @wood2006]. GAMs are built upon smoothing splines functions, the components of which are multiplied by estimated coefficients to reconstruct an arbitrary time-changing curve. For a thorough introduction to GAMs we refer the reader to [@soskuthy2017a; @soskuthy2021; @pedersen2019; @wieling2018].
 
-The data tracked by DeepLabCut consists of the position on the horizontal (*x*) and vertical (*y*) axes of the fourteen knots. In this tutorial, we will focus on modelling the tongue contour based on the 11 knots from the vallecula to the tongue tip. @fig-tongue illustrates the reconstructed tongue contour on the basis of the 11 knots: the shown tongue is from the offset of a vowel \[o\] followed by \[t\], uttered by a Polish speaker (see below for details on the data).
+The data tracked by DeepLabCut consists of the position on the horizontal (*x*) and vertical (*y*) axes of the fourteen knots. In this tutorial, we will focus on modelling the tongue contour based on the 11 knots from the vallecula to the tongue tip. @fig-tongue illustrates the reconstructed tongue contour on the basis of the 11 knots: the shown tongue is from the offset of a vowel \[o\] followed by \[t\], uttered by a Polish speaker (see @sec-gam-vc-coart).
 
 ```{r}
 #| label: fig-tongue
 #| fig-cap: "The eleven knots on the tongue contour taken from the offset of [o] followed by [t] (Polish speaker PL04, tongue tip to the right)."
-dlc_voff_f <- readRDS("data/coretta2018/dlc_voff_f.rds")
 
 dlc_voff_f |> 
   filter(speaker == "pl04", frame_id == 432) |> 
@@ -76,7 +96,7 @@ dlc_voff_f |>
   labs(x = "Knot", y = "Position (mm)")
 ```
 
-## VC coarticulation
+## VC coarticulation {#sec-gam-vc-coart}
 
 The data of the first case study, @coretta2018f, comes from @coretta2020b and have been discussed in @coretta2020 (the analysis concerned the position of the tongue root during the duration of vowels followed by voiceless or voiced stops; in this paper we focus on tongue contours at the vowel offset). The materials are /pVCV/ words embedded in a frame sentence (*Dico X lentamente* 'I say X slowly' in Italian and *Mówię X teraz* 'I say X now' in Polish). In the /pVCV/ words, C was /t, d, k, ɡ/ and V was /a, o, u/ (in each word, the two vowels where identical, so for example *pata, poto, putu*). The data analysed here is from 9 speakers of Italian and 6 speakers of Polish (other speakers were not included due to the difficulty in processing their data with DeepLabCut).
 
@@ -431,7 +451,7 @@ emph_gam_p_2 |>
   coord_fixed()
 ```
 
-# FPCA
+# Multivariate Functional Principal Component Analysis {#sec-fpca}
 
 ## VC coarticulation
 
