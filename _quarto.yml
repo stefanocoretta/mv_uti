@@ -22,7 +22,7 @@ format:
     keep-tex: true
 
 execute:
-  freeze: true
+  freeze: auto
 
 
 

@@ -1,5 +1,5 @@
 ---
-title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.3"
+title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.4"
 authors:
   - name: Stefano Coretta
     affiliation: University of Edinburgh
@@ -62,9 +62,9 @@ In this tutorial, we introduce two alternative methods to analyse DLC-tracked to
 
 # Multivariate Generalised Additive Models {#sec-gam}
 
-Generalised additive models (GAMs) are an extension of generalised models that allow flexible modelling of non-linear effects [@hastie1986; @wood2006]. GAMs are built upon smoothing splines functions, the components of which are multiplied by estimated coefficients to reconstruct an arbitrary time-changing curve. For a thorough introduction to GAMs we refer the reader to [@soskuthy2017a; @soskuthy2021; @pedersen2019; @wieling2018].
+Generalised additive models (GAMs) are an extension of generalised models that allow flexible modelling of non-linear effects [@hastie1986; @wood2006]. GAMs are built upon smoothing splines functions, the components of which are multiplied by estimated coefficients to reconstruct an arbitrary time-changing curve. For a thorough introduction to GAMs we refer the reader to [@soskuthy2017a; @soskuthy2021; @pedersen2019; @wieling2018]. Multivariate Generalised Additive Models (MGAMs) are GAMs with more than one outcome variable.
 
-The data tracked by DeepLabCut consists of the position on the horizontal (*x*) and vertical (*y*) axes of the fourteen knots. In this tutorial, we will focus on modelling the tongue contour based on the 11 knots from the vallecula to the tongue tip. @fig-tongue illustrates the reconstructed tongue contour on the basis of the 11 knots: the shown tongue is from the offset of a vowel \[o\] followed by \[t\], uttered by a Polish speaker (see @sec-gam-vc-coart).
+As mentioned in the Introduction, the data tracked by DeepLabCut consists of the position on the horizontal (*x*) and vertical (*y*) axes of fourteen knots. In this tutorial, we will focus on modelling the tongue contour based on the 11 knots from the vallecula to the tongue tip. @fig-tongue illustrates the reconstructed tongue contour on the basis of the 11 knots: the shown tongue is from the offset of a vowel \[o\] followed by \[t\], uttered by a Polish speaker (see @sec-gam-vc-coart).
 
 ```{r}
 #| label: fig-tongue
@@ -79,7 +79,7 @@ dlc_voff_f |>
   labs(x = "X (mm)", y = "Y (mm)")
 ```
 
-The same data is shown in @fig-tongue-xy, but in a different format. Instead of a Cartesian coordinate system of X and Y values, the plot has knot number on the *x*-axis and X/Y coordinates on the *y*-axis. The X/Y coordinates thus form "trajectories" along the knots. These trajectories are the ones that can be modelled using GAMs and Functional Principal Component Analysis (FPCA). In this section, we will illustrate GAMs applied to the X/Y trajectories along the knots and how we can reconstruct the tongue contour from the modelled trajectories. We will use data from two case studies of coarticulation: vowel consonant (VC) coarticulation based on C place in Italian and Polish, and consonantal articulation of plain vs emphatic consonants in Lebanese Arabic.
+The same data is shown in @fig-tongue-xy, but in a different format. Instead of a Cartesian coordinate system of X and Y values, the plot has knot number on the *x*-axis and X/Y coordinates on the *y*-axis. The X/Y coordinates thus form "trajectories" along the knots. These X/Y trajectories are the ones that can be modelled using MGAMs and Multiple Functional Principal Component Analysis (MFPCA): in both cases, the X/Y trajectories are modelled as two variables changing along knot number. In this section, we will illustrate GAMs applied to the X/Y trajectories along the knots and how we can reconstruct the tongue contour from the modelled trajectories. We will use data from two case studies of coarticulation: vowel consonant (VC) coarticulation based on C place in Italian and Polish, and consonantal articulation of plain vs emphatic consonants in Lebanese Arabic.
 
 ```{r}
 #| label: fig-tongue-xy
@@ -144,7 +144,9 @@ dlc_voff_f |>
   labs(x = "X (z-scores)", "Y (z-scores)")
 ```
 
-We can now run a multivariate GAM to model the tongue contours. A multivariate GAM can be fitted by providing model formulae for each outcome variable (in our case, `X_z` and `Y_z`) in a list. For example `list(y ~ s(x), w ~ s(x))` would instruct `mgcv::gam()` to fit a bivariate GAM with the two outcome variables `y` and `w`. The required family is `mvn` for "multivariate normal": `mvn(d = 2)` indicates a bivariate family (a multivariate family with two dimensions, i.e. two outcome variables). In the model below, we are fitting a multivariate GAM to the *z*-scored X and Y coordinates. For both outcome variables, we include a smooth over knot (`s(knot, ...)`) with a `by` variable `vow_place_lang`: this variable is built from an interaction of vowel, place and language. (XXX note on categorical interactions in GAMs). We set `k` to 5: this will usually be sufficient for X/Y coordinates of tongue contours, since they are by nature not very "wiggly" (which would require a higher `k`). We also include a factor smooth over knot for speaker (the equivalent of a non-linear random effect) with `s(knot, speaker, ...)`: since language is a between-speaker variable, we use `vow_place` as the `by` variable (`vow_place` is the interaction of vowel and place).
+We can now run a multivariate GAM to model the tongue contours. A multivariate GAM can be fitted by providing model formulae for each outcome variable (in our case, `X_z` and `Y_z`) in a list. For example `list(y ~ s(x), w ~ s(x))` would instruct `mgcv::gam()` to fit a bivariate GAM with the two outcome variables `y` and `w`. The required family is `mvn` for "multivariate normal": `mvn(d = 2)` indicates a bivariate family (a multivariate family with two dimensions, i.e. two outcome variables). In the model below, we are fitting a multivariate GAM to the *z*-scored X and Y coordinates. For both outcome variables, we include a smooth over knot (`s(knot, ...)`) with a `by` variable `vow_place_lang`: this variable is built from an interaction of vowel, place and language.[^1] We set `k` to 5: this will usually be sufficient for X/Y coordinates of tongue contours, since they are by nature not very "wiggly" (which would require a higher `k`). We also include a factor smooth over knot for speaker (the equivalent of a non-linear random effect) with `s(knot, speaker, ...)`: since language is a between-speaker variable, we use `vow_place` as the `by` variable (`vow_place` is the interaction of vowel and place).
+
+[^1]: Note that interactions between categorical variables in the classical sense are not possible in GAMs. Instead, one can approximate interactions by creating an "interaction variable", which is simply a variable where the values of the interacting variables are pasted together.
 
 ```{r}
 #| label: voff-gam-code
@@ -312,14 +314,17 @@ voff_gam_p |>
   theme(legend.position = "bottom")
 ```
 
-## Emphaticness
+## Emphaticness  {#sec-gam-emphaticness}
+
+The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from XXX. \[XXX TODO GEORGE description of the data, including a brief explanation of the LebAr context\].
 
 ```{r}
 #| label: dlc-emph
-#| echo: true
 
 dlc_emph_f <- readRDS("data/sakr2025/dlc_emph_f.rds")
 ```
+
+Since the procedure to fit and plot MGAMs is the same as the one presented in @sec-gam-vc-coart, we won't be showing the code in this section, but readers can find the code in the Article Notebook, at <https://stefanocoretta.github.io/mv_uti/index-preview.html>.
 
 ```{r}
 #| label: emph-gam
@@ -397,19 +402,11 @@ emph_gam_p <- bind_cols(frame_emph, emph_gam_p) |>
   separate(vow_emph, c("vowel", "emph"))
 ```
 
-```{r}
-#| label: fig-emph-pred
-
-emph_gam_p |> 
-  ggplot(aes(X, Y, colour = emph)) +
-  geom_point() +
-  facet_grid(cols = vars(vowel)) +
-  coord_fixed() +
-  theme(legend.position = "bottom")
-```
+@fig-emph-ci shows the predicted tongue contours of emphatic and plain consonants, split by following vowel. First, the following vowel exercises an appreciable amount of coarticulation on the preceding consonant. The vowel-induced coarticulation seem to be modulating how the emphatic vs plain distinction is implemented (or not): in the context of the vowels /A, O, U/, emphatic consonants are produced with a retracted body and root, indicating pharyngealisation. On the other hand, in the context of the front vowels /E, I/, there is visibly less distinction between emphatic and plain consonants, which is virtually absent in /E/. However, when plotting the predictions for the different vocalic contexts and different speakers, the picture becomes more complex.
 
 ```{r}
 #| label: fig-emph-ci
+#| fig-cap: "Predicted tongue contours with 95% CIs from an MGAM of Lebanese Arabic emphatic and plain coronal consonants."
 
 emph_gam_p |> 
   ggplot(aes(X, Y, colour = emph)) +
@@ -440,22 +437,29 @@ emph_gam_p_2 <- bind_cols(frame_emph, emph_gam_p_2) |>
   separate(vow_emph, c("vowel", "emph"))
 ```
 
+In @fig-emph-part, predictions have been calculated for individual speakers (see Article Notebook online, linked above, for the code). First, there is a good deal of individual variation: some speakers show a clear differentiation of the tongue shape in emphatic and plain consonants, while in other speakers the difference is less obvious. In FAK virtually produced emphatic and plain consonants with the same tongue shape. Just to pick another example, emphatic consonants followed by /I/ in BAR are velarised, rather than pharyngealised, while in BAY they are pharyngealised. Plotting predictions of individual speakers can reveal idiosyncratic patterns which are not visible when plotting overall predictions.
+
 ```{r}
 #| label: fig-emph-part
+#| fig-cap: "Predicted tongue contours with 95% CIs from an MGAM of Lebanese Arabic emphatic and plain coronal consonants split by speaker."
+
 emph_gam_p_2 |> 
   ggplot(aes(X, Y, colour = emph)) +
   geom_errorbarh(aes(xmin = X_lo, xmax = X_hi), alpha = 0.5) +
   geom_errorbar(aes(ymin = Y_lo, ymax = Y_hi), alpha = 0.5) +
-  # geom_point() +
   facet_grid(rows = vars(participant), cols = vars(vowel)) +
   coord_fixed()
 ```
 
 # Multivariate Functional Principal Component Analysis {#sec-fpca}
 
+Principal Component Analysis (PCA) is a dimensionality reduction technique. For an introduction to PCA we recommend @kassambara2017a. Functional PCA (FPCA) is an extension of PCA: while classical PCA works by finding common variance in a set of variables (and by reducing the variables to Principal Components that explain that common variance), FPCA is a PCA applied to a functional representation of varying numerical variables [@gubian2019; @gubian2019a; @gubian2024]: a typical example is time-series data, with a variable changing over time. The trajectory of the time-varying variable is encoded into a function with a set of coefficients and the values of those coefficients are submit to PCA. When more than one time-varying variable is needed, this is where Multivariate FPCA (MFPCA) come in [@gubian2024].
+
+MFPCA is an FPCA applied to two or more varying variables. Note that the variable does not have to be *time*-varying. The variation can be on any linear variable: in the case of DLC-tracked UTI data, the variation happens along the knot number. Look back at @fig-tongue-xy: the two varying variables are the X and Y coordinates, which are varying along the DLC knots. As with MGAMs, it is these two varying trajectories that are submitted to MFPCA.
+
 ## VC coarticulation
 
-We will apply Multivariate Functional Principal Component Analysis (MFPCA). The following code has been adapted from @gubian2024. The packages below are needed to run MFPCA (except landmarkregUtils, they are available on CRAN).
+We will apply Multivariate Functional Principal Component Analysis (MFPCA) to the data introduced in @sec-gam-vc-coart. The following code has been adapted from @gubian2024. The packages below are needed to run MFPCA (except landmarkregUtils, they are available on CRAN).
 
 ```{r}
 #| label: attach-fda
@@ -647,7 +651,7 @@ Once one has established which patterns each PC is capturing, PC scores can be s
 
 ## Emphaticness
 
-In this section we will run an MFPCA analysis on the Lebanese Arabic data. Since the procedure is the same as in the previous section, the code will not be shown here, but can be viewed in the article notebook, at XXX.
+In this section we will run an MFPCA analysis on the Lebanese Arabic data. Since the procedure is the same as in the previous section, the code will not be shown here, but can be viewed in the Article Notebook, at <https://stefanocoretta.github.io/mv_uti/index-preview.html>.
 
 ```{r}
 #| label: dlc-emph-long

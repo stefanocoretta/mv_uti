@@ -8,7 +8,7 @@
 
 <meta name="dcterms.date" content="2025-04-08">
 
-<title>Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.3</title>
+<title>Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.4</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -133,7 +133,7 @@ window.Quarto = {
 };
 </script>
 
-<meta name="citation_title" content="Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.3">
+<meta name="citation_title" content="Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.4">
 <meta name="citation_author" content="Stefano Coretta">
 <meta name="citation_author" content="Georges Sakr">
 <meta name="citation_publication_date" content="2025-04-08">
@@ -164,6 +164,9 @@ window.Quarto = {
 <meta name="citation_reference" content="citation_title=Analysing tongue shape and movement in vowel production using SS-ANOVA in ultrasound imaging;,citation_author=Yu Chen;,citation_author=Hua Lin;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;">
 <meta name="citation_reference" content="citation_title=Assessing mid-saggital tongue contours in polar coordinates using generalised additive (mixed) models;,citation_author=Stefano Coretta;,citation_doi=10.31219/osf.io/q6vzb;">
 <meta name="citation_reference" content="citation_title=Using generalised additive models (GAM) with polar coordinates for assessing tongue contours;,citation_author=Stefano Coretta;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://stefanocoretta.github.io/rticulate/articles/polar-gams.html;">
+<meta name="citation_reference" content="citation_title=Practical guide to principal component methods in r;,citation_author=Alboukadel Kassambara;,citation_publication_date=2017;,citation_cover_date=2017;,citation_year=2017;">
+<meta name="citation_reference" content="citation_title=Zooming in on spatiotemporal v-to-c coarticulation with functional PCA;,citation_author=Michele Gubian;,citation_author=Manfred Pastätter;,citation_author=Marianne Pouplier;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_doi=10.21437/Interspeech.2019-2143;,citation_journal_title=Proceedings of INTERSPEECH 2019;">
+<meta name="citation_reference" content="citation_title=Tracking the new zealand english NEAR/SQUARE merger using functional principal components analysis;,citation_author=Michele Gubian;,citation_author=Jonathan Harrington;,citation_author=Mary Stevens;,citation_author=Florian Schiel;,citation_author=Paul Warren;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_doi=10.21437/interspeech.2019-2115;,citation_journal_title=Proceedings of INTERSPEECH 2019;">
 </head>
 
 <body>
@@ -171,7 +174,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.3</h1>
+      <h1 class="title">Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.4</h1>
           </div>
 
     
@@ -230,12 +233,12 @@ window.Quarto = {
   <li><a href="#sec-gam" id="toc-sec-gam" class="nav-link" data-scroll-target="#sec-gam">Multivariate Generalised Additive Models</a>
   <ul class="collapse">
   <li><a href="#sec-gam-vc-coart" id="toc-sec-gam-vc-coart" class="nav-link" data-scroll-target="#sec-gam-vc-coart">VC coarticulation</a></li>
-  <li><a href="#emphaticness" id="toc-emphaticness" class="nav-link" data-scroll-target="#emphaticness">Emphaticness</a></li>
+  <li><a href="#sec-gam-emphaticness" id="toc-sec-gam-emphaticness" class="nav-link" data-scroll-target="#sec-gam-emphaticness">Emphaticness</a></li>
   </ul></li>
   <li><a href="#sec-fpca" id="toc-sec-fpca" class="nav-link" data-scroll-target="#sec-fpca">Multivariate Functional Principal Component Analysis</a>
   <ul class="collapse">
   <li><a href="#vc-coarticulation" id="toc-vc-coarticulation" class="nav-link" data-scroll-target="#vc-coarticulation">VC coarticulation</a></li>
-  <li><a href="#emphaticness-1" id="toc-emphaticness-1" class="nav-link" data-scroll-target="#emphaticness-1">Emphaticness</a></li>
+  <li><a href="#emphaticness" id="toc-emphaticness" class="nav-link" data-scroll-target="#emphaticness">Emphaticness</a></li>
   </ul></li>
   </ul>
 <div class="quarto-alternate-notebooks"><h2>Notebooks</h2><ul><li><a href="index-preview.html"><i class="bi bi-journal-code"></i>Article Notebook</a></li><li><a href="notebooks/01_prepare_data-preview.html"><i class="bi bi-journal-code"></i>Prepare data</a></li></ul></div></nav>
@@ -295,8 +298,8 @@ Figure&nbsp;2: Illustrating tongue contours curling up along the root. The estim
 </section>
 <section id="sec-gam" class="level1">
 <h1>Multivariate Generalised Additive Models</h1>
-<p>Generalised additive models (GAMs) are an extension of generalised models that allow flexible modelling of non-linear effects <span class="citation" data-cites="hastie1986 wood2006">(<a href="#ref-hastie1986" role="doc-biblioref">Hastie and Tibshirani 1986</a>; <a href="#ref-wood2006" role="doc-biblioref">Wood 2006</a>)</span>. GAMs are built upon smoothing splines functions, the components of which are multiplied by estimated coefficients to reconstruct an arbitrary time-changing curve. For a thorough introduction to GAMs we refer the reader to <span class="citation" data-cites="soskuthy2017a soskuthy2021 pedersen2019 wieling2018">(<a href="#ref-soskuthy2017a" role="doc-biblioref">Sóskuthy 2021b</a>, <a href="#ref-soskuthy2021" role="doc-biblioref">2021a</a>; <a href="#ref-pedersen2019" role="doc-biblioref">Pedersen et al. 2019</a>; <a href="#ref-wieling2018" role="doc-biblioref">Wieling 2018</a>)</span>.</p>
-<p>The data tracked by DeepLabCut consists of the position on the horizontal (<em>x</em>) and vertical (<em>y</em>) axes of the fourteen knots. In this tutorial, we will focus on modelling the tongue contour based on the 11 knots from the vallecula to the tongue tip. <a href="#fig-tongue" class="quarto-xref">Figure&nbsp;3</a> illustrates the reconstructed tongue contour on the basis of the 11 knots: the shown tongue is from the offset of a vowel [o] followed by [t], uttered by a Polish speaker (see <a href="#sec-gam-vc-coart" class="quarto-xref">Section&nbsp;2.1</a>).</p>
+<p>Generalised additive models (GAMs) are an extension of generalised models that allow flexible modelling of non-linear effects <span class="citation" data-cites="hastie1986 wood2006">(<a href="#ref-hastie1986" role="doc-biblioref">Hastie and Tibshirani 1986</a>; <a href="#ref-wood2006" role="doc-biblioref">Wood 2006</a>)</span>. GAMs are built upon smoothing splines functions, the components of which are multiplied by estimated coefficients to reconstruct an arbitrary time-changing curve. For a thorough introduction to GAMs we refer the reader to <span class="citation" data-cites="soskuthy2017a soskuthy2021 pedersen2019 wieling2018">(<a href="#ref-soskuthy2017a" role="doc-biblioref">Sóskuthy 2021b</a>, <a href="#ref-soskuthy2021" role="doc-biblioref">2021a</a>; <a href="#ref-pedersen2019" role="doc-biblioref">Pedersen et al. 2019</a>; <a href="#ref-wieling2018" role="doc-biblioref">Wieling 2018</a>)</span>. Multivariate Generalised Additive Models (MGAMs) are GAMs with more than one outcome variable.</p>
+<p>As mentioned in the Introduction, the data tracked by DeepLabCut consists of the position on the horizontal (<em>x</em>) and vertical (<em>y</em>) axes of fourteen knots. In this tutorial, we will focus on modelling the tongue contour based on the 11 knots from the vallecula to the tongue tip. <a href="#fig-tongue" class="quarto-xref">Figure&nbsp;3</a> illustrates the reconstructed tongue contour on the basis of the 11 knots: the shown tongue is from the offset of a vowel [o] followed by [t], uttered by a Polish speaker (see <a href="#sec-gam-vc-coart" class="quarto-xref">Section&nbsp;2.1</a>).</p>
 <div id="cell-fig-tongue" class="cell">
 <div class="cell-output-display">
 <div id="fig-tongue" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -311,7 +314,7 @@ Figure&nbsp;3: The eleven knots on the tongue contour taken from the offset of [
 </div>
 </div>
 </div>
-<p>The same data is shown in <a href="#fig-tongue-xy" class="quarto-xref">Figure&nbsp;4</a>, but in a different format. Instead of a Cartesian coordinate system of X and Y values, the plot has knot number on the <em>x</em>-axis and X/Y coordinates on the <em>y</em>-axis. The X/Y coordinates thus form “trajectories” along the knots. These trajectories are the ones that can be modelled using GAMs and Functional Principal Component Analysis (FPCA). In this section, we will illustrate GAMs applied to the X/Y trajectories along the knots and how we can reconstruct the tongue contour from the modelled trajectories. We will use data from two case studies of coarticulation: vowel consonant (VC) coarticulation based on C place in Italian and Polish, and consonantal articulation of plain vs emphatic consonants in Lebanese Arabic.</p>
+<p>The same data is shown in <a href="#fig-tongue-xy" class="quarto-xref">Figure&nbsp;4</a>, but in a different format. Instead of a Cartesian coordinate system of X and Y values, the plot has knot number on the <em>x</em>-axis and X/Y coordinates on the <em>y</em>-axis. The X/Y coordinates thus form “trajectories” along the knots. These X/Y trajectories are the ones that can be modelled using MGAMs and Multiple Functional Principal Component Analysis (MFPCA): in both cases, the X/Y trajectories are modelled as two variables changing along knot number. In this section, we will illustrate GAMs applied to the X/Y trajectories along the knots and how we can reconstruct the tongue contour from the modelled trajectories. We will use data from two case studies of coarticulation: vowel consonant (VC) coarticulation based on C place in Italian and Polish, and consonantal articulation of plain vs emphatic consonants in Lebanese Arabic.</p>
 <div id="cell-fig-tongue-xy" class="cell">
 <div class="cell-output-display">
 <div id="fig-tongue-xy" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -437,7 +440,7 @@ Figure&nbsp;6: Tongue contours of PL04 (Polish) taken from the offset of vowels 
 </div>
 </div>
 </div>
-<p>We can now run a multivariate GAM to model the tongue contours. A multivariate GAM can be fitted by providing model formulae for each outcome variable (in our case, <code>X_z</code> and <code>Y_z</code>) in a list. For example <code>list(y ~ s(x), w ~ s(x))</code> would instruct <code>mgcv::gam()</code> to fit a bivariate GAM with the two outcome variables <code>y</code> and <code>w</code>. The required family is <code>mvn</code> for “multivariate normal”: <code>mvn(d = 2)</code> indicates a bivariate family (a multivariate family with two dimensions, i.e.&nbsp;two outcome variables). In the model below, we are fitting a multivariate GAM to the <em>z</em>-scored X and Y coordinates. For both outcome variables, we include a smooth over knot (<code>s(knot, ...)</code>) with a <code>by</code> variable <code>vow_place_lang</code>: this variable is built from an interaction of vowel, place and language. (XXX note on categorical interactions in GAMs). We set <code>k</code> to 5: this will usually be sufficient for X/Y coordinates of tongue contours, since they are by nature not very “wiggly” (which would require a higher <code>k</code>). We also include a factor smooth over knot for speaker (the equivalent of a non-linear random effect) with <code>s(knot, speaker, ...)</code>: since language is a between-speaker variable, we use <code>vow_place</code> as the <code>by</code> variable (<code>vow_place</code> is the interaction of vowel and place).</p>
+<p>We can now run a multivariate GAM to model the tongue contours. A multivariate GAM can be fitted by providing model formulae for each outcome variable (in our case, <code>X_z</code> and <code>Y_z</code>) in a list. For example <code>list(y ~ s(x), w ~ s(x))</code> would instruct <code>mgcv::gam()</code> to fit a bivariate GAM with the two outcome variables <code>y</code> and <code>w</code>. The required family is <code>mvn</code> for “multivariate normal”: <code>mvn(d = 2)</code> indicates a bivariate family (a multivariate family with two dimensions, i.e.&nbsp;two outcome variables). In the model below, we are fitting a multivariate GAM to the <em>z</em>-scored X and Y coordinates. For both outcome variables, we include a smooth over knot (<code>s(knot, ...)</code>) with a <code>by</code> variable <code>vow_place_lang</code>: this variable is built from an interaction of vowel, place and language.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> We set <code>k</code> to 5: this will usually be sufficient for X/Y coordinates of tongue contours, since they are by nature not very “wiggly” (which would require a higher <code>k</code>). We also include a factor smooth over knot for speaker (the equivalent of a non-linear random effect) with <code>s(knot, speaker, ...)</code>: since language is a between-speaker variable, we use <code>vow_place</code> as the <code>by</code> variable (<code>vow_place</code> is the interaction of vowel and place).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -545,48 +548,35 @@ Figure&nbsp;8: Predicted tongue contours based on a multivariate GAM, with 95% C
 </div>
 </div>
 </section>
-<section id="emphaticness" class="level2">
-<h2 class="anchored" data-anchor-id="emphaticness">Emphaticness</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dlc_emph_f <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/sakr2025/dlc_emph_f.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="cell-fig-emph-pred" class="cell">
-<div class="cell-output-display">
-<div id="fig-emph-pred" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-emph-pred-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-emph-pred-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Figure&nbsp;9: "><img src="index_files/figure-html/fig-emph-pred-1.png" id="fig-emph-pred" class="img-fluid figure-img" width="672"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-emph-pred-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
+<section id="sec-gam-emphaticness" class="level2">
+<h2 class="anchored" data-anchor-id="sec-gam-emphaticness">Emphaticness</h2>
+<p>The second case study is about consonant “emphaticness” in Lebanese Arabic. The data is from XXX. [XXX TODO GEORGE description of the data, including a brief explanation of the LebAr context].</p>
+<p>Since the procedure to fit and plot MGAMs is the same as the one presented in <a href="#sec-gam-vc-coart" class="quarto-xref">Section&nbsp;2.1</a>, we won’t be showing the code in this section, but readers can find the code in the Article Notebook, at <a href="https://stefanocoretta.github.io/mv_uti/index-preview.html" class="uri">https://stefanocoretta.github.io/mv_uti/index-preview.html</a>.</p>
+<p><a href="#fig-emph-ci" class="quarto-xref">Figure&nbsp;9</a> shows the predicted tongue contours of emphatic and plain consonants, split by following vowel. First, the following vowel exercises an appreciable amount of coarticulation on the preceding consonant. The vowel-induced coarticulation seem to be modulating how the emphatic vs plain distinction is implemented (or not): in the context of the vowels /A, O, U/, emphatic consonants are produced with a retracted body and root, indicating pharyngealisation. On the other hand, in the context of the front vowels /E, I/, there is visibly less distinction between emphatic and plain consonants, which is virtually absent in /E/. However, when plotting the predictions for the different vocalic contexts and different speakers, the picture becomes more complex.</p>
 <div id="cell-fig-emph-ci" class="cell">
 <div class="cell-output-display">
-<div id="fig-emph-ci" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<div id="fig-emph-ci" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emph-ci-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-emph-ci-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Figure&nbsp;10: "><img src="index_files/figure-html/fig-emph-ci-1.png" id="fig-emph-ci" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-emph-ci-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Figure&nbsp;9: Predicted tongue contours with 95% CIs from an MGAM of Lebanese Arabic emphatic and plain coronal consonants."><img src="index_files/figure-html/fig-emph-ci-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-emph-ci-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-emph-ci-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Predicted tongue contours with 95% CIs from an MGAM of Lebanese Arabic emphatic and plain coronal consonants.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
+<p>In <a href="#fig-emph-part" class="quarto-xref">Figure&nbsp;10</a>, predictions have been calculated for individual speakers (see Article Notebook online, linked above, for the code). First, there is a good deal of individual variation: some speakers show a clear differentiation of the tongue shape in emphatic and plain consonants, while in other speakers the difference is less obvious. In FAK virtually produced emphatic and plain consonants with the same tongue shape. Just to pick another example, emphatic consonants followed by /I/ in BAR are velarised, rather than pharyngealised, while in BAY they are pharyngealised. Plotting predictions of individual speakers can reveal idiosyncratic patterns which are not visible when plotting overall predictions.</p>
 <div id="cell-fig-emph-part" class="cell">
 <div class="cell-output-display">
-<div id="fig-emph-part" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<div id="fig-emph-part" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emph-part-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-emph-part-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Figure&nbsp;11: "><img src="index_files/figure-html/fig-emph-part-1.png" id="fig-emph-part" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-emph-part-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Figure&nbsp;10: Predicted tongue contours with 95% CIs from an MGAM of Lebanese Arabic emphatic and plain coronal consonants split by speaker."><img src="index_files/figure-html/fig-emph-part-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-emph-part-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-emph-part-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Predicted tongue contours with 95% CIs from an MGAM of Lebanese Arabic emphatic and plain coronal consonants split by speaker.
 </figcaption>
 </figure>
 </div>
@@ -596,9 +586,11 @@ Figure&nbsp;11
 </section>
 <section id="sec-fpca" class="level1">
 <h1>Multivariate Functional Principal Component Analysis</h1>
+<p>Principal Component Analysis (PCA) is a dimensionality reduction technique. For an introduction to PCA we recommend <span class="citation" data-cites="kassambara2017a">Kassambara (<a href="#ref-kassambara2017a" role="doc-biblioref">2017</a>)</span>. Functional PCA (FPCA) is an extension of PCA: while classical PCA works by finding common variance in a set of variables (and by reducing the variables to Principal Components that explain that common variance), FPCA is a PCA applied to a functional representation of varying numerical variables <span class="citation" data-cites="gubian2019 gubian2019a gubian2024">(<a href="#ref-gubian2019" role="doc-biblioref">Gubian et al. 2019</a>; <a href="#ref-gubian2019a" role="doc-biblioref">Gubian, Pastätter, and Pouplier 2019</a>; <a href="#ref-gubian2024" role="doc-biblioref">Gubian 2024</a>)</span>: a typical example is time-series data, with a variable changing over time. The trajectory of the time-varying variable is encoded into a function with a set of coefficients and the values of those coefficients are submit to PCA. When more than one time-varying variable is needed, this is where Multivariate FPCA (MFPCA) come in <span class="citation" data-cites="gubian2024">(<a href="#ref-gubian2024" role="doc-biblioref">Gubian 2024</a>)</span>.</p>
+<p>MFPCA is an FPCA applied to two or more varying variables. Note that the variable does not have to be <em>time</em>-varying. The variation can be on any linear variable: in the case of DLC-tracked UTI data, the variation happens along the knot number. Look back at <a href="#fig-tongue-xy" class="quarto-xref">Figure&nbsp;4</a>: the two varying variables are the X and Y coordinates, which are varying along the DLC knots. As with MGAMs, it is these two varying trajectories that are submitted to MFPCA.</p>
 <section id="vc-coarticulation" class="level2">
 <h2 class="anchored" data-anchor-id="vc-coarticulation">VC coarticulation</h2>
-<p>We will apply Multivariate Functional Principal Component Analysis (MFPCA). The following code has been adapted from <span class="citation" data-cites="gubian2024">Gubian (<a href="#ref-gubian2024" role="doc-biblioref">2024</a>)</span>. The packages below are needed to run MFPCA (except landmarkregUtils, they are available on CRAN).</p>
+<p>We will apply Multivariate Functional Principal Component Analysis (MFPCA) to the data introduced in <a href="#sec-gam-vc-coart" class="quarto-xref">Section&nbsp;2.1</a>. The following code has been adapted from <span class="citation" data-cites="gubian2024">Gubian (<a href="#ref-gubian2024" role="doc-biblioref">2024</a>)</span>. The packages below are needed to run MFPCA (except landmarkregUtils, they are available on CRAN).</p>
 <p>The format required to work through MFPCA is a “long” format with one column containing the coordinate labels (<em>x</em> or <em>y</em> coordinate) and another with the coordinate values. We can easily pivot the data with <code>pivot_longer()</code>. Note that we are using the <em>z</em>-scored coordinate values (<code>X_z</code> and <code>Y_z</code>). If you are not unsure about what the code in this section, it is always useful to inspect intermediate and final output.</p>
 <p>In the second step, we create a <code>multiFunData</code> object: this is a special type of list object, with the observations of the two coordinates (<code>X_z</code> and <code>Y_z</code>) as two matrices of dimension <span class="math inline">\(N \cdot 11\)</span>, where <span class="math inline">\(N\)</span> is the number of tongue contours and <span class="math inline">\(11\)</span> is for the 11 knots returned by DLC. Three columns in the data are used to create the <code>multiFunData</code> object: one column with the id of each contour (in our data, <code>frame_id</code>), a time or series column (<code>knot</code>) and the column with the coordinate values (<code>value</code>).</p>
 <p>Once we have our <code>multFunData</code> object, we can use the <code>MFPCA()</code> function to compute an MFPCA. In this tutorial we will compute the first two PCs, but you can compute up to <span class="math inline">\(K-1\)</span> PCs where <span class="math inline">\(K\)</span> is the number of DLC knots in the data.</p>
@@ -609,48 +601,48 @@ Figure&nbsp;11
 </div>
 </div>
 <p>The best way to assess the effect of the PC scores on the shape of the tongue contours is to plot the predicted tongue contours based on a set of representative PC scores. In order to be able to plot the predicted contours, we need to calculate them from the MFPCA object. Gubian suggests plotting predicted curves at score intervals based on fractions of the scores standard deviation. This is what the following code does.</p>
-<p>The created data frame <code>pc_curves</code> has the predicted values of the X and Y coordinates <em>along the knots</em>. This is the same structure as <a href="#fig-tongue-xy" class="quarto-xref">Figure&nbsp;4</a>, with the knot number on the <em>x</em>-axis and the coordinates on the <em>y</em>-axis. Of course, what we are after is the X/Y plot of the tongue contours, rather than the knot/coordinate plot as needed to fit an MFPCA. For the sake of clarity, we first plot the predicted curves for X and Y separately. <a href="#fig-pc-curves" class="quarto-xref">Figure&nbsp;12</a> shows these. The plot is composed of four panels: the top two are the predicted curves along knot number for the Y coordinates (based on PC1 in the left panel and PC2 in the right panel). Interpreting the effect of the PCs on the X and Y coordinates separately allows one to observe vertical (Y coordinate) and horizontal (X coordinate) differences in tongue position independently. However, note that the vector of muscle contractions in the tongue are not simply along a vertical/horizontal axis <span class="citation" data-cites="honda1996 wrench2024">(<a href="#ref-honda1996" role="doc-biblioref">Honda 1996</a>; <a href="#ref-wrench2024" role="doc-biblioref">Wrench 2024</a>)</span>. Looking at a full tongue contour (in an X/Y coordinates plot) will generally prove to be more straightforward.</p>
+<p>The created data frame <code>pc_curves</code> has the predicted values of the X and Y coordinates <em>along the knots</em>. This is the same structure as <a href="#fig-tongue-xy" class="quarto-xref">Figure&nbsp;4</a>, with the knot number on the <em>x</em>-axis and the coordinates on the <em>y</em>-axis. Of course, what we are after is the X/Y plot of the tongue contours, rather than the knot/coordinate plot as needed to fit an MFPCA. For the sake of clarity, we first plot the predicted curves for X and Y separately. <a href="#fig-pc-curves" class="quarto-xref">Figure&nbsp;11</a> shows these. The plot is composed of four panels: the top two are the predicted curves along knot number for the Y coordinates (based on PC1 in the left panel and PC2 in the right panel). Interpreting the effect of the PCs on the X and Y coordinates separately allows one to observe vertical (Y coordinate) and horizontal (X coordinate) differences in tongue position independently. However, note that the vector of muscle contractions in the tongue are not simply along a vertical/horizontal axis <span class="citation" data-cites="honda1996 wrench2024">(<a href="#ref-honda1996" role="doc-biblioref">Honda 1996</a>; <a href="#ref-wrench2024" role="doc-biblioref">Wrench 2024</a>)</span>. Looking at a full tongue contour (in an X/Y coordinates plot) will generally prove to be more straightforward.</p>
 <div id="cell-fig-pc-curves" class="cell">
 <div class="cell-output-display">
 <div id="fig-pc-curves" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-pc-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-pc-curves-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Figure&nbsp;12: Predicted curves along knot number for X and Y coordinates, as obtained from an MFPCA."><img src="index_files/figure-html/fig-pc-curves-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-pc-curves-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Figure&nbsp;11: Predicted curves along knot number for X and Y coordinates, as obtained from an MFPCA."><img src="index_files/figure-html/fig-pc-curves-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pc-curves-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;12: Predicted curves along knot number for X and Y coordinates, as obtained from an MFPCA.
+Figure&nbsp;11: Predicted curves along knot number for X and Y coordinates, as obtained from an MFPCA.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
 <p>In order to plot tongue contours in the X/Y coordinate system, we simply need to pivot the data to a wider format.</p>
-<p><a href="#fig-contours" class="quarto-xref">Figure&nbsp;13</a> plots the predicted contours based on the the PC scores (specifically, fractions of the standard deviation of the PC scores). The <em>x</em> and <em>y</em>-axes correspond to the X and Y coordinates of the tongue contour, with the effect of PC1 in the left panel and the effect of PC2 in the right panel. A higher PC1 score (green lines in the left panel) suggest a lowering of the tongue body/dorsum and raising of the tongue tip. Since the data contains velar and coronal consonants, we take this to be capturing the velar/coronal place of articulation effect. A higher PC2 score (green lines in the right panel) corresponds to an overall higher tongue position. Considering that the back/central vowels /a, o, u/ are included in this data set, we take PC2 to be related with the effect of vowel on the tongue shape at closure onset.</p>
+<p><a href="#fig-contours" class="quarto-xref">Figure&nbsp;12</a> plots the predicted contours based on the the PC scores (specifically, fractions of the standard deviation of the PC scores). The <em>x</em> and <em>y</em>-axes correspond to the X and Y coordinates of the tongue contour, with the effect of PC1 in the left panel and the effect of PC2 in the right panel. A higher PC1 score (green lines in the left panel) suggest a lowering of the tongue body/dorsum and raising of the tongue tip. Since the data contains velar and coronal consonants, we take this to be capturing the velar/coronal place of articulation effect. A higher PC2 score (green lines in the right panel) corresponds to an overall higher tongue position. Considering that the back/central vowels /a, o, u/ are included in this data set, we take PC2 to be related with the effect of vowel on the tongue shape at closure onset.</p>
 <div id="cell-fig-contours" class="cell">
 <div class="cell-output-display">
 <div id="fig-contours" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-contours-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-contours-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="Figure&nbsp;13: Predicted tongue contours as obtained from an MFPCA."><img src="index_files/figure-html/fig-contours-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-contours-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Figure&nbsp;12: Predicted tongue contours as obtained from an MFPCA."><img src="index_files/figure-html/fig-contours-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-contours-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;13: Predicted tongue contours as obtained from an MFPCA.
+Figure&nbsp;12: Predicted tongue contours as obtained from an MFPCA.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>Given the patterns in <a href="#fig-contours" class="quarto-xref">Figure&nbsp;13</a>, we can expect to see differences in PC2 scores based on the vowel if there is VC coarticulation. We can obtain the PC scores of each observation in the data with the following code.</p>
-<p><a href="#fig-pc-scores" class="quarto-xref">Figure&nbsp;14</a> plots PC scores by language (rows), consonant place (columns) and vowel (colour). Both in Italian and Polish, we can observe a clear coarticulatory effect of /u/ on the production of coronal stops (and perhaps minor differences in /a/ vs /o/). On the other hand, the effect of vowel in velar stops seems to be minimal, again in both languages. This is not entirely surprising, since while coronal stops allow for adjustments of (and coarticulatory effect on) the tongue body, velar stops do not since it is precisely the tongue body/dorsum that is raised to produce the velar closure.</p>
+<p>Given the patterns in <a href="#fig-contours" class="quarto-xref">Figure&nbsp;12</a>, we can expect to see differences in PC2 scores based on the vowel if there is VC coarticulation. We can obtain the PC scores of each observation in the data with the following code.</p>
+<p><a href="#fig-pc-scores" class="quarto-xref">Figure&nbsp;13</a> plots PC scores by language (rows), consonant place (columns) and vowel (colour). Both in Italian and Polish, we can observe a clear coarticulatory effect of /u/ on the production of coronal stops (and perhaps minor differences in /a/ vs /o/). On the other hand, the effect of vowel in velar stops seems to be minimal, again in both languages. This is not entirely surprising, since while coronal stops allow for adjustments of (and coarticulatory effect on) the tongue body, velar stops do not since it is precisely the tongue body/dorsum that is raised to produce the velar closure.</p>
 <div id="cell-fig-pc-scores" class="cell">
 <div class="cell-output-display">
 <div id="fig-pc-scores" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-pc-scores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-pc-scores-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="Figure&nbsp;14: PC1/PC2 scores by language, consonant place of articulation and vowel."><img src="index_files/figure-html/fig-pc-scores-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-pc-scores-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="Figure&nbsp;13: PC1/PC2 scores by language, consonant place of articulation and vowel."><img src="index_files/figure-html/fig-pc-scores-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pc-scores-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;14: PC1/PC2 scores by language, consonant place of articulation and vowel.
+Figure&nbsp;13: PC1/PC2 scores by language, consonant place of articulation and vowel.
 </figcaption>
 </figure>
 </div>
@@ -658,19 +650,19 @@ Figure&nbsp;14: PC1/PC2 scores by language, consonant place of articulation and 
 </div>
 <p>Once one has established which patterns each PC is capturing, PC scores can be submitted to further statistical modelling, like for example regression models where the PC scores are outcome variables and several predictors are include to assess possible differences in PC scores.</p>
 </section>
-<section id="emphaticness-1" class="level2">
-<h2 class="anchored" data-anchor-id="emphaticness-1">Emphaticness</h2>
-<p>In this section we will run an MFPCA analysis on the Lebanese Arabic data. Since the procedure is the same as in the previous section, the code will not be shown here, but can be viewed in the article notebook, at XXX.</p>
-<p><a href="#fig-emph-curves-wide" class="quarto-xref">Figure&nbsp;15</a> illustrates the reconstructed tongue contours (taken from 35 ms before the CV boundary) in Lebanese Arabic, based on the MFPCA. PC1 captures the low-back/high-front diagonal movement. PC2, on the other hand, seems to be restricted to high/low movement at the back of the oral cavity. Emphatic consonants, if produced with a constricted pharynx (i.e.&nbsp;paryngealised), should have a lower PC1. If on the other hand they are produced with a raised tongue dorsum (i.e.&nbsp;velarised), they should have a lower PC2 (lower PC scores are in purple in <a href="#fig-emph-curves-wide" class="quarto-xref">Figure&nbsp;15</a>).</p>
+<section id="emphaticness" class="level2">
+<h2 class="anchored" data-anchor-id="emphaticness">Emphaticness</h2>
+<p>In this section we will run an MFPCA analysis on the Lebanese Arabic data. Since the procedure is the same as in the previous section, the code will not be shown here, but can be viewed in the Article Notebook, at <a href="https://stefanocoretta.github.io/mv_uti/index-preview.html" class="uri">https://stefanocoretta.github.io/mv_uti/index-preview.html</a>.</p>
+<p><a href="#fig-emph-curves-wide" class="quarto-xref">Figure&nbsp;14</a> illustrates the reconstructed tongue contours (taken from 35 ms before the CV boundary) in Lebanese Arabic, based on the MFPCA. PC1 captures the low-back/high-front diagonal movement. PC2, on the other hand, seems to be restricted to high/low movement at the back of the oral cavity. Emphatic consonants, if produced with a constricted pharynx (i.e.&nbsp;paryngealised), should have a lower PC1. If on the other hand they are produced with a raised tongue dorsum (i.e.&nbsp;velarised), they should have a lower PC2 (lower PC scores are in purple in <a href="#fig-emph-curves-wide" class="quarto-xref">Figure&nbsp;14</a>).</p>
 <div id="cell-fig-emph-curves-wide" class="cell">
 <div class="cell-output-display">
 <div id="fig-emph-curves-wide" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emph-curves-wide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-emph-curves-wide-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Figure&nbsp;15: Predicted tongue contours of Lebanese Arabic coronal consonants as obtained from an MFPCA."><img src="index_files/figure-html/fig-emph-curves-wide-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-emph-curves-wide-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="Figure&nbsp;14: Predicted tongue contours of Lebanese Arabic coronal consonants as obtained from an MFPCA."><img src="index_files/figure-html/fig-emph-curves-wide-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-emph-curves-wide-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;15: Predicted tongue contours of Lebanese Arabic coronal consonants as obtained from an MFPCA.
+Figure&nbsp;14: Predicted tongue contours of Lebanese Arabic coronal consonants as obtained from an MFPCA.
 </figcaption>
 </figure>
 </div>
@@ -681,10 +673,10 @@ Figure&nbsp;15: Predicted tongue contours of Lebanese Arabic coronal consonants 
 <div id="fig-emph-speakers" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emph-speakers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-emph-speakers-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="Figure&nbsp;16: PC1 and PC2 scores by vowel, consonant type and speaker."><img src="index_files/figure-html/fig-emph-speakers-1.png" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-emph-speakers-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Figure&nbsp;15: PC1 and PC2 scores by vowel, consonant type and speaker."><img src="index_files/figure-html/fig-emph-speakers-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-emph-speakers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;16: PC1 and PC2 scores by vowel, consonant type and speaker.
+Figure&nbsp;15: PC1 and PC2 scores by vowel, consonant type and speaker.
 </figcaption>
 </figure>
 </div>
@@ -695,10 +687,10 @@ Figure&nbsp;16: PC1 and PC2 scores by vowel, consonant type and speaker.
 <div id="fig-emph-pc1" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emph-pc1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-emph-pc1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Figure&nbsp;17: "><img src="index_files/figure-html/fig-emph-pc1-1.png" id="fig-emph-pc1" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-emph-pc1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="Figure&nbsp;16: "><img src="index_files/figure-html/fig-emph-pc1-1.png" id="fig-emph-pc1" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-emph-pc1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;17
+Figure&nbsp;16
 </figcaption>
 </figure>
 </div>
@@ -709,10 +701,10 @@ Figure&nbsp;17
 <div id="fig-emph-pc2" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emph-pc2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-emph-pc2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="Figure&nbsp;18: "><img src="index_files/figure-html/fig-emph-pc2-1.png" id="fig-emph-pc2" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-emph-pc2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Figure&nbsp;17: "><img src="index_files/figure-html/fig-emph-pc2-1.png" id="fig-emph-pc2" class="img-fluid figure-img" width="672"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-emph-pc2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;18
+Figure&nbsp;17
 </figcaption>
 </figure>
 </div>
@@ -721,6 +713,7 @@ Figure&nbsp;18
 
 </section>
 </section>
+
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
 <div id="ref-chen2011" class="csl-entry" role="listitem">
@@ -750,11 +743,20 @@ Epstein, Melissa A., and Maureen Stone. 2005. <span>“The Tongue Stops Here: Ul
 <div id="ref-gubian2024" class="csl-entry" role="listitem">
 Gubian, Michele. 2024. <em>Workshop on Functional PCA for Phonetics and Prosody</em>. <a href="https://github.com/uasolo/FPCA-phonetics-workshop">https://github.com/uasolo/FPCA-phonetics-workshop</a>.
 </div>
+<div id="ref-gubian2019" class="csl-entry" role="listitem">
+Gubian, Michele, Jonathan Harrington, Mary Stevens, Florian Schiel, and Paul Warren. 2019. <span>“Tracking the New Zealand English NEAR/SQUARE Merger Using Functional Principal Components Analysis.”</span> <em>Proceedings of INTERSPEECH 2019</em>, 296300. <a href="https://doi.org/10.21437/interspeech.2019-2115">https://doi.org/10.21437/interspeech.2019-2115</a>.
+</div>
+<div id="ref-gubian2019a" class="csl-entry" role="listitem">
+Gubian, Michele, Manfred Pastätter, and Marianne Pouplier. 2019. <span>“Zooming in on Spatiotemporal v-to-c Coarticulation with Functional PCA.”</span> <em>Proceedings of INTERSPEECH 2019</em>, 889893. <a href="https://doi.org/10.21437/Interspeech.2019-2143">https://doi.org/10.21437/Interspeech.2019-2143</a>.
+</div>
 <div id="ref-hastie1986" class="csl-entry" role="listitem">
 Hastie, Trevor, and Robert Tibshirani. 1986. <span>“Generalized Additive Models.”</span> <em>Statistical Science</em> 1 (3): 297310. <a href="https://doi.org/10.1201/9780203753781-6">https://doi.org/10.1201/9780203753781-6</a>.
 </div>
 <div id="ref-honda1996" class="csl-entry" role="listitem">
 Honda, Kiyoshi. 1996. <span>“Organization of Tongue Articulation for Vowels.”</span> <em>Journal of Phonetics</em> 24 (1): 3952. <a href="https://doi.org/10.1006/jpho.1996.0004">https://doi.org/10.1006/jpho.1996.0004</a>.
+</div>
+<div id="ref-kassambara2017a" class="csl-entry" role="listitem">
+Kassambara, Alboukadel. 2017. <em>Practical Guide to Principal Component Methods in r</em>. STHDA.
 </div>
 <div id="ref-ltd2011" class="csl-entry" role="listitem">
 Ltd, Articulate Instruments. 2011. <span>“Articulate Assistant Advanced User Guide. <span>Version</span> 2.16.”</span>
@@ -789,17 +791,22 @@ Wrench, Alan. 2024. <span>“The Compartmental Tongue.”</span> <em>Journal of 
 <div id="ref-wrench2022" class="csl-entry" role="listitem">
 Wrench, Alan, and Jonathan Balch-Tomes. 2022. <span>“Beyond the Edge: Markerless Pose Estimation of Speech Articulators from Ultrasound and Camera Images Using DeepLabCut.”</span> <em>Sensors</em> 22 (3): 1133. <a href="https://doi.org/10.3390/s22031133">https://doi.org/10.3390/s22031133</a>.
 </div>
-</div></section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{coretta2025,
+</div></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Note that interactions between categorical variables in the classical sense are not possible in GAMs. Instead, one can approximate interactions by creating an “interaction variable”, which is simply a variable where the values of the interacting variables are pasted together.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{coretta2025,
   author = {Coretta, Stefano and Sakr, Georges},
   title = {Multivariate Analyses of Tongue Contours from Ultrasound
-    Tongue Imaging. {Draft} V0.3},
+    Tongue Imaging. {Draft} V0.4},
   date = {2025-04-08},
   url = {https://stefanocoretta.github.io/mv_uti/},
   langid = {en}
 }
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-coretta2025" class="csl-entry quarto-appendix-citeas" role="listitem">
 Coretta, Stefano, and Georges Sakr. 2025. <span>“Multivariate Analyses
-of Tongue Contours from Ultrasound Tongue Imaging. Draft V0.3.”</span>
+of Tongue Contours from Ultrasound Tongue Imaging. Draft V0.4.”</span>
 April 8, 2025. <a href="https://stefanocoretta.github.io/mv_uti/">https://stefanocoretta.github.io/mv_uti/</a>.
 </div></div></section></div></main>
 <!-- /main column -->

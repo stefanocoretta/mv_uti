@@ -229,7 +229,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.3},
+  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.4},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -239,7 +239,7 @@
 
 
 \title{Multivariate analyses of tongue contours from ultrasound tongue
-imaging. Draft v0.3}
+imaging. Draft v0.4}
 \author{Stefano
 Coretta$\textsuperscript{1}$~\orcidlink{0000-0001-9627-5532}, Georges
 Sakr$\textsuperscript{1}$~\orcidlink{0000-0003-3813-2669}}
@@ -254,7 +254,7 @@ Coretta. Email: \href{mailto:s.coretta@ed.ac.uk}{\nolinkurl{s.coretta@ed.ac.uk}}
 
 \section{Introduction}\label{introduction}
 
-\begin{tcolorbox}[enhanced jigsaw, titlerule=0mm, bottomrule=.15mm, left=2mm, colback=white, breakable, toptitle=1mm, colframe=quarto-callout-warning-color-frame, opacityback=0, colbacktitle=quarto-callout-warning-color!10!white, opacitybacktitle=0.6, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, leftrule=.75mm, bottomtitle=1mm, arc=.35mm, rightrule=.15mm, coltitle=black, toprule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, arc=.35mm, coltitle=black, breakable, colframe=quarto-callout-warning-color-frame, left=2mm, bottomrule=.15mm, colback=white, toptitle=1mm, toprule=.15mm, leftrule=.75mm, opacityback=0, colbacktitle=quarto-callout-warning-color!10!white, bottomtitle=1mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, titlerule=0mm, opacitybacktitle=0.6, rightrule=.15mm]
 
 This is a ``living'' draft, meaning it is work in progress. While the
 code is fully functional and usable, we will be updating the textual
@@ -363,16 +363,17 @@ Tibshirani 1986; Wood 2006). GAMs are built upon smoothing splines
 functions, the components of which are multiplied by estimated
 coefficients to reconstruct an arbitrary time-changing curve. For a
 thorough introduction to GAMs we refer the reader to (Sóskuthy 2021b,
-2021a; Pedersen et al. 2019; Wieling 2018).
+2021a; Pedersen et al. 2019; Wieling 2018). Multivariate Generalised
+Additive Models (MGAMs) are GAMs with more than one outcome variable.
 
-The data tracked by DeepLabCut consists of the position on the
-horizontal (\emph{x}) and vertical (\emph{y}) axes of the fourteen
-knots. In this tutorial, we will focus on modelling the tongue contour
-based on the 11 knots from the vallecula to the tongue tip.
-Figure~\ref{fig-tongue} illustrates the reconstructed tongue contour on
-the basis of the 11 knots: the shown tongue is from the offset of a
-vowel {[}o{]} followed by {[}t{]}, uttered by a Polish speaker (see
-Section~\ref{sec-gam-vc-coart}).
+As mentioned in the Introduction, the data tracked by DeepLabCut
+consists of the position on the horizontal (\emph{x}) and vertical
+(\emph{y}) axes of fourteen knots. In this tutorial, we will focus on
+modelling the tongue contour based on the 11 knots from the vallecula to
+the tongue tip. Figure~\ref{fig-tongue} illustrates the reconstructed
+tongue contour on the basis of the 11 knots: the shown tongue is from
+the offset of a vowel {[}o{]} followed by {[}t{]}, uttered by a Polish
+speaker (see Section~\ref{sec-gam-vc-coart}).
 
 \phantomsection\label{cell-fig-tongue}
 \begin{figure}[H]
@@ -397,14 +398,15 @@ The same data is shown in Figure~\ref{fig-tongue-xy}, but in a different
 format. Instead of a Cartesian coordinate system of X and Y values, the
 plot has knot number on the \emph{x}-axis and X/Y coordinates on the
 \emph{y}-axis. The X/Y coordinates thus form ``trajectories'' along the
-knots. These trajectories are the ones that can be modelled using GAMs
-and Functional Principal Component Analysis (FPCA). In this section, we
-will illustrate GAMs applied to the X/Y trajectories along the knots and
-how we can reconstruct the tongue contour from the modelled
-trajectories. We will use data from two case studies of coarticulation:
-vowel consonant (VC) coarticulation based on C place in Italian and
-Polish, and consonantal articulation of plain vs emphatic consonants in
-Lebanese Arabic.
+knots. These X/Y trajectories are the ones that can be modelled using
+MGAMs and Multiple Functional Principal Component Analysis (MFPCA): in
+both cases, the X/Y trajectories are modelled as two variables changing
+along knot number. In this section, we will illustrate GAMs applied to
+the X/Y trajectories along the knots and how we can reconstruct the
+tongue contour from the modelled trajectories. We will use data from two
+case studies of coarticulation: vowel consonant (VC) coarticulation
+based on C place in Italian and Polish, and consonantal articulation of
+plain vs emphatic consonants in Lebanese Arabic.
 
 \phantomsection\label{cell-fig-tongue-xy}
 \begin{figure}[H]
@@ -553,15 +555,18 @@ multivariate GAM to the \emph{z}-scored X and Y coordinates. For both
 outcome variables, we include a smooth over knot
 (\texttt{s(knot,\ ...)}) with a \texttt{by} variable
 \texttt{vow\_place\_lang}: this variable is built from an interaction of
-vowel, place and language. (XXX note on categorical interactions in
-GAMs). We set \texttt{k} to 5: this will usually be sufficient for X/Y
-coordinates of tongue contours, since they are by nature not very
-``wiggly'' (which would require a higher \texttt{k}). We also include a
-factor smooth over knot for speaker (the equivalent of a non-linear
-random effect) with \texttt{s(knot,\ speaker,\ ...)}: since language is
-a between-speaker variable, we use \texttt{vow\_place} as the
-\texttt{by} variable (\texttt{vow\_place} is the interaction of vowel
-and place).
+vowel, place and language.\footnote{Note that interactions between
+  categorical variables in the classical sense are not possible in GAMs.
+  Instead, one can approximate interactions by creating an ``interaction
+  variable'', which is simply a variable where the values of the
+  interacting variables are pasted together.} We set \texttt{k} to 5:
+this will usually be sufficient for X/Y coordinates of tongue contours,
+since they are by nature not very ``wiggly'' (which would require a
+higher \texttt{k}). We also include a factor smooth over knot for
+speaker (the equivalent of a non-linear random effect) with
+\texttt{s(knot,\ speaker,\ ...)}: since language is a between-speaker
+variable, we use \texttt{vow\_place} as the \texttt{by} variable
+(\texttt{vow\_place} is the interaction of vowel and place).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -763,13 +768,21 @@ multivariate GAM, with 95\% Confidence Intervals.}
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
-\subsection{Emphaticness}\label{emphaticness}
+\subsection{Emphaticness}\label{sec-gam-emphaticness}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{dlc\_emph\_f }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(}\StringTok{"data/sakr2025/dlc\_emph\_f.rds"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
+The second case study is about consonant ``emphaticness'' in Lebanese
+Arabic. The data is from XXX. {[}XXX TODO GEORGE description of the
+data, including a brief explanation of the LebAr context{]}.
+
+\textsubscript{Source:
+\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
+Notebook}}
+
+Since the procedure to fit and plot MGAMs is the same as the one
+presented in Section~\ref{sec-gam-vc-coart}, we won't be showing the
+code in this section, but readers can find the code in the Article
+Notebook, at
+\url{https://stefanocoretta.github.io/mv_uti/index-preview.html}.
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -779,26 +792,18 @@ Notebook}}
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
-\phantomsection\label{cell-fig-emph-pred}
-\begin{figure}[H]
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-pred-1.pdf}}
-
-}
-
-\caption{\label{fig-emph-pred}}
-
-\end{figure}%
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
+Figure~\ref{fig-emph-ci} shows the predicted tongue contours of emphatic
+and plain consonants, split by following vowel. First, the following
+vowel exercises an appreciable amount of coarticulation on the preceding
+consonant. The vowel-induced coarticulation seem to be modulating how
+the emphatic vs plain distinction is implemented (or not): in the
+context of the vowels /A, O, U/, emphatic consonants are produced with a
+retracted body and root, indicating pharyngealisation. On the other
+hand, in the context of the front vowels /E, I/, there is visibly less
+distinction between emphatic and plain consonants, which is virtually
+absent in /E/. However, when plotting the predictions for the different
+vocalic contexts and different speakers, the picture becomes more
+complex.
 
 \phantomsection\label{cell-fig-emph-ci}
 \begin{figure}[H]
@@ -809,7 +814,8 @@ Notebook}}
 
 }
 
-\caption{\label{fig-emph-ci}}
+\caption{\label{fig-emph-ci}Predicted tongue contours with 95\% CIs from
+an MGAM of Lebanese Arabic emphatic and plain coronal consonants.}
 
 \end{figure}%
 
@@ -820,6 +826,18 @@ Notebook}}
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
+
+In Figure~\ref{fig-emph-part}, predictions have been calculated for
+individual speakers (see Article Notebook online, linked above, for the
+code). First, there is a good deal of individual variation: some
+speakers show a clear differentiation of the tongue shape in emphatic
+and plain consonants, while in other speakers the difference is less
+obvious. In FAK virtually produced emphatic and plain consonants with
+the same tongue shape. Just to pick another example, emphatic consonants
+followed by /I/ in BAR are velarised, rather than pharyngealised, while
+in BAY they are pharyngealised. Plotting predictions of individual
+speakers can reveal idiosyncratic patterns which are not visible when
+plotting overall predictions.
 
 \phantomsection\label{cell-fig-emph-part}
 \begin{figure}[H]
@@ -830,7 +848,9 @@ Notebook}}
 
 }
 
-\caption{\label{fig-emph-part}}
+\caption{\label{fig-emph-part}Predicted tongue contours with 95\% CIs
+from an MGAM of Lebanese Arabic emphatic and plain coronal consonants
+split by speaker.}
 
 \end{figure}%
 
@@ -841,12 +861,35 @@ Notebook}}
 \section{Multivariate Functional Principal Component
 Analysis}\label{sec-fpca}
 
+Principal Component Analysis (PCA) is a dimensionality reduction
+technique. For an introduction to PCA we recommend Kassambara (2017).
+Functional PCA (FPCA) is an extension of PCA: while classical PCA works
+by finding common variance in a set of variables (and by reducing the
+variables to Principal Components that explain that common variance),
+FPCA is a PCA applied to a functional representation of varying
+numerical variables (Gubian et al. 2019; Gubian, Pastätter, and Pouplier
+2019; Gubian 2024): a typical example is time-series data, with a
+variable changing over time. The trajectory of the time-varying variable
+is encoded into a function with a set of coefficients and the values of
+those coefficients are submit to PCA. When more than one time-varying
+variable is needed, this is where Multivariate FPCA (MFPCA) come in
+(Gubian 2024).
+
+MFPCA is an FPCA applied to two or more varying variables. Note that the
+variable does not have to be \emph{time}-varying. The variation can be
+on any linear variable: in the case of DLC-tracked UTI data, the
+variation happens along the knot number. Look back at
+Figure~\ref{fig-tongue-xy}: the two varying variables are the X and Y
+coordinates, which are varying along the DLC knots. As with MGAMs, it is
+these two varying trajectories that are submitted to MFPCA.
+
 \subsection{VC coarticulation}\label{vc-coarticulation}
 
 We will apply Multivariate Functional Principal Component Analysis
-(MFPCA). The following code has been adapted from Gubian (2024). The
-packages below are needed to run MFPCA (except landmarkregUtils, they
-are available on CRAN).
+(MFPCA) to the data introduced in Section~\ref{sec-gam-vc-coart}. The
+following code has been adapted from Gubian (2024). The packages below
+are needed to run MFPCA (except landmarkregUtils, they are available on
+CRAN).
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -1028,12 +1071,12 @@ can be submitted to further statistical modelling, like for example
 regression models where the PC scores are outcome variables and several
 predictors are include to assess possible differences in PC scores.
 
-\subsection{Emphaticness}\label{emphaticness-1}
+\subsection{Emphaticness}\label{emphaticness}
 
 In this section we will run an MFPCA analysis on the Lebanese Arabic
 data. Since the procedure is the same as in the previous section, the
-code will not be shown here, but can be viewed in the article notebook,
-at XXX.
+code will not be shown here, but can be viewed in the Article Notebook,
+at \url{https://stefanocoretta.github.io/mv_uti/index-preview.html}.
 
 Figure~\ref{fig-emph-curves-wide} illustrates the reconstructed tongue
 contours (taken from 35 ms before the CV boundary) in Lebanese Arabic,
@@ -1162,6 +1205,19 @@ Society of America} 118 (4): 21282131.
 Gubian, Michele. 2024. \emph{Workshop on Functional PCA for Phonetics
 and Prosody}. \url{https://github.com/uasolo/FPCA-phonetics-workshop}.
 
+\bibitem[\citeproctext]{ref-gubian2019}
+Gubian, Michele, Jonathan Harrington, Mary Stevens, Florian Schiel, and
+Paul Warren. 2019. {``Tracking the New Zealand English NEAR/SQUARE
+Merger Using Functional Principal Components Analysis.''}
+\emph{Proceedings of INTERSPEECH 2019}, 296300.
+\url{https://doi.org/10.21437/interspeech.2019-2115}.
+
+\bibitem[\citeproctext]{ref-gubian2019a}
+Gubian, Michele, Manfred Pastätter, and Marianne Pouplier. 2019.
+{``Zooming in on Spatiotemporal v-to-c Coarticulation with Functional
+PCA.''} \emph{Proceedings of INTERSPEECH 2019}, 889893.
+\url{https://doi.org/10.21437/Interspeech.2019-2143}.
+
 \bibitem[\citeproctext]{ref-hastie1986}
 Hastie, Trevor, and Robert Tibshirani. 1986. {``Generalized Additive
 Models.''} \emph{Statistical Science} 1 (3): 297310.
@@ -1171,6 +1227,10 @@ Models.''} \emph{Statistical Science} 1 (3): 297310.
 Honda, Kiyoshi. 1996. {``Organization of Tongue Articulation for
 Vowels.''} \emph{Journal of Phonetics} 24 (1): 3952.
 \url{https://doi.org/10.1006/jpho.1996.0004}.
+
+\bibitem[\citeproctext]{ref-kassambara2017a}
+Kassambara, Alboukadel. 2017. \emph{Practical Guide to Principal
+Component Methods in r}. STHDA.
 
 \bibitem[\citeproctext]{ref-ltd2011}
 Ltd, Articulate Instruments. 2011. {``Articulate Assistant Advanced User
