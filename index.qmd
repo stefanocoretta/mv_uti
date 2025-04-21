@@ -1,5 +1,5 @@
 ---
-title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.4"
+title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.5"
 authors:
   - name: Stefano Coretta
     affiliation: University of Edinburgh
@@ -15,7 +15,7 @@ bibliography: references.bib
 citation:
   url: "https://stefanocoretta.github.io/mv_uti/"
 google-scholar: true
-date: "08 April 2025"
+date: "21 April 2025"
 ---
 
 # Introduction
@@ -314,9 +314,9 @@ voff_gam_p |>
   theme(legend.position = "bottom")
 ```
 
-## Emphaticness  {#sec-gam-emphaticness}
+## Emphaticness {#sec-gam-emphaticness}
 
-The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from XXX. \[XXX TODO GEORGE description of the data, including a brief explanation of the LebAr context\].
+The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from @sakr2025. \[XXX TODO GEORGE description of the data, including a brief explanation of the LebAr context\].
 
 ```{r}
 #| label: dlc-emph
@@ -836,3 +836,24 @@ pc_scores |>
   scale_color_brewer(palette = "Dark2") +
     facet_wrap(vars(participant))
 ```
+
+# Advantages and disadvantages  {#sec-procons}
+
+Both Multivariate GAMs and FPCA are a useful way to model DLC-tracked ultrasound tongue imaging data. However, each possesses advantages and disadvantages.
+
+Multivariate GAMs can model tongue contours in specific contexts and combinations thereof, like different vowels, consonant, prosodic contexts and so on. The rather complex model structure required to fit multivariate GAMs to tongue data comes at a computational cost and interpretative cost. Computationally, multivariate GAMs can take hours to estimate even the most simple models. Interpretationally, comparing different tongue contours quantitatively based on the output of a multivariate GAM is non-trivial, given that the tongue contour is in fact a curve reconstructed from the smooths of the X and Y coordinates along knot (in other words, the model does not model tongue contours directly). Moreover, there is no straightforward way to use traditional methods to assess (frequentist) statistical significance. From a practical point of view, a multivariate GAM ends up being a mathematically complex way of obtaining a sort of average tongue contour.
+
+Multivariate FPCA, on the other hand, are computationally efficient. Even with very large data sets, the computation of Principal Components is relatively quick. Moreover, the obtained PCs can be interpreted straightforwardly by plotting the effect of changing the PC score on the reconstructed tongue contour (as we did for example in @fig-contours). One possible disadvantage of multivariate FPCA is that it is usually not known what type of variation each obtained PC captures. This is illustrated in the two case studies in @sec-fpca. In the VC coarticulation data, PC1 corresponded to the coronal/velar difference in consonants, while PC2 to the difference in vowel. In the emphaticness data, PC1 captured the low-back/high-front diagonal movement, while PC2 to the high/low movement at the back of the oral cavity. In other words, until one has run the MPFCA, one does not know what PC will correspond to which axis of differences and whether the PCs will capture relevant difference at all (it can happen that the variation one is after is so minimal relative to other, more substantial cases of variation, that it will not be captures at all). It is possible that qualitatively homogeneous data sets might return PCs that have the same or very similar interpretation, but this has not been systematically tested [perhaps with the exception of simple PCA run on vowel formant data, which suggests that the first two PCs capture the two diagonals, @faber1995; @hoole1999; @strycharczuk2021; @strycharczuk2025 which make sense in light of the tongue position and shape model expounded by @honda1996].
+
+Another advantage of MFPCA is that, provided that the PCs have captured relevant characteristics, the PCs can be submitted to further modelling using regression with the inclusion of relevant predictors (like different categorical variables of interest). We have not done so in this tutorial to keep the scope and length of the tutorial manageable, but both case studies presented in @sec-fpca are amenable to such follow-up analysis.
+
+Based on the advantages and disadvantages of each of multivariate GAMs and FPCA, we suggest researchers to use MFPCA as the preferred and default approach to analyse DLC-tracked tongue contour data and to resort to multivariate GAMs if MFPCA fails to capture relevant variation.
+
+# Conclusions
+
+TBA
+
+# References
+
+::: {#refs}
+:::

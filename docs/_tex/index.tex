@@ -229,7 +229,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.4},
+  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.5},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -239,7 +239,7 @@
 
 
 \title{Multivariate analyses of tongue contours from ultrasound tongue
-imaging. Draft v0.4}
+imaging. Draft v0.5}
 \author{Stefano
 Coretta$\textsuperscript{1}$~\orcidlink{0000-0001-9627-5532}, Georges
 Sakr$\textsuperscript{1}$~\orcidlink{0000-0003-3813-2669}}
@@ -254,7 +254,7 @@ Coretta. Email: \href{mailto:s.coretta@ed.ac.uk}{\nolinkurl{s.coretta@ed.ac.uk}}
 
 \section{Introduction}\label{introduction}
 
-\begin{tcolorbox}[enhanced jigsaw, arc=.35mm, coltitle=black, breakable, colframe=quarto-callout-warning-color-frame, left=2mm, bottomrule=.15mm, colback=white, toptitle=1mm, toprule=.15mm, leftrule=.75mm, opacityback=0, colbacktitle=quarto-callout-warning-color!10!white, bottomtitle=1mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, titlerule=0mm, opacitybacktitle=0.6, rightrule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, arc=.35mm, opacityback=0, coltitle=black, colframe=quarto-callout-warning-color-frame, breakable, bottomrule=.15mm, leftrule=.75mm, bottomtitle=1mm, colbacktitle=quarto-callout-warning-color!10!white, opacitybacktitle=0.6, titlerule=0mm, toptitle=1mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, rightrule=.15mm, toprule=.15mm, colback=white, left=2mm]
 
 This is a ``living'' draft, meaning it is work in progress. While the
 code is fully functional and usable, we will be updating the textual
@@ -349,8 +349,8 @@ In this tutorial, we introduce two alternative methods to analyse
 DLC-tracked tongue contour data: Multivariate Generalised Additive
 Models (Section~\ref{sec-gam}) and Multivariate Functional Principal
 Component Analysis (Section~\ref{sec-fpca}). We will present the pros
-and cons of each method in \textbf{?@sec-procons}, but to summarise we
-are inclined to recommend Multivariate Functional Principal Component
+and cons of each method in Section~\ref{sec-procons}, but to summarise
+we are inclined to recommend Multivariate Functional Principal Component
 Analysis over Multivariate Generalised Additive Models due to the
 substantial computational overhead and reduced practical utility of the
 latter over the former.
@@ -771,8 +771,8 @@ Notebook}}
 \subsection{Emphaticness}\label{sec-gam-emphaticness}
 
 The second case study is about consonant ``emphaticness'' in Lebanese
-Arabic. The data is from XXX. {[}XXX TODO GEORGE description of the
-data, including a brief explanation of the LebAr context{]}.
+Arabic. The data is from Sakr (2025). {[}XXX TODO GEORGE description of
+the data, including a brief explanation of the LebAr context{]}.
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -1158,6 +1158,69 @@ Notebook}}
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
+\section{Advantages and disadvantages}\label{sec-procons}
+
+Both Multivariate GAMs and FPCA are a useful way to model DLC-tracked
+ultrasound tongue imaging data. However, each possesses advantages and
+disadvantages.
+
+Multivariate GAMs can model tongue contours in specific contexts and
+combinations thereof, like different vowels, consonant, prosodic
+contexts and so on. The rather complex model structure required to fit
+multivariate GAMs to tongue data comes at a computational cost and
+interpretative cost. Computationally, multivariate GAMs can take hours
+to estimate even the most simple models. Interpretationally, comparing
+different tongue contours quantitatively based on the output of a
+multivariate GAM is non-trivial, given that the tongue contour is in
+fact a curve reconstructed from the smooths of the X and Y coordinates
+along knot (in other words, the model does not model tongue contours
+directly). Moreover, there is no straightforward way to use traditional
+methods to assess (frequentist) statistical significance. From a
+practical point of view, a multivariate GAM ends up being a
+mathematically complex way of obtaining a sort of average tongue
+contour.
+
+Multivariate FPCA, on the other hand, are computationally efficient.
+Even with very large data sets, the computation of Principal Components
+is relatively quick. Moreover, the obtained PCs can be interpreted
+straightforwardly by plotting the effect of changing the PC score on the
+reconstructed tongue contour (as we did for example in
+Figure~\ref{fig-contours}). One possible disadvantage of multivariate
+FPCA is that it is usually not known what type of variation each
+obtained PC captures. This is illustrated in the two case studies in
+Section~\ref{sec-fpca}. In the VC coarticulation data, PC1 corresponded
+to the coronal/velar difference in consonants, while PC2 to the
+difference in vowel. In the emphaticness data, PC1 captured the
+low-back/high-front diagonal movement, while PC2 to the high/low
+movement at the back of the oral cavity. In other words, until one has
+run the MPFCA, one does not know what PC will correspond to which axis
+of differences and whether the PCs will capture relevant difference at
+all (it can happen that the variation one is after is so minimal
+relative to other, more substantial cases of variation, that it will not
+be captures at all). It is possible that qualitatively homogeneous data
+sets might return PCs that have the same or very similar interpretation,
+but this has not been systematically tested Honda (1996).
+
+Another advantage of MFPCA is that, provided that the PCs have captured
+relevant characteristics, the PCs can be submitted to further modelling
+using regression with the inclusion of relevant predictors (like
+different categorical variables of interest). We have not done so in
+this tutorial to keep the scope and length of the tutorial manageable,
+but both case studies presented in Section~\ref{sec-fpca} are amenable
+to such follow-up analysis.
+
+Based on the advantages and disadvantages of each of multivariate GAMs
+and FPCA, we suggest researchers to use MFPCA as the preferred and
+default approach to analyse DLC-tracked tongue contour data and to
+resort to multivariate GAMs if MFPCA fails to capture relevant
+variation.
+
+\section{Conclusions}\label{conclusions}
+
+TBA
+
+\section{References}\label{references}
+
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
 \bibitem[\citeproctext]{ref-chen2011}
@@ -1201,6 +1264,11 @@ Ultrasound Imaging of the Palate.''} \emph{The Journal of the Acoustical
 Society of America} 118 (4): 21282131.
 \url{https://doi.org/10.1121/1.2031977}.
 
+\bibitem[\citeproctext]{ref-faber1995}
+Faber, Alice, and Marianna Di Paolo. 1995. {``The Discriminability of
+Nearly Merged Sounds.''} \emph{Language Variation and Change} 7 (1):
+35--78. \url{https://doi.org/10.1017/S0954394500000892}.
+
 \bibitem[\citeproctext]{ref-gubian2024}
 Gubian, Michele. 2024. \emph{Workshop on Functional PCA for Phonetics
 and Prosody}. \url{https://github.com/uasolo/FPCA-phonetics-workshop}.
@@ -1228,6 +1296,11 @@ Honda, Kiyoshi. 1996. {``Organization of Tongue Articulation for
 Vowels.''} \emph{Journal of Phonetics} 24 (1): 3952.
 \url{https://doi.org/10.1006/jpho.1996.0004}.
 
+\bibitem[\citeproctext]{ref-hoole1999}
+Hoole, Philip. 1999. {``On the Lingual Organization of the German Vowel
+System.''} \emph{The Journal of the Acoustical Society of America} 106
+(2): 10201032. \url{https://doi.org/10.1121/1.428053}.
+
 \bibitem[\citeproctext]{ref-kassambara2017a}
 Kassambara, Alboukadel. 2017. \emph{Practical Guide to Principal
 Component Methods in r}. STHDA.
@@ -1248,6 +1321,10 @@ Pedersen, Eric J., David L. Miller, Gavin L. Simpson, and Noam Ross.
 Introduction with Mgcv.''} \emph{PeerJ} 7: e6876.
 \url{https://doi.org/10.7717/peerj.6876}.
 
+\bibitem[\citeproctext]{ref-sakr2025}
+Sakr, Georges. 2025. {``The Phonetics of Emphasis in Central Mount
+Lebanon Lebanese: Acoustics, Perception, Articulation.''} PhD thesis.
+
 \bibitem[\citeproctext]{ref-scobbie2011}
 Scobbie, James M., Eleanor Lawson, Steve Cowen, Joanne Cleland, and Alan
 A. Wrench. 2011. {``A Common Co-Ordinate System for Mid-Sagittal
@@ -1267,6 +1344,19 @@ Analysis in Linguistics: A Practical Introduction.''}
 Stone, Maureen. 2005. {``A Guide to Analysing Tongue Motion from
 Ultrasound Images.''} \emph{Clinical Linguistics \& Phonetics} 19 (6-7):
 455501. \url{https://doi.org/10.1080/02699200500113558}.
+
+\bibitem[\citeproctext]{ref-strycharczuk2021}
+Strycharczuk, Patrycja, Małgorzata Ćavar, and Stefano Coretta. 2021.
+{``Distance Vs Time. Acoustic and Articulatory Consequences of Reduced
+Vowel Duration in Polish.''} \emph{The Journal of the Acoustical Society
+of America} 150 (1): 592607. \url{https://doi.org/10.1121/10.0005585}.
+
+\bibitem[\citeproctext]{ref-strycharczuk2025}
+Strycharczuk, Patrycja, Sam Kirkham, Emily Gorman, and Takayuki
+Nagamine. 2025. {``Dimensionality Reduction in Lingual Articulation of
+Vowels: Evidence From Lax Vowels in Northern Anglo-English.''}
+\emph{Language and Speech}, March, 00238309251320581.
+\url{https://doi.org/10.1177/00238309251320581}.
 
 \bibitem[\citeproctext]{ref-wieling2018}
 Wieling, Martijn. 2018. {``Analyzing Dynamic Phonetic Data Using
