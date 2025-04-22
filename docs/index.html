@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-04-21">
+<meta name="dcterms.date" content="2025-04-22">
 
-<title>Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.5</title>
+<title>Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.6</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -133,13 +133,13 @@ window.Quarto = {
 };
 </script>
 
-<meta name="citation_title" content="Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.5">
+<meta name="citation_title" content="Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.6">
 <meta name="citation_author" content="Stefano Coretta">
 <meta name="citation_author" content="Georges Sakr">
-<meta name="citation_publication_date" content="2025-04-21">
-<meta name="citation_cover_date" content="2025-04-21">
+<meta name="citation_publication_date" content="2025-04-22">
+<meta name="citation_cover_date" content="2025-04-22">
 <meta name="citation_year" content="2025">
-<meta name="citation_online_date" content="2025-04-21">
+<meta name="citation_online_date" content="2025-04-22">
 <meta name="citation_fulltext_html_url" content="https://stefanocoretta.github.io/mv_uti/">
 <meta name="citation_language" content="en">
 <meta name="citation_reference" content="citation_title=Articulate assistant advanced user guide. Version 2.16;,citation_author=Articulate Instruments Ltd;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;">
@@ -179,7 +179,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.5</h1>
+      <h1 class="title">Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.6</h1>
           </div>
 
     
@@ -213,7 +213,7 @@ window.Quarto = {
                 <div>
             <div class="quarto-title-meta-heading">Published</div>
             <div class="quarto-title-meta-contents">
-              <p class="date">April 21, 2025</p>
+              <p class="date">April 22, 2025</p>
             </div>
           </div>
           
@@ -718,6 +718,55 @@ Figure&nbsp;17
 </div>
 </div>
 </div>
+<div id="cell-fig-vow-emph" class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pc_scores_mean <span class="ot">&lt;-</span> pc_scores <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(vowel, emph) <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC1 =</span> <span class="fu">mean</span>(PC1),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC2 =</span> <span class="fu">mean</span>(PC2),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">dim =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(dim)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>pc_curves_2 <span class="ot">&lt;-</span> pc_scores_mean <span class="sc">|&gt;</span> </span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(dim, vowel, emph) <span class="sc">|&gt;</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We can now calculate the predicted contour with funData2long1().</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reframe() is needed because the funData2long1() function returns a data frame</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># the has more rows than the original.</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">reframe</span>(</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">funData2long1</span>(</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>      mfpca<span class="sc">$</span>meanFunction[[dim]] <span class="sc">+</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        PC1 <span class="sc">*</span> mfpca<span class="sc">$</span>functions[[dim]][<span class="dv">1</span>] <span class="sc">+</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        PC2 <span class="sc">*</span> mfpca<span class="sc">$</span>functions[[dim]][<span class="dv">2</span>],</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">time =</span> <span class="st">"knot"</span>, <span class="at">value =</span> <span class="st">"value"</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We relabel the dimensions</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">dim =</span> <span class="fu">factor</span>(dim, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Y_z'</span>, <span class="st">'X_z'</span>))</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> dim, <span class="at">values_from =</span> value)</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>pc_curves_2 <span class="sc">|&gt;</span> </span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(X_z, Y_z, <span class="at">colour =</span> emph)) <span class="sc">+</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>() <span class="sc">+</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(vowel))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-vow-emph" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-vow-emph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="index_files/figure-html/fig-vow-emph-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="Figure&nbsp;18: "><img src="index_files/figure-html/fig-vow-emph-1.png" id="fig-vow-emph" class="img-fluid figure-img" width="672"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-vow-emph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="sec-procons" class="level1">
@@ -834,18 +883,17 @@ Wrench, Alan, and Jonathan Balch-Tomes. 2022. <span>“Beyond the Edge: Markerle
 <ol>
 <li id="fn1"><p>Note that interactions between categorical variables in the classical sense are not possible in GAMs. Instead, one can approximate interactions by creating an “interaction variable”, which is simply a variable where the values of the interacting variables are pasted together.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
-</section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{coretta2025,
+</section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{coretta,
   author = {Coretta, Stefano and Sakr, Georges},
   title = {Multivariate Analyses of Tongue Contours from Ultrasound
-    Tongue Imaging. {Draft} V0.5},
-  date = {2025-04-21},
+    Tongue Imaging. {Draft} V0.6},
+  date = {},
   url = {https://stefanocoretta.github.io/mv_uti/},
   langid = {en}
 }
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-coretta2025" class="csl-entry quarto-appendix-citeas" role="listitem">
-Coretta, Stefano, and Georges Sakr. 2025. <span>“Multivariate Analyses
-of Tongue Contours from Ultrasound Tongue Imaging. Draft V0.5.”</span>
-April 21, 2025. <a href="https://stefanocoretta.github.io/mv_uti/">https://stefanocoretta.github.io/mv_uti/</a>.
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-coretta" class="csl-entry quarto-appendix-citeas" role="listitem">
+Coretta, Stefano, and Georges Sakr. n.d. <span>“Multivariate Analyses of
+Tongue Contours from Ultrasound Tongue Imaging. Draft V0.6.”</span> <a href="https://stefanocoretta.github.io/mv_uti/">https://stefanocoretta.github.io/mv_uti/</a>.
 </div></div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">

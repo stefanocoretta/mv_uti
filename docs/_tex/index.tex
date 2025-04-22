@@ -229,7 +229,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.5},
+  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.6},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -239,7 +239,7 @@
 
 
 \title{Multivariate analyses of tongue contours from ultrasound tongue
-imaging. Draft v0.5}
+imaging. Draft v0.6}
 \author{Stefano
 Coretta$\textsuperscript{1}$~\orcidlink{0000-0001-9627-5532}, Georges
 Sakr$\textsuperscript{1}$~\orcidlink{0000-0003-3813-2669}}
@@ -254,7 +254,7 @@ Coretta. Email: \href{mailto:s.coretta@ed.ac.uk}{\nolinkurl{s.coretta@ed.ac.uk}}
 
 \section{Introduction}\label{introduction}
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, rightrule=.15mm, arc=.35mm, coltitle=black, bottomrule=.15mm, breakable, toprule=.15mm, toptitle=1mm, colback=white, colbacktitle=quarto-callout-warning-color!10!white, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, opacityback=0, titlerule=0mm, colframe=quarto-callout-warning-color-frame, leftrule=.75mm, left=2mm, opacitybacktitle=0.6]
+\begin{tcolorbox}[enhanced jigsaw, titlerule=0mm, bottomrule=.15mm, bottomtitle=1mm, opacitybacktitle=0.6, left=2mm, colbacktitle=quarto-callout-warning-color!10!white, coltitle=black, arc=.35mm, colback=white, opacityback=0, toptitle=1mm, rightrule=.15mm, colframe=quarto-callout-warning-color-frame, breakable, toprule=.15mm, leftrule=.75mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}]
 
 This is a ``living'' draft, meaning it is work in progress. While the
 code is fully functional and usable, we will be updating the textual
@@ -1151,6 +1151,63 @@ Notebook}}
 }
 
 \caption{\label{fig-emph-pc2}}
+
+\end{figure}%
+
+\textsubscript{Source:
+\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
+Notebook}}
+
+\phantomsection\label{cell-fig-vow-emph}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pc\_scores\_mean }\OtherTok{\textless{}{-}}\NormalTok{ pc\_scores }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(vowel, emph) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{summarise}\NormalTok{(}
+    \AttributeTok{PC1 =} \FunctionTok{mean}\NormalTok{(PC1),}
+    \AttributeTok{PC2 =} \FunctionTok{mean}\NormalTok{(PC2),}
+    \AttributeTok{.groups =} \StringTok{"drop"}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{dim =} \FunctionTok{list}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{unnest}\NormalTok{(dim)}
+
+\NormalTok{pc\_curves\_2 }\OtherTok{\textless{}{-}}\NormalTok{ pc\_scores\_mean }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{group\_by}\NormalTok{(dim, vowel, emph) }\SpecialCharTok{|\textgreater{}}
+  \CommentTok{\# We can now calculate the predicted contour with funData2long1().}
+  \CommentTok{\# reframe() is needed because the funData2long1() function returns a data frame}
+  \CommentTok{\# the has more rows than the original.}
+  \FunctionTok{reframe}\NormalTok{(}
+    \FunctionTok{funData2long1}\NormalTok{(}
+\NormalTok{      mfpca}\SpecialCharTok{$}\NormalTok{meanFunction[[dim]] }\SpecialCharTok{+}
+\NormalTok{        PC1 }\SpecialCharTok{*}\NormalTok{ mfpca}\SpecialCharTok{$}\NormalTok{functions[[dim]][}\DecValTok{1}\NormalTok{] }\SpecialCharTok{+}
+\NormalTok{        PC2 }\SpecialCharTok{*}\NormalTok{ mfpca}\SpecialCharTok{$}\NormalTok{functions[[dim]][}\DecValTok{2}\NormalTok{],}
+      \AttributeTok{time =} \StringTok{"knot"}\NormalTok{, }\AttributeTok{value =} \StringTok{"value"}
+\NormalTok{    )}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \CommentTok{\# We relabel the dimensions}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{dim =} \FunctionTok{factor}\NormalTok{(dim, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Y\_z\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}X\_z\textquotesingle{}}\NormalTok{))}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{pivot\_wider}\NormalTok{(}\AttributeTok{names\_from =}\NormalTok{ dim, }\AttributeTok{values\_from =}\NormalTok{ value)}
+
+\NormalTok{pc\_curves\_2 }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(X\_z, Y\_z, }\AttributeTok{colour =}\NormalTok{ emph)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_path}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\FunctionTok{vars}\NormalTok{(vowel))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-vow-emph-1.pdf}}
+
+}
+
+\caption{\label{fig-vow-emph}}
 
 \end{figure}%
 

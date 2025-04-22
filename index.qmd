@@ -1,5 +1,5 @@
 ---
-title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.5"
+title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.6"
 authors:
   - name: Stefano Coretta
     affiliation: University of Edinburgh
@@ -15,7 +15,7 @@ bibliography: references.bib
 citation:
   url: "https://stefanocoretta.github.io/mv_uti/"
 google-scholar: true
-date: "21 April 2025"
+date: "`r Sys.Date()`"
 ---
 
 # Introduction
@@ -835,6 +835,47 @@ pc_scores |>
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2), alpha = 0.25) +
   scale_color_brewer(palette = "Dark2") +
     facet_wrap(vars(participant))
+```
+
+```{r}
+#| label: fig-vow-emph
+#| echo: true
+
+pc_scores_mean <- pc_scores |>
+  group_by(vowel, emph) |> 
+  summarise(
+    PC1 = mean(PC1),
+    PC2 = mean(PC2),
+    .groups = "drop"
+  ) |> 
+  mutate(
+    dim = list(c(1, 2))
+  ) |> 
+  unnest(dim)
+
+pc_curves_2 <- pc_scores_mean |> 
+  group_by(dim, vowel, emph) |>
+  # We can now calculate the predicted contour with funData2long1().
+  # reframe() is needed because the funData2long1() function returns a data frame
+  # the has more rows than the original.
+  reframe(
+    funData2long1(
+      mfpca$meanFunction[[dim]] +
+        PC1 * mfpca$functions[[dim]][1] +
+        PC2 * mfpca$functions[[dim]][2],
+      time = "knot", value = "value"
+    )
+  ) |> 
+  # We relabel the dimensions
+  mutate(
+    dim = factor(dim, levels = c(2,1), labels = c('Y_z', 'X_z'))
+  ) |> 
+  pivot_wider(names_from = dim, values_from = value)
+
+pc_curves_2 |> 
+  ggplot(aes(X_z, Y_z, colour = emph)) +
+  geom_path() +
+  facet_wrap(vars(vowel))
 ```
 
 # Advantages and disadvantages  {#sec-procons}
