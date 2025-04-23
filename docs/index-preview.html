@@ -5,7 +5,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-    <meta name="dcterms.date" content="2025-04-22">
+    <meta name="dcterms.date" content="2025-04-23">
 
     <title>Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.6</title>
     <style>
@@ -193,10 +193,10 @@
       <meta name="citation_title" content="Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.6">
 <meta name="citation_author" content="Stefano Coretta">
 <meta name="citation_author" content="Georges Sakr">
-<meta name="citation_publication_date" content="2025-04-22">
-<meta name="citation_cover_date" content="2025-04-22">
+<meta name="citation_publication_date" content="2025-04-23">
+<meta name="citation_cover_date" content="2025-04-23">
 <meta name="citation_year" content="2025">
-<meta name="citation_online_date" content="2025-04-22">
+<meta name="citation_online_date" content="2025-04-23">
 <meta name="citation_fulltext_html_url" content="https://stefanocoretta.github.io/mv_uti/">
 <meta name="citation_language" content="en">
 <meta name="citation_reference" content="citation_title=Articulate assistant advanced user guide. Version 2.16;,citation_author=Articulate Instruments Ltd;,citation_publication_date=2011;,citation_cover_date=2011;,citation_year=2011;">
@@ -277,7 +277,7 @@
                 <div>
             <div class="quarto-title-meta-heading">Published</div>
             <div class="quarto-title-meta-contents">
-              <p class="date">April 22, 2025</p>
+              <p class="date">April 23, 2025</p>
             </div>
           </div>
           
@@ -328,7 +328,7 @@
 ✔ dplyr     1.1.4     ✔ readr     2.1.5
 ✔ forcats   1.0.0     ✔ stringr   1.5.1
 ✔ ggplot2   3.5.2     ✔ tibble    3.2.1
-✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
 ✔ purrr     1.0.4     
 ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ✖ dplyr::filter() masks stats::filter()
@@ -597,7 +597,7 @@ Attaching package: 'nlme'</code></pre>
     collapse</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>This is mgcv 1.9-1. For overview type 'help("mgcv-package")'.</code></pre>
+<pre><code>This is mgcv 1.9-3. For overview type 'help("mgcv-package")'.</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fi <span class="ot">&lt;-</span> <span class="st">"data/cache/voff_gam.rds"</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1279,6 +1279,7 @@ Figure&nbsp;15: Predicted tongue contours of Lebanese Arabic coronal consonants 
 <span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
 <span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(dlc_emph_long <span class="sc">|&gt;</span> <span class="fu">distinct</span>(frame_id, emph, vowel, participant))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div>
+<p><a href="#fig-emph-speakers" class="quarto-xref">Figure&nbsp;16</a> plots the PC scores for each vowel, emphaticness and speaker combination. Points are coloured based on emphaticness: emphatic in green and plain in orange. This figure illustrates well how the PC scores can capture individual variation: some speakers show clear separation of emphatic and plain tokens, while others do not. In most cases, PC1 is doing the heavy lifting of distinguishing emphatic and plain: recall that PC1 captures the front-high/back-low diagonal; a low PC1 indicates tongue dorsum and root backing, in other words pharyngealisation. Indeed, PC1 tends to be lower in emphatic tokens in several speakers, like Bar, Bay, Mro and Sak, especially with the vowels /A, O, U/. On the other hand, Bar’s emphatic and plain tokens for vowels /E, I/ do not show a PC1 difference, but rather a PC2 difference: PC2 captures tongue dorsum/body raising, hence indicating velarisation. It is possible that in Bar’s productions of emphatic consonants followed by /E, I/ the distinction with plain is produced by velarisation, compared to the pharyngealisation of emphatic consonants followed by /A, O, U/. Velarisation, rather than pharyngealisation, in the /E, I/ contexts makes sense given that the tongue root has to be front in the production of those vowels.</p>
 <div class="cell-container"><div class="cell-decorator"><pre>In [43]:</pre></div><div id="cell-fig-emph-speakers" class="cell">
 <div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>pc_scores <span class="sc">|&gt;</span> </span>
 <span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> PC1, <span class="at">y =</span> PC2, <span class="at">colour =</span> emph, <span class="at">label =</span> vowel)) <span class="sc">+</span></span>
@@ -1299,6 +1300,7 @@ Figure&nbsp;16: PC1 and PC2 scores by vowel, consonant type and speaker.
 </div>
 </div>
 </div></div>
+<p><a href="#fig-emph-pc1" class="quarto-xref">Figure&nbsp;17</a> and <a href="#fig-emph-pc2" class="quarto-xref">Figure&nbsp;18</a> illustrate one way to plot the PC scores individually for PC1 and PC2. We won’t include here a full description of the plots, since they should be self-explanatory, but we flag to the reader that these type of plots can be helpful in illustrating specific patterns in PC1 or PC2.</p>
 <div class="cell-container"><div class="cell-decorator"><pre>In [44]:</pre></div><div id="cell-fig-emph-pc1" class="cell">
 <div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>pc_scores <span class="sc">|&gt;</span> </span>
 <span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(vowel, PC1, <span class="at">colour =</span> emph)) <span class="sc">+</span></span>
@@ -1306,13 +1308,13 @@ Figure&nbsp;16: PC1 and PC2 scores by vowel, consonant type and speaker.
 <span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Dark2"</span>) <span class="sc">+</span></span>
 <span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(participant))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-emph-pc1" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<div id="fig-emph-pc1" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emph-pc1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="">
-<a href="index_files/figure-html/fig-emph-pc1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Figure&nbsp;17: "><img src="index_files/figure-html/fig-emph-pc1-1.png" id="fig-emph-pc1" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-emph-pc1-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Figure&nbsp;17: PC1 scores of emphatic and plain consonants by speaker and vowel."><img src="index_files/figure-html/fig-emph-pc1-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-emph-pc1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;17
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-emph-pc1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17: PC1 scores of emphatic and plain consonants by speaker and vowel.
 </figcaption>
 </figure>
 </div>
@@ -1325,62 +1327,73 @@ Figure&nbsp;17
 <span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Dark2"</span>) <span class="sc">+</span></span>
 <span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(participant))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-emph-pc2" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<div id="fig-emph-pc2" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emph-pc2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="">
-<a href="index_files/figure-html/fig-emph-pc2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="Figure&nbsp;18: "><img src="index_files/figure-html/fig-emph-pc2-1.png" id="fig-emph-pc2" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-emph-pc2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="Figure&nbsp;18: PC2 scores of emphatic and plain consonants by speaker and vowel."><img src="index_files/figure-html/fig-emph-pc2-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-emph-pc2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;18
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-emph-pc2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18: PC2 scores of emphatic and plain consonants by speaker and vowel.
 </figcaption>
 </figure>
 </div>
 </div>
 </div></div>
-<div class="cell-container"><div class="cell-decorator"><pre>In [46]:</pre></div><div id="cell-fig-vow-emph" class="cell">
+<p>Finally, it will usually be helpful to reconstruct the predicted tongue contours of specific context. For example, we might be interested in showing the average tongue contours for emphatic and plain consonant followed by each of the five vowels in the data. This is shown in <a href="#fig-vow-emph" class="quarto-xref">Figure&nbsp;19</a>. In order to obtain the reconstructed contours, we first need to calculate mean PC scores for each vowel. This can be done through the following code. We recommend to inspect the <code>pc_scores_mean</code> object.</p>
+<div class="cell-container"><div class="cell-decorator"><pre>In [46]:</pre></div><div class="cell">
 <div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>pc_scores_mean <span class="ot">&lt;-</span> pc_scores <span class="sc">|&gt;</span></span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(vowel, emph) <span class="sc">|&gt;</span> </span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC1 =</span> <span class="fu">mean</span>(PC1),</span>
-<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC2 =</span> <span class="fu">mean</span>(PC2),</span>
-<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
-<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">dim =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(dim)</span>
-<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>pc_curves_2 <span class="ot">&lt;-</span> pc_scores_mean <span class="sc">|&gt;</span> </span>
-<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(dim, vowel, emph) <span class="sc">|&gt;</span></span>
-<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We can now calculate the predicted contour with funData2long1().</span></span>
-<span id="cb74-16"><a href="#cb74-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reframe() is needed because the funData2long1() function returns a data frame</span></span>
-<span id="cb74-17"><a href="#cb74-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># the has more rows than the original.</span></span>
-<span id="cb74-18"><a href="#cb74-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">reframe</span>(</span>
-<span id="cb74-19"><a href="#cb74-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">funData2long1</span>(</span>
-<span id="cb74-20"><a href="#cb74-20" aria-hidden="true" tabindex="-1"></a>      mfpca<span class="sc">$</span>meanFunction[[dim]] <span class="sc">+</span></span>
-<span id="cb74-21"><a href="#cb74-21" aria-hidden="true" tabindex="-1"></a>        PC1 <span class="sc">*</span> mfpca<span class="sc">$</span>functions[[dim]][<span class="dv">1</span>] <span class="sc">+</span></span>
-<span id="cb74-22"><a href="#cb74-22" aria-hidden="true" tabindex="-1"></a>        PC2 <span class="sc">*</span> mfpca<span class="sc">$</span>functions[[dim]][<span class="dv">2</span>],</span>
-<span id="cb74-23"><a href="#cb74-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">time =</span> <span class="st">"knot"</span>, <span class="at">value =</span> <span class="st">"value"</span></span>
-<span id="cb74-24"><a href="#cb74-24" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb74-25"><a href="#cb74-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb74-26"><a href="#cb74-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We relabel the dimensions</span></span>
-<span id="cb74-27"><a href="#cb74-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb74-28"><a href="#cb74-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">dim =</span> <span class="fu">factor</span>(dim, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Y_z'</span>, <span class="st">'X_z'</span>))</span>
-<span id="cb74-29"><a href="#cb74-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb74-30"><a href="#cb74-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> dim, <span class="at">values_from =</span> value)</span>
-<span id="cb74-31"><a href="#cb74-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb74-32"><a href="#cb74-32" aria-hidden="true" tabindex="-1"></a>pc_curves_2 <span class="sc">|&gt;</span> </span>
-<span id="cb74-33"><a href="#cb74-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(X_z, Y_z, <span class="at">colour =</span> emph)) <span class="sc">+</span></span>
-<span id="cb74-34"><a href="#cb74-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>() <span class="sc">+</span></span>
-<span id="cb74-35"><a href="#cb74-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(vowel))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Group by variables based on which we want to obtain mean values.</span></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(vowel, emph) <span class="sc">|&gt;</span> </span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Sumarise data to obtain means</span></span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC1 =</span> <span class="fu">mean</span>(PC1),</span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">PC2 =</span> <span class="fu">mean</span>(PC2),</span>
+<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add "dimensions", i.e. X and Y coordinates</span></span>
+<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">dim =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Unnes the dim column</span></span>
+<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(dim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div>
+<p>The following code calculates the reconstructed tongue contours based on both PC1 and PC2. One could also calculate the reconstructed contours at factions of the standard deviation of the scores if one wished so, like it was done above.</p>
+<div class="cell-container"><div class="cell-decorator"><pre>In [47]:</pre></div><div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>pc_curves_2 <span class="ot">&lt;-</span> pc_scores_mean <span class="sc">|&gt;</span> </span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(dim, vowel, emph) <span class="sc">|&gt;</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We can now calculate the predicted contour with funData2long1().</span></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># reframe() is needed because the funData2long1() function returns a data frame</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># the has more rows than the original.</span></span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">reframe</span>(</span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">funData2long1</span>(</span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>      mfpca<span class="sc">$</span>meanFunction[[dim]] <span class="sc">+</span></span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># We add PC1</span></span>
+<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a>        PC1 <span class="sc">*</span> mfpca<span class="sc">$</span>functions[[dim]][<span class="dv">1</span>] <span class="sc">+</span></span>
+<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># and we add PC2 as well</span></span>
+<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a>        PC2 <span class="sc">*</span> mfpca<span class="sc">$</span>functions[[dim]][<span class="dv">2</span>],</span>
+<span id="cb75-13"><a href="#cb75-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">time =</span> <span class="st">"knot"</span>, <span class="at">value =</span> <span class="st">"value"</span></span>
+<span id="cb75-14"><a href="#cb75-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb75-15"><a href="#cb75-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb75-16"><a href="#cb75-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># We relabel the dimensions</span></span>
+<span id="cb75-17"><a href="#cb75-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb75-18"><a href="#cb75-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">dim =</span> <span class="fu">factor</span>(dim, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">'Y_z'</span>, <span class="st">'X_z'</span>))</span>
+<span id="cb75-19"><a href="#cb75-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb75-20"><a href="#cb75-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> dim, <span class="at">values_from =</span> value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div>
+<p>Finally, <a href="#fig-vow-emph" class="quarto-xref">Figure&nbsp;19</a> plots the reconstructed contours. Based on this figure, we do find pharyngealisation in emphatic consonants followed by /A, O, U/ on average, while pharyngealisation is absent in the context of /E, I/.</p>
+<div class="cell-container"><div class="cell-decorator"><pre>In [48]:</pre></div><div id="cell-fig-vow-emph" class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>pc_curves_2 <span class="sc">|&gt;</span> </span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(X_z, Y_z, <span class="at">colour =</span> emph)) <span class="sc">+</span></span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>() <span class="sc">+</span></span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(vowel))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-vow-emph" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<div id="fig-vow-emph" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-vow-emph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="">
-<a href="index_files/figure-html/fig-vow-emph-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="Figure&nbsp;19: "><img src="index_files/figure-html/fig-vow-emph-1.png" id="fig-vow-emph" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-vow-emph-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-19" title="Figure&nbsp;19: Reconstructed tongue contours based on PC1/PC2."><img src="index_files/figure-html/fig-vow-emph-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-vow-emph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;19
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-vow-emph-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19: Reconstructed tongue contours based on PC1/PC2.
 </figcaption>
 </figure>
 </div>

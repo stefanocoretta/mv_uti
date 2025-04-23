@@ -316,7 +316,7 @@ voff_gam_p |>
 
 ## Emphaticness {#sec-gam-emphaticness}
 
-The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from @sakr2025. \[XXX TODO GEORGE description of the data, including a brief explanation of the LebAr context\].
+The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from @sakr2025. [XXX TODO GEORGE description of the data, including a brief explanation of the LebAr context].
 
 ```{r}
 #| label: dlc-emph
@@ -805,6 +805,8 @@ pc_scores <- mfpca$scores |>
   bind_cols(dlc_emph_long |> distinct(frame_id, emph, vowel, participant))
 ```
 
+@fig-emph-speakers plots the PC scores for each vowel, emphaticness and speaker combination. Points are coloured based on emphaticness: emphatic in green and plain in orange. This figure illustrates well how the PC scores can capture individual variation: some speakers show clear separation of emphatic and plain tokens, while others do not. In most cases, PC1 is doing the heavy lifting of distinguishing emphatic and plain: recall that PC1 captures the front-high/back-low diagonal; a low PC1 indicates tongue dorsum and root backing, in other words pharyngealisation. Indeed, PC1 tends to be lower in emphatic tokens in several speakers, like Bar, Bay, Mro and Sak, especially with the vowels /A, O, U/. On the other hand, Bar's emphatic and plain tokens for vowels /E, I/ do not show a PC1 difference, but rather a PC2 difference: PC2 captures tongue dorsum/body raising, hence indicating velarisation. It is possible that in Bar's productions of emphatic consonants followed by /E, I/ the distinction with plain is produced by velarisation, compared to the pharyngealisation of emphatic consonants followed by /A, O, U/. Velarisation, rather than pharyngealisation, in the /E, I/ contexts makes sense given that the tongue root has to be front in the production of those vowels.
+
 ```{r}
 #| label: fig-emph-speakers
 #| fig-cap: "PC1 and PC2 scores by vowel, consonant type and speaker."
@@ -817,8 +819,11 @@ pc_scores |>
   facet_grid(cols = vars(participant), rows = vars(vowel))
 ```
 
+@fig-emph-pc1 and @fig-emph-pc2 illustrate one way to plot the PC scores individually for PC1 and PC2. We won't include here a full description of the plots, since they should be self-explanatory, but we flag to the reader that these type of plots can be helpful in illustrating specific patterns in PC1 or PC2.
+
 ```{r}
 #| label: fig-emph-pc1
+#| fig-cap: "PC1 scores of emphatic and plain consonants by speaker and vowel."
 
 pc_scores |> 
   ggplot(aes(vowel, PC1, colour = emph)) +
@@ -829,6 +834,7 @@ pc_scores |>
 
 ```{r}
 #| label: fig-emph-pc2
+#| fig-cap: "PC2 scores of emphatic and plain consonants by speaker and vowel."
 
 pc_scores |> 
   ggplot(aes(vowel, PC2, colour = emph)) +
@@ -837,21 +843,34 @@ pc_scores |>
     facet_wrap(vars(participant))
 ```
 
+Finally, it will usually be helpful to reconstruct the predicted tongue contours of specific context. For example, we might be interested in showing the average tongue contours for emphatic and plain consonant followed by each of the five vowels in the data. This is shown in @fig-vow-emph. In order to obtain the reconstructed contours, we first need to calculate mean PC scores for each vowel. This can be done through the following code. We recommend to inspect the `pc_scores_mean` object.
+
 ```{r}
-#| label: fig-vow-emph
+#| label: pc-scores-mean
 #| echo: true
 
 pc_scores_mean <- pc_scores |>
+  # Group by variables based on which we want to obtain mean values.
   group_by(vowel, emph) |> 
+  # Sumarise data to obtain means
   summarise(
     PC1 = mean(PC1),
     PC2 = mean(PC2),
     .groups = "drop"
   ) |> 
+  # Add "dimensions", i.e. X and Y coordinates
   mutate(
     dim = list(c(1, 2))
   ) |> 
+  # Unnes the dim column
   unnest(dim)
+```
+
+The following code calculates the reconstructed tongue contours based on both PC1 and PC2. One could also calculate the reconstructed contours at factions of the standard deviation of the scores if one wished so, like it was done above.
+
+```{r}
+#| label: pc-curves-2
+#| echo: true
 
 pc_curves_2 <- pc_scores_mean |> 
   group_by(dim, vowel, emph) |>
@@ -861,7 +880,9 @@ pc_curves_2 <- pc_scores_mean |>
   reframe(
     funData2long1(
       mfpca$meanFunction[[dim]] +
+        # We add PC1
         PC1 * mfpca$functions[[dim]][1] +
+        # and we add PC2 as well
         PC2 * mfpca$functions[[dim]][2],
       time = "knot", value = "value"
     )
@@ -871,6 +892,13 @@ pc_curves_2 <- pc_scores_mean |>
     dim = factor(dim, levels = c(2,1), labels = c('Y_z', 'X_z'))
   ) |> 
   pivot_wider(names_from = dim, values_from = value)
+```
+
+Finally, @fig-vow-emph plots the reconstructed contours. Based on this figure, we do find pharyngealisation in emphatic consonants followed by /A, O, U/ on average, while pharyngealisation is absent in the context of /E, I/.
+
+```{r}
+#| label: fig-vow-emph
+#| fig-cap: "Reconstructed tongue contours based on PC1/PC2."
 
 pc_curves_2 |> 
   ggplot(aes(X_z, Y_z, colour = emph)) +
@@ -878,7 +906,7 @@ pc_curves_2 |>
   facet_wrap(vars(vowel))
 ```
 
-# Advantages and disadvantages  {#sec-procons}
+# Advantages and disadvantages {#sec-procons}
 
 Both Multivariate GAMs and FPCA are a useful way to model DLC-tracked ultrasound tongue imaging data. However, each possesses advantages and disadvantages.
 
