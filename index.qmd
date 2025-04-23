@@ -1,5 +1,5 @@
 ---
-title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.6"
+title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.7"
 authors:
   - name: Stefano Coretta
     affiliation: University of Edinburgh
@@ -316,8 +316,7 @@ voff_gam_p |>
 
 ## Emphaticness {#sec-gam-emphaticness}
 
-The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from @sakr2025. [XXX TODO GEORGE description of the data, including a brief explanation of the LebAr context].
-The second case study is about consonant "emphaticness" in Lebanese Arabic.
+The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from @sakr2025. [XXX TODO GEORGE description of the data, including a brief explanation of the LebAr context]. The second case study is about consonant "emphaticness" in Lebanese Arabic.
 
 Lebanese Arabic is a variety of Arabic primarily spoken in Lebanon, where it is in constant contact with a number of Indo-European languages [primarily English and French, as vectors of education and business, see eg. @shaaban1999], as well as the written standard form of Arabic known as Modern Standard Arabic (MSA). The relationship between Lebanese Arabic (LA) and MSA in Lebanon is one of diglossia [see eg. @lian2022], where LA is spoken in most contexts, but not written, and MSA is the written variety, and therefore also primarily used for legal and official purposes.
 

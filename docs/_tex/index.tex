@@ -229,7 +229,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.6},
+  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.7},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -239,7 +239,7 @@
 
 
 \title{Multivariate analyses of tongue contours from ultrasound tongue
-imaging. Draft v0.6}
+imaging. Draft v0.7}
 \author{Stefano
 Coretta$\textsuperscript{1}$~\orcidlink{0000-0001-9627-5532}, Georges
 Sakr$\textsuperscript{1}$~\orcidlink{0000-0003-3813-2669}}
@@ -254,7 +254,7 @@ Coretta. Email: \href{mailto:s.coretta@ed.ac.uk}{\nolinkurl{s.coretta@ed.ac.uk}}
 
 \section{Introduction}\label{introduction}
 
-\begin{tcolorbox}[enhanced jigsaw, titlerule=0mm, bottomrule=.15mm, bottomtitle=1mm, opacitybacktitle=0.6, left=2mm, colbacktitle=quarto-callout-warning-color!10!white, coltitle=black, arc=.35mm, colback=white, opacityback=0, toptitle=1mm, rightrule=.15mm, colframe=quarto-callout-warning-color-frame, breakable, toprule=.15mm, leftrule=.75mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}]
+\begin{tcolorbox}[enhanced jigsaw, bottomrule=.15mm, arc=.35mm, left=2mm, colframe=quarto-callout-warning-color-frame, toptitle=1mm, colback=white, opacitybacktitle=0.6, breakable, toprule=.15mm, titlerule=0mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, opacityback=0, colbacktitle=quarto-callout-warning-color!10!white, leftrule=.75mm, bottomtitle=1mm, coltitle=black, rightrule=.15mm]
 
 This is a ``living'' draft, meaning it is work in progress. While the
 code is fully functional and usable, we will be updating the textual
@@ -279,17 +279,17 @@ Wrench and Balch-Tomes (2022) have trained a DeepLabCut (DLC) model to
 estimate and track specific flesh points on the tongue contour and
 anatomical landmarks as captured by UTI. The model estimates 11
 ``knots'' from the vallecula to the tongue tip, plus three
-muscular-skeletal knots, the hyoid bone, the mandible base and and the
-mental spine where the short tendon attaches. See Figure~\ref{fig-knots}
-for a schematic illustration of the position of the tracked knots. An
-advantage of DLC tracked data over the traditional fan-line coordinate
+muscular-skeletal knots, the hyoid bone, the mandible base and the
+mental spine where the short tendon attaches (see Figure~\ref{fig-knots}
+for a schematic illustration of the position of the tracked knots). An
+advantage of DLC-tracked data over the traditional fan-line coordinate
 system is that (in theory) specific (moving) flesh points are tracked
-rather than simply he intersection of the tongue contour with fixed
-radii from the fan-line system. This makes DLC tracked data resemble
-data obtain with electromagnetic articulography (EMA). The downside is
-that the tongue contour is represented by 11 freely moving points. The
-11 knots can move in any direction in the midsagittal two-dimensional
-space captured by UTI.
+rather than simply the intersection of the tongue contour with fixed
+radii from the fan-line system. This makes DLC-tracked data resemble
+data obtained with electromagnetic articulography (EMA). The downside is
+that the tongue contour is represented by 11 freely moving points, which
+can move in any direction in the midsagittal two-dimensional space
+captured by UTI.
 
 \begin{figure}
 
@@ -307,25 +307,25 @@ by DeepLabCut. CC-BY Wrench and Balch-Tomes (Wrench 2024).}
 Classical ways to analyse tongue contour data obtained from a fan-line
 system, like SS-ANOVA (Davidson 2006; Chen and Lin 2011) and Generalised
 Additive Models using polar coordinates (Coretta 2018b, n.d.), are not
-appropriate with DLC tracked data due to the tongue contour ``curling''
+appropriate with DLC-tracked data, due to the tongue contour ``curling''
 onto itself along the root. This is illustrated in
-Figure~\ref{fig-curl}: the plot shows the DLC tracked points (in black)
+Figure~\ref{fig-curl}: the plot shows the DLC-tracked points (in black)
 of the data from a Polish speaker and the traced tongue contours based
 on the points (see Section~\ref{sec-gam-vc-coart} for details on the
 data). The contours clearly curl onto themselves along the root (on the
-left of the contour). The red smooths represent a LOESS smooth
-calculated for Y along X: clearly this approach clearly miscalculates
-the smooth for the back half of the tongue, simply because of the same X
-value there are two Y values and the procedure returns something like an
-average of the two values. Generalised Additive Models (introduced in
-the following section) work on the same principle and hence would
-produce the same type of error. Using polar coordinates would not solve
-the problem: while a fan-line system lends itself easily to using polar
-coordinates (since the origin of the probe can be used to approximate
-the origin of the coordinate system), this can not be done with DLC data
-because there is in reality no single origin in the actual tongue
-anatomy from which vectors of displacement radiate that would work for
-all tracked points.
+left of the contour). The red smooths represent a LOESS smooth,
+calculated for Y along X. This approach clearly miscalculates the smooth
+for the back half of the tongue, simply because there are two Y values
+for the same X value, and the procedure, in that case, returns something
+like an average of the two values. Generalised Additive Models
+(introduced in the following section) work on the same principle and
+hence would produce the same type of error. Using polar coordinates
+would not solve the problem: while a fan-line system lends itself easily
+to using polar coordinates (since the origin of the probe can be used to
+approximate the origin of the coordinate system), this cannot be done
+with DLC data because there is, in reality, no single origin in the
+actual tongue anatomy from which vectors of displacement radiate, that
+would work for all tracked points.
 
 \phantomsection\label{cell-fig-curl}
 \begin{figure}[H]
@@ -357,7 +357,7 @@ latter over the former.
 
 \section{Multivariate Generalised Additive Models}\label{sec-gam}
 
-Generalised additive models (GAMs) are an extension of generalised
+Generalised Additive Models (GAMs) are an extension of generalised
 models that allow flexible modelling of non-linear effects (Hastie and
 Tibshirani 1986; Wood 2006). GAMs are built upon smoothing splines
 functions, the components of which are multiplied by estimated
@@ -772,7 +772,53 @@ Notebook}}
 
 The second case study is about consonant ``emphaticness'' in Lebanese
 Arabic. The data is from Sakr (2025). {[}XXX TODO GEORGE description of
-the data, including a brief explanation of the LebAr context{]}.
+the data, including a brief explanation of the LebAr context{]}. The
+second case study is about consonant ``emphaticness'' in Lebanese
+Arabic.
+
+Lebanese Arabic is a variety of Arabic primarily spoken in Lebanon,
+where it is in constant contact with a number of Indo-European languages
+(primarily English and French, as vectors of education and business, see
+eg. Shaaban and Ghaith 1999), as well as the written standard form of
+Arabic known as Modern Standard Arabic (MSA). The relationship between
+Lebanese Arabic (LA) and MSA in Lebanon is one of diglossia (see eg.
+Lian 2022), where LA is spoken in most contexts, but not written, and
+MSA is the written variety, and therefore also primarily used for legal
+and official purposes.
+
+Emphasis is a phonologically contrastive feature of Semitic languages.
+In most varieties of Arabic, it is usually reported to be realised as
+pharyngealisation (Sakr 2023; J. Al-Tamimi 2017; Zeroual, Esling, and
+Hoole 2011; Watson 2002) with some variation depending on phonological
+context (Sakr 2025; F. Al-Tamimi and Heselwood 2011) or on
+sociolinguistic factors (Khattab, Al-Tamimi, and Heselwood 2006). Older
+sources instead report the secondary place of articulation as being the
+velum (see eg. Obrecht 1968; Nasr 1959) or the uvula (see eg. Bin-Muqbil
+2006; Zawaydeh 1999; Ghazeli 1977). Whatever the specifics of this
+secondary place of articulation, the literature (see among others
+Sullivan 2017; El-Khaissi 2015; Elhij'a 2012; Alorifi 2008) additionally
+suggests the occurrence of a loss of emphasis in Lebanese, or more
+generally Levantine or Western dialects of Arabic, likely as a result of
+the contact with the Indo-European languages mentioned above.
+
+It is against this background, and as part of efforts to document the
+precise place of secondary articulation of emphasis in Lebanese Arabic,
+as well as to document whether or not emphasis has, indeed, been lost in
+the variety, that the data used here (from Sakr 2025) was collected. It
+consists of UTI recordings, by 5 participants, of CVb stimuli. The onset
+was either an emphatic or an unemphatic (`plain'), voiced or voiceless,
+alveolar, plosive or fricative /t, ṭ, d, ḍ, s, ṣ, z, ẓ/; when talking
+about a plain/emphatic pair, we denote them /T, D, S, Z/. The nucleus
+was one of five vowel qualities (see Sakr 2019) present in Lebanese,
+which we will denote with /A, E, I, O, U/ to signal that these are
+neither to be taken as phonemes or exact phonetic realisations. The coda
+was the voiced bilabial plosive /b/.
+
+Each recording consisted of four stimuli in randomized order, covering
+forty syllables, in five repetitions; for a total of 1000 recordings.
+The subset of the data used here is from 35ms before consonant offset,
+defined as the burst for the plosives and as the end of the frication
+noise for the fricatives.
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -832,12 +878,12 @@ individual speakers (see Article Notebook online, linked above, for the
 code). First, there is a good deal of individual variation: some
 speakers show a clear differentiation of the tongue shape in emphatic
 and plain consonants, while in other speakers the difference is less
-obvious. In FAK virtually produced emphatic and plain consonants with
-the same tongue shape. Just to pick another example, emphatic consonants
-followed by /I/ in BAR are velarised, rather than pharyngealised, while
-in BAY they are pharyngealised. Plotting predictions of individual
-speakers can reveal idiosyncratic patterns which are not visible when
-plotting overall predictions.
+obvious. FAK produced emphatic and plain consonants with virtually the
+same tongue shape. Just to pick another example, BAR velarised rather
+than pharyngealised the emphatic consonants followed by /I/, while BAY
+pharyngealised them. Plotting predictions of individual speakers can
+reveal idiosyncratic patterns which are not visible when plotting
+overall predictions.
 
 \phantomsection\label{cell-fig-emph-part}
 \begin{figure}[H]
@@ -1083,7 +1129,7 @@ contours (taken from 35 ms before the CV boundary) in Lebanese Arabic,
 based on the MFPCA. PC1 captures the low-back/high-front diagonal
 movement. PC2, on the other hand, seems to be restricted to high/low
 movement at the back of the oral cavity. Emphatic consonants, if
-produced with a constricted pharynx (i.e.~paryngealised), should have a
+produced with a constricted pharynx (i.e.~pharyngealised), should have a
 lower PC1. If on the other hand they are produced with a raised tongue
 dorsum (i.e.~velarised), they should have a lower PC2 (lower PC scores
 are in purple in Figure~\ref{fig-emph-curves-wide}).
@@ -1106,6 +1152,26 @@ Lebanese Arabic coronal consonants as obtained from an MFPCA.}
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
+Figure~\ref{fig-emph-speakers} plots the PC scores for each vowel,
+emphaticness and speaker combination. Points are coloured based on
+emphaticness: emphatic in green and plain in orange. This figure
+illustrates well how the PC scores can capture individual variation:
+some speakers show clear separation of emphatic and plain tokens, while
+others do not. In most cases, PC1 is doing the heavy lifting of
+distinguishing emphatic and plain: recall that PC1 captures the
+front-high/back-low diagonal; a low PC1 indicates tongue dorsum and root
+backing, in other words pharyngealisation. Indeed, PC1 tends to be lower
+in emphatic tokens in several speakers, like Bar, Bay, Mro and Sak,
+especially with the vowels /A, O, U/. On the other hand, Bar's emphatic
+and plain tokens for vowels /E, I/ do not show a PC1 difference, but
+rather a PC2 difference: PC2 captures tongue dorsum/body raising, hence
+indicating velarisation. It is possible that in Bar's productions of
+emphatic consonants followed by /E, I/ the distinction with plain is
+produced by velarisation, compared to the pharyngealisation of emphatic
+consonants followed by /A, O, U/. Velarisation, rather than
+pharyngealisation, in the /E, I/ contexts makes sense given that the
+tongue root has to be front in the production of those vowels.
+
 \phantomsection\label{cell-fig-emph-speakers}
 \begin{figure}[H]
 
@@ -1124,6 +1190,12 @@ type and speaker.}
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
+Figure~\ref{fig-emph-pc1} and Figure~\ref{fig-emph-pc2} illustrate one
+way to plot the PC scores individually for PC1 and PC2. We won't include
+here a full description of the plots, since they should be
+self-explanatory, but we flag to the reader that these type of plots can
+be helpful in illustrating specific patterns in PC1 or PC2.
+
 \phantomsection\label{cell-fig-emph-pc1}
 \begin{figure}[H]
 
@@ -1133,7 +1205,8 @@ Notebook}}
 
 }
 
-\caption{\label{fig-emph-pc1}}
+\caption{\label{fig-emph-pc1}PC1 scores of emphatic and plain consonants
+by speaker and vowel.}
 
 \end{figure}%
 
@@ -1150,7 +1223,8 @@ Notebook}}
 
 }
 
-\caption{\label{fig-emph-pc2}}
+\caption{\label{fig-emph-pc2}PC2 scores of emphatic and plain consonants
+by speaker and vowel.}
 
 \end{figure}%
 
@@ -1158,21 +1232,46 @@ Notebook}}
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
-\phantomsection\label{cell-fig-vow-emph}
+Finally, it will usually be helpful to reconstruct the predicted tongue
+contours of specific context. For example, we might be interested in
+showing the average tongue contours for emphatic and plain consonant
+followed by each of the five vowels in the data. This is shown in
+Figure~\ref{fig-vow-emph}. In order to obtain the reconstructed
+contours, we first need to calculate mean PC scores for each vowel. This
+can be done through the following code. We recommend to inspect the
+\texttt{pc\_scores\_mean} object.
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{pc\_scores\_mean }\OtherTok{\textless{}{-}}\NormalTok{ pc\_scores }\SpecialCharTok{|\textgreater{}}
+  \CommentTok{\# Group by variables based on which we want to obtain mean values.}
   \FunctionTok{group\_by}\NormalTok{(vowel, emph) }\SpecialCharTok{|\textgreater{}} 
+  \CommentTok{\# Sumarise data to obtain means}
   \FunctionTok{summarise}\NormalTok{(}
     \AttributeTok{PC1 =} \FunctionTok{mean}\NormalTok{(PC1),}
     \AttributeTok{PC2 =} \FunctionTok{mean}\NormalTok{(PC2),}
     \AttributeTok{.groups =} \StringTok{"drop"}
 \NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \CommentTok{\# Add "dimensions", i.e. X and Y coordinates}
   \FunctionTok{mutate}\NormalTok{(}
     \AttributeTok{dim =} \FunctionTok{list}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{))}
 \NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \CommentTok{\# Unnes the dim column}
   \FunctionTok{unnest}\NormalTok{(dim)}
+\end{Highlighting}
+\end{Shaded}
 
+\textsubscript{Source:
+\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
+Notebook}}
+
+The following code calculates the reconstructed tongue contours based on
+both PC1 and PC2. One could also calculate the reconstructed contours at
+factions of the standard deviation of the scores if one wished so, like
+it was done above.
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \NormalTok{pc\_curves\_2 }\OtherTok{\textless{}{-}}\NormalTok{ pc\_scores\_mean }\SpecialCharTok{|\textgreater{}} 
   \FunctionTok{group\_by}\NormalTok{(dim, vowel, emph) }\SpecialCharTok{|\textgreater{}}
   \CommentTok{\# We can now calculate the predicted contour with funData2long1().}
@@ -1181,7 +1280,9 @@ Notebook}}
   \FunctionTok{reframe}\NormalTok{(}
     \FunctionTok{funData2long1}\NormalTok{(}
 \NormalTok{      mfpca}\SpecialCharTok{$}\NormalTok{meanFunction[[dim]] }\SpecialCharTok{+}
+        \CommentTok{\# We add PC1}
 \NormalTok{        PC1 }\SpecialCharTok{*}\NormalTok{ mfpca}\SpecialCharTok{$}\NormalTok{functions[[dim]][}\DecValTok{1}\NormalTok{] }\SpecialCharTok{+}
+        \CommentTok{\# and we add PC2 as well}
 \NormalTok{        PC2 }\SpecialCharTok{*}\NormalTok{ mfpca}\SpecialCharTok{$}\NormalTok{functions[[dim]][}\DecValTok{2}\NormalTok{],}
       \AttributeTok{time =} \StringTok{"knot"}\NormalTok{, }\AttributeTok{value =} \StringTok{"value"}
 \NormalTok{    )}
@@ -1191,14 +1292,19 @@ Notebook}}
     \AttributeTok{dim =} \FunctionTok{factor}\NormalTok{(dim, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Y\_z\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}X\_z\textquotesingle{}}\NormalTok{))}
 \NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
   \FunctionTok{pivot\_wider}\NormalTok{(}\AttributeTok{names\_from =}\NormalTok{ dim, }\AttributeTok{values\_from =}\NormalTok{ value)}
-
-\NormalTok{pc\_curves\_2 }\SpecialCharTok{|\textgreater{}} 
-  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(X\_z, Y\_z, }\AttributeTok{colour =}\NormalTok{ emph)) }\SpecialCharTok{+}
-  \FunctionTok{geom\_path}\NormalTok{() }\SpecialCharTok{+}
-  \FunctionTok{facet\_wrap}\NormalTok{(}\FunctionTok{vars}\NormalTok{(vowel))}
 \end{Highlighting}
 \end{Shaded}
 
+\textsubscript{Source:
+\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
+Notebook}}
+
+Finally, Figure~\ref{fig-vow-emph} plots the reconstructed contours.
+Based on this figure, we do find pharyngealisation in emphatic
+consonants followed by /A, O, U/ on average, while pharyngealisation is
+absent in the context of /E, I/.
+
+\phantomsection\label{cell-fig-vow-emph}
 \begin{figure}[H]
 
 \centering{
@@ -1207,7 +1313,8 @@ Notebook}}
 
 }
 
-\caption{\label{fig-vow-emph}}
+\caption{\label{fig-vow-emph}Reconstructed tongue contours based on
+PC1/PC2.}
 
 \end{figure}%
 
@@ -1280,6 +1387,27 @@ TBA
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-alorifi2008}
+Alorifi, Fawzi S. 2008. {``Automatic Identification of Arabic Dialects
+Using Hidden Markov Models.''} PhD thesis.
+
+\bibitem[\citeproctext]{ref-al-tamimi2011}
+Al-Tamimi, Feda, and Barry Heselwood. 2011. {``Nasoendoscopic,
+Videofluoroscopic and Acoustic Study of Plain and Emphatic Coronals in
+Jordanian Arabic.''} \emph{Instrumental Studies in Arabic Phonetics}
+319: 165191.
+
+\bibitem[\citeproctext]{ref-al-tamimi2017}
+Al-Tamimi, Jalal. 2017. {``Revisiting Acoustic Correlates of
+Pharyngealization in Jordanian and Moroccan Arabic: Implications for
+Formal Representations.''} \emph{Laboratory Phonology: Journal of the
+Association for Laboratory Phonology} 8 (1): 28.
+\url{https://doi.org/10.5334/labphon.19}.
+
+\bibitem[\citeproctext]{ref-bin-muqbil2006}
+Bin-Muqbil, Musaed S. 2006. \emph{Phonetic and Phonological Aspects of
+Arabic Emphatics and Gutturals}. The University of Wisconsin-Madison.
+
 \bibitem[\citeproctext]{ref-chen2011}
 Chen, Yu, and Hua Lin. 2011. {``Analysing Tongue Shape and Movement in
 Vowel Production Using SS-ANOVA in Ultrasound Imaging.''} In, 1721.
@@ -1315,6 +1443,16 @@ Using Smoothing Spline Analysis of Variance.''} \emph{The Journal of the
 Acoustical Society of America} 120 (1): 407415.
 \url{https://doi.org/10.1121/1.2205133}.
 
+\bibitem[\citeproctext]{ref-elhija2012}
+Elhij'a, Dua'a Abu. 2012. {``Facebook Written Levantine Vernacular
+Languages.''} \emph{Levantine Review} 1 (1): 68105.
+\url{https://doaj.org/article/6698290a36c244f783a59ba49617e821}.
+
+\bibitem[\citeproctext]{ref-el-khaissi2015}
+El-Khaissi, Charbel. 2015. {``The Romanisation of Arabic: A Comparative
+Analysis of Romanised Spoken Arabic and Romanised Modern Standard
+Arabic.''} PhD thesis.
+
 \bibitem[\citeproctext]{ref-epstein2005}
 Epstein, Melissa A., and Maureen Stone. 2005. {``The Tongue Stops Here:
 Ultrasound Imaging of the Palate.''} \emph{The Journal of the Acoustical
@@ -1325,6 +1463,10 @@ Society of America} 118 (4): 21282131.
 Faber, Alice, and Marianna Di Paolo. 1995. {``The Discriminability of
 Nearly Merged Sounds.''} \emph{Language Variation and Change} 7 (1):
 35--78. \url{https://doi.org/10.1017/S0954394500000892}.
+
+\bibitem[\citeproctext]{ref-ghazeli1977}
+Ghazeli, Salem. 1977. {``Back Consonants and Backing Coarticulation in
+Arabic.''} PhD thesis.
 
 \bibitem[\citeproctext]{ref-gubian2024}
 Gubian, Michele. 2024. \emph{Workshop on Functional PCA for Phonetics
@@ -1362,6 +1504,18 @@ System.''} \emph{The Journal of the Acoustical Society of America} 106
 Kassambara, Alboukadel. 2017. \emph{Practical Guide to Principal
 Component Methods in r}. STHDA.
 
+\bibitem[\citeproctext]{ref-khattab2006}
+Khattab, Ghada, Feda Al-Tamimi, and Barry Heselwood. 2006. {``Acoustic
+and Auditory Differences in the /t/-/ṭ/ Opposition in Male and Female
+Speakers of Jordanian Arabic.''} In, edited by Sami Boudelaa,
+XVI:131--60. The Netherlands: John Benjamins Publishing Company.
+
+\bibitem[\citeproctext]{ref-lian2022}
+Lian, Chaoqun,. 2022. \emph{Language, Ideology and Sociopolitical Change
+in the Arabic-Speaking World : A Study of the Discourse of Arabic
+Language Academies / Chaoqun Lian.} Edinburgh: Edinburgh University
+Press,. \url{https://doi.org/10.1515/9781474449960}.
+
 \bibitem[\citeproctext]{ref-ltd2011}
 Ltd, Articulate Instruments. 2011. {``Articulate Assistant Advanced User
 Guide. {Version} 2.16.''}
@@ -1372,20 +1526,43 @@ Lulich, Steven M., Kelly H. Berkson, and Kenneth de Jong. 2018.
 Motion.''} \emph{Journal of Phonetics} 71: 410424.
 \url{https://doi.org/10.1016/j.wocn.2018.10.001}.
 
+\bibitem[\citeproctext]{ref-nasr1959}
+Nasr, Raja T. 1959. {``Velarization in Lebanese Arabic.''}
+\emph{Phonetica} 3 (4): 203--9. \url{https://doi.org/10.1159/000257920}.
+
+\bibitem[\citeproctext]{ref-obrecht1968}
+Obrecht, Dean H. 1968. \emph{Effects of the second formant on the
+perception of velarization consonants in Arabic}. Reprint 2017. Janua
+linguarum ; 39, Ser. practica. Berlin ;Boston: De Gruyter Mouton.
+
 \bibitem[\citeproctext]{ref-pedersen2019}
 Pedersen, Eric J., David L. Miller, Gavin L. Simpson, and Noam Ross.
 2019. {``Hierarchical Generalized Additive Models in Ecology: An
 Introduction with Mgcv.''} \emph{PeerJ} 7: e6876.
 \url{https://doi.org/10.7717/peerj.6876}.
 
+\bibitem[\citeproctext]{ref-sakr2019}
+Sakr, Georges. 2019. {``A Laboratory Phonology Investigation Into The
+Vocalic Inventory of Lebanese.''} Master's thesis, United Kingdom.
+
+\bibitem[\citeproctext]{ref-sakr2023}
+---------. 2023. {``On the Acoustics of Emphasis in Central Mount
+Lebanon Lebanese.''} \emph{Journal of Semitic Studies}.
+\url{https://doi.org/10.1093/jss/fgad024}.
+
 \bibitem[\citeproctext]{ref-sakr2025}
-Sakr, Georges. 2025. {``The Phonetics of Emphasis in Central Mount
-Lebanon Lebanese: Acoustics, Perception, Articulation.''} PhD thesis.
+---------. 2025. {``The Phonetics of Emphasis in Central Mount Lebanon
+Lebanese: Acoustics, Perception, Articulation.''} PhD thesis.
 
 \bibitem[\citeproctext]{ref-scobbie2011}
 Scobbie, James M., Eleanor Lawson, Steve Cowen, Joanne Cleland, and Alan
 A. Wrench. 2011. {``A Common Co-Ordinate System for Mid-Sagittal
 Articulatory Measurement.''} In, 14.
+
+\bibitem[\citeproctext]{ref-shaaban1999}
+Shaaban, Kassim, and Ghazi Ghaith. 1999. {``Lebanon's
+language-in-education policies: From bilingualism to trilingualism.''}
+\emph{Language Problems and Language Planning} 23 (1): 116.
 
 \bibitem[\citeproctext]{ref-soskuthy2021}
 Sóskuthy, Márton. 2021a. {``Evaluating Generalised Additive Mixed
@@ -1415,6 +1592,14 @@ Vowels: Evidence From Lax Vowels in Northern Anglo-English.''}
 \emph{Language and Speech}, March, 00238309251320581.
 \url{https://doi.org/10.1177/00238309251320581}.
 
+\bibitem[\citeproctext]{ref-sullivan2017}
+Sullivan, Natalie. 2017. {``Writing Arabizi: Orthographic Variation in
+Romanized Lebanese Arabic on Twitter.''} PhD thesis.
+
+\bibitem[\citeproctext]{ref-watson2002}
+Watson, Janet C. E. 2002. \emph{The phonology and morphology of Arabic}.
+Phonology of the world's languages. Oxford: Oxford University Press.
+
 \bibitem[\citeproctext]{ref-wieling2018}
 Wieling, Martijn. 2018. {``Analyzing Dynamic Phonetic Data Using
 Generalized Additive Mixed Modeling: A Tutorial Focusing on Articulatory
@@ -1435,6 +1620,16 @@ Wrench, Alan, and Jonathan Balch-Tomes. 2022. {``Beyond the Edge:
 Markerless Pose Estimation of Speech Articulators from Ultrasound and
 Camera Images Using DeepLabCut.''} \emph{Sensors} 22 (3): 1133.
 \url{https://doi.org/10.3390/s22031133}.
+
+\bibitem[\citeproctext]{ref-zawaydeh1999}
+Zawaydeh, Bushra Adnan. 1999. {``The phonetics and phonology of
+gutturals in Arabic.''} PhD thesis.
+
+\bibitem[\citeproctext]{ref-zeroual2011}
+Zeroual, Chakir, John H Esling, and Philip Hoole. 2011. {``EMA,
+Endoscopic, Ultrasound and Acoustic Study of Two Secondary Articulations
+in Moroccan Arabic.''} \emph{Instrumental Studies in Arabic Phonetics}
+319: 277.
 
 \end{CSLReferences}
 
