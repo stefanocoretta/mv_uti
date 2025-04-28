@@ -1,5 +1,5 @@
 ---
-title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.7"
+title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.8"
 authors:
   - name: Stefano Coretta
     affiliation: University of Edinburgh
@@ -35,11 +35,11 @@ This is a "living" draft, meaning it is work in progress. While the code is full
 
 Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows researchers to image the shape of the tongue during speech at medium temporal resolution [30-100 frames per second, @epstein2005; @stone2005]. Typically, the midsagittal contour of the tongue is imaged, although 3D systems exist [@lulich2018]. Recent developments in machine learning assisted image processing has enabled faster tracking of estimated points on the tongue contour [@wrench2022].
 
-@wrench2022 have trained a DeepLabCut (DLC) model to estimate and track specific flesh points on the tongue contour and anatomical landmarks as captured by UTI. The model estimates 11 "knots" from the vallecula to the tongue tip, plus three muscular-skeletal knots (the hyoid bone, the mandible base and the mental spine where the short tendon attaches); see @fig-knots for a schematic illustration of the position of the tracked knots. An advantage of DLC-tracked data over the traditional fan-line coordinate system is that (in theory) specific (moving) flesh points are tracked rather than simply the intersection of the tongue contour with fixed radii from the fan-line system. This makes DLC-tracked data resemble data obtained with electromagnetic articulography (EMA). The downside is that the tongue contour is represented by 11 freely moving points, which can move in any direction in the midsagittal two-dimensional space captured by UTI.
+@wrench2022 have trained a DeepLabCut [DLC, @mathis2018] model to estimate and track specific flesh points on the tongue contour and anatomical landmarks as captured by UTI. The model estimates 11 "knots" from the vallecula to the tongue tip, plus three muscular-skeletal knots (the hyoid bone, the mandible base and the mental spine where the short tendon attaches). See @fig-knots for a schematic illustration of the position of the tracked knots. An advantage of DLC-tracked data over the traditional fan-line coordinate system is that (in theory) specific (moving) flesh points are tracked rather than simply the intersection of the tongue contour with fixed radii from the fan-line system. This makes DLC-tracked data resemble data obtained with electromagnetic articulography (EMA). The downside is that the tongue contour is represented by 11 freely moving points, which can move in any direction in the midsagittal two-dimensional space captured by UTI.
 
 ![Schematic representation of the knots tracked by DeepLabCut. CC-BY Wrench and Balch-Tomes [@wrench2024].](img/sensors-22-01133-g002.jpg){#fig-knots fig-align="center"}
 
-Classical ways to analyse tongue contour data obtained from a fan-line system, like SS-ANOVA [@davidson2006; @chen2011] and Generalised Additive Models using polar coordinates [@coretta2018c; @coretta2019g], are not appropriate with DLC-tracked data, due to the tongue contour "curling" onto itself along the root. This is illustrated in @fig-curl: the plot shows the DLC-tracked points (in black) of the data from a Polish speaker and the traced tongue contours based on the points (see @sec-gam-vc-coart for details on the data). The contours clearly curl onto themselves along the root (on the left of the contour). The red smooths represent a LOESS smooth, calculated for Y along X. This approach clearly miscalculates the smooth for the back half of the tongue, simply because there are two Y values for the same X value, and the procedure, in that case, returns something like an average of the two values. Generalised Additive Models (introduced in the following section) work on the same principle and hence would produce the same type of error. Using polar coordinates would not solve the problem: while a fan-line system lends itself easily to using polar coordinates (since the origin of the probe can be used to approximate the origin of the coordinate system), this cannot be done with DLC data because there is, in reality, no single origin in the actual tongue anatomy from which vectors of displacement radiate, that would work for all tracked points.
+Classical ways to analyse tongue contour data obtained from a fan-line system, like SS-ANOVA [@davidson2006; @chen2011] and Generalised Additive Models using polar coordinates [@coretta2018c; @coretta2019g], are not appropriate with DLC-tracked data, due to the tongue contour "curling" onto itself along the root. This is illustrated in @fig-curl: the plot shows the DLC-tracked points (in black) of the data from a Polish speaker and the traced tongue contours based on the points (see @sec-gam-vc-coart for details on the data). The contours clearly curl onto themselves along the root (on the left of the contour). The red smooths represent a LOESS smooth, calculated for Y along X. This approach clearly miscalculates the smooth for the back half of the tongue, simply because there are two Y values for the same X value, and the procedure, in that case, returns something like an average of the two values. Generalised Additive Models (introduced in the following section) work on the same principle and hence would produce the same type of error. Using polar coordinates would not solve the problem: while a fan-line system lends itself easily to using polar coordinates (since the origin of the probe can be used to approximate the origin of the coordinate system), this cannot be done with DLC data because there is no single origin in the actual tongue anatomy from which vectors of displacement radiate, that would work for all tracked points.
 
 ```{r}
 #| label: fig-curl
@@ -198,7 +198,7 @@ if (file.exists(fi)) {
 }
 ```
 
-The model summary is not particular insightful. What we are normally interested in is the reconstructed tongue contours and in which locations they are similar of different across conditions. To the best of our knowledge, there isn't a straightforward way to compute sensible measures of comparison, given the multidimensional nature of the model (i.e., only one or the other outcome can be inspected at a time; moreover, difference smooths, like in @soskuthy2017a and @wieling2018, represent the difference of the *sum* of the outcome variables, rather than each outcome separately, Michele Gubian pers. comm.) We thus recommend to plot the predicted tongue contours and base any further inference on impressionistic observations on such predicted contours. Alas, there is also no straightforward way to plot predicted tongue contours, but to extract the predictions following a step-by-step procedure, like the one illustrated in the following paragraphs.
+The model summary is not particular insightful. What we are normally interested in is the reconstructed tongue contours and in which locations they are similar or different across conditions. To the best of our knowledge, there isn't a straightforward way to compute sensible measures of comparison, given the multidimensional nature of the model (i.e., only one or the other outcome can be inspected at a time; moreover, difference smooths, like in @soskuthy2017a and @wieling2018, represent the difference of the *sum* of the outcome variables, rather than each outcome separately, Michele Gubian pers. comm.) We thus recommend to plot the predicted tongue contours and base any further inference on impressionistic observations on such predicted contours. Alas, there is also no straightforward way to plot predicted tongue contours, but to extract the predictions following a step-by-step procedure, like the one illustrated in the following paragraphs.
 
 First off, one has to create a grid of predictor values to obtain predictions for. We do this with `expand_grid()` in the following code chunk. We start with unique values of `speaker`, `vow_place` and `knot` (rather than just using integers for the knots, we predict along increments of 0.1 from 0 to 10 for a more refined tongue contour). We then create the required column `vow_place_lang` by appending the language name based on the speaker ID. Note that all variables included as predictors in the model must be included in the prediction grid.
 
@@ -314,17 +314,15 @@ voff_gam_p |>
   theme(legend.position = "bottom")
 ```
 
+@fig-voff-ci strongly suggests greater VC coarticulation on the C closure in coronal that in velar contexts. Moreover, the vowels /a, o/ have a similar coarticulatory effect on the tongue contour. With velar consonants, we observe less coarticulation from the preceding vowel (an possible explanation of this is given at the end of @sec-fpca-vc.
+
 ## Emphaticness {#sec-gam-emphaticness}
 
-The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from @sakr2025.
+The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from @sakr2025. Lebanese Arabic is a variety of Arabic primarily spoken in Lebanon, where it is in constant contact with a number of Indo-European languages [primarily English and French, as vectors of education and business, see eg. @shaaban1999], as well as the written standard form of Arabic known as Modern Standard Arabic (MSA). The relationship between Lebanese Arabic (LA) and MSA in Lebanon is one of diglossia [see eg. @lian2022], where LA is spoken in most contexts, but not written, and MSA is the written variety, and therefore also primarily used for legal and official purposes.
 
-Lebanese Arabic is a variety of Arabic primarily spoken in Lebanon, where it is in constant contact with a number of Indo-European languages [primarily English and French, as vectors of education and business, see eg. @shaaban1999], as well as the written standard form of Arabic known as Modern Standard Arabic (MSA). The relationship between Lebanese Arabic (LA) and MSA in Lebanon is one of diglossia [see eg. @lian2022], where LA is spoken in most contexts, but not written, and MSA is the written variety, and therefore also primarily used for legal and official purposes.
+Emphasis is a phonologically contrastive feature of Semitic languages. In most varieties of Arabic, it is usually reported to be realised as pharyngealisation [@sakr2023; @al-tamimi2017; @zeroual2011; @watson2002] with some variation depending on phonological context [@sakr2025; @al-tamimi2011] or on sociolinguistic factors [@khattab2006]. Older sources instead report the secondary place of articulation as being the velum [see eg. @obrecht1968; @nasr1959] or the uvula [see eg. @bin-muqbil2006; @zawaydeh1999; @ghazeli1977]. Whatever the specifics of this secondary place of articulation, the literature additionally suggests the occurrence of a loss of emphasis in Lebanese, or more generally Levantine or Western dialects of Arabic, likely as a result of the contact with the Indo-European languages mentioned above [see among others @sullivan2017; @el-khaissi2015; @elhija2012; @alorifi2008].
 
-Emphasis is a phonologically contrastive feature of Semitic languages. In most varieties of Arabic, it is usually reported to be realised as pharyngealisation [@sakr2023; @al-tamimi2017; @zeroual2011; @watson2002] with some variation depending on phonological context [@sakr2025; @al-tamimi2011] or on sociolinguistic factors [@khattab2006]. Older sources instead report the secondary place of articulation as being the velum [see eg. @obrecht1968; @nasr1959] or the uvula [see eg. @bin-muqbil2006; @zawaydeh1999; @ghazeli1977]. Whatever the specifics of this secondary place of articulation, the literature [see among others @sullivan2017; @el-khaissi2015; @elhija2012; @alorifi2008] additionally suggests the occurrence of a loss of emphasis in Lebanese, or more generally Levantine or Western dialects of Arabic, likely as a result of the contact with the Indo-European languages mentioned above.
-
-It is against this background, and as part of efforts to document the precise place of secondary articulation of emphasis in Lebanese Arabic, as well as to document whether or not emphasis has, indeed, been lost in the variety, that the data used here [from @sakr2025] was collected. It consists of UTI recordings, by 5 participants, of CVb stimuli. The onset was either an emphatic or an unemphatic ('plain'), voiced or voiceless, alveolar, plosive or fricative /t, ṭ, d, ḍ, s, ṣ, z, ẓ/; when talking about a plain/emphatic pair, we denote them /T, D, S, Z/. The nucleus was one of five vowel qualities [see @sakr2019] present in Lebanese, which we will denote with /A, E, I, O, U/ to signal that these are neither to be taken as phonemes or exact phonetic realisations. The coda was the voiced bilabial plosive /b/.
-
-Each recording consisted of four stimuli in randomized order, covering forty syllables, in five repetitions; for a total of 1000 recordings. The subset of the data used here is from 35ms before consonant offset, defined as the burst for the plosives and as the end of the frication noise for the fricatives.
+It is against this background, and as part of efforts to document the precise place of secondary articulation of emphasis in Lebanese Arabic, as well as to document whether or not emphasis has, indeed, been lost in the variety, that the data used here [from @sakr2025] was collected. It consists of UTI recordings, by 5 participants, of CVb stimuli. The onset was either an emphatic or an unemphatic ('plain'), voiced or voiceless, alveolar, plosive or fricative /t, ṭ, d, ḍ, s, ṣ, z, ẓ/; when talking about a plain/emphatic pair, we denote them /T, D, S, Z/. The nucleus was one of five vowel qualities [see @sakr2019] present in Lebanese, which we will denote with /A, E, I, O, U/ to signal that these are neither to be taken as phonemes or exact phonetic realisations. The coda was the voiced bilabial plosive /b/. Each recording consisted of four stimuli in randomized order, covering forty syllables, in five repetitions; for a total of 1000 recordings. The subset of the data used here is from 35ms before consonant offset, defined as the burst for the plosives and as the end of the frication noise for the fricatives.
 
 ```{r}
 #| label: dlc-emph
@@ -332,7 +330,7 @@ Each recording consisted of four stimuli in randomized order, covering forty syl
 dlc_emph_f <- readRDS("data/sakr2025/dlc_emph_f.rds")
 ```
 
-Since the procedure to fit and plot MGAMs is the same as the one presented in @sec-gam-vc-coart, we won't be showing the code in this section, but readers can find the code in the Article Notebook, at <https://stefanocoretta.github.io/mv_uti/index-preview.html>.
+Since the procedure to fit and plot MGAMs is the same as the one presented in @sec-gam-vc-coart, we won't be showing the code in this section, but readers can find the code in the [Article Notebook](index.qmd).
 
 ```{r}
 #| label: emph-gam
@@ -445,7 +443,7 @@ emph_gam_p_2 <- bind_cols(frame_emph, emph_gam_p_2) |>
   separate(vow_emph, c("vowel", "emph"))
 ```
 
-In @fig-emph-part, predictions have been calculated for individual speakers (see Article Notebook online, linked above, for the code). First, there is a good deal of individual variation: some speakers show a clear differentiation of the tongue shape in emphatic and plain consonants, while in other speakers the difference is less obvious. FAK produced emphatic and plain consonants with virtually the same tongue shape. Just to pick another example, BAR velarised rather than pharyngealised the emphatic consonants followed by /I/, while BAY pharyngealised them. Plotting predictions of individual speakers can reveal idiosyncratic patterns which are not visible when plotting overall predictions.
+In @fig-emph-part, predictions have been calculated for individual speakers (see Article Notebook online, linked above, for the code). First, there is a good deal of individual variation: some speakers show a clear differentiation of the tongue shape in emphatic and plain consonants, while in other speakers the difference is less obvious. FAK produced emphatic and plain consonants with virtually the same tongue shape. Just to pick another example, BAR uvularised/velarised rather than pharyngealised the emphatic consonants followed by /I/, while BAY pharyngealised them. Plotting predictions of individual speakers can reveal idiosyncratic patterns which are not visible when plotting overall predictions.
 
 ```{r}
 #| label: fig-emph-part
@@ -465,13 +463,14 @@ Principal Component Analysis (PCA) is a dimensionality reduction technique. For 
 
 MFPCA is an FPCA applied to two or more varying variables. Note that the variable does not have to be *time*-varying. The variation can be on any linear variable: in the case of DLC-tracked UTI data, the variation happens along the knot number. Look back at @fig-tongue-xy: the two varying variables are the X and Y coordinates, which are varying along the DLC knots. As with MGAMs, it is these two varying trajectories that are submitted to MFPCA.
 
-## VC coarticulation
+## VC coarticulation {#sec-fpca-vc}
 
 We will apply Multivariate Functional Principal Component Analysis (MFPCA) to the data introduced in @sec-gam-vc-coart. The following code has been adapted from @gubian2024. The packages below are needed to run MFPCA (except landmarkregUtils, they are available on CRAN).
 
 ```{r}
 #| label: attach-fda
 #| message: false
+#| echo: true
 
 library(fda)
 library(funData)
@@ -481,10 +480,11 @@ library(MFPCA)
 library(landmarkregUtils)
 ```
 
-The format required to work through MFPCA is a "long" format with one column containing the coordinate labels (*x* or *y* coordinate) and another with the coordinate values. We can easily pivot the data with `pivot_longer()`. Note that we are using the *z*-scored coordinate values (`X_z` and `Y_z`). If you are not unsure about what the code in this section, it is always useful to inspect intermediate and final output.
+The format required to work through MFPCA is a "long" format with one column containing the coordinate labels (*x* or *y* coordinate) and another with the coordinate values. We can easily pivot the data with `pivot_longer()`. Note that we are using the *z*-scored coordinate values (`X_z` and `Y_z`). If you are not unsure about what the code in this section, it is always useful to inspect intermediate and final output in the pipe chains to familiarise yourself with the format of the input and resulting data.
 
 ```{r}
 #| label: dlc-voff-long
+#| echo: true
 
 dlc_voff_long <- dlc_voff_f |> 
   # Select relevant columns
@@ -497,6 +497,7 @@ In the second step, we create a `multiFunData` object: this is a special type of
 
 ```{r}
 #| label: voff-curves
+#| echo: true
 
 curves_fun_2d <- lapply(
   c("X_z", "Y_z"),
@@ -520,6 +521,7 @@ Once we have our `multiFunData` object, we can use the `MFPCA()` function to com
 
 ```{r}
 #| label: voff-mfpca
+#| echo: true
 
 # Number of PC to compute
 n_pc <- 2
@@ -532,10 +534,11 @@ mfpca <- MFPCA(
 )
 ```
 
-We can quickly calculate the proportion of explained variance of each PC with the following code. PC1 and PC2 together explain almost 100% of the variance in our data. The higher the variance explained, the better the variance patterns in the data are captured.
+We can quickly calculate the proportion of explained variance of each PC with the following code. Since we have calculated only two PCs, PC1 and PC2 together explain 100% of the variance in our data. For each PC that is calculated, the higher the variance explained, the better the variance patterns in the data are captured.
 
 ```{r}
 #| label: prop-var
+#| echo: true
 
 # Proportion of explained variance
 mfpca$values  / sum(mfpca$values)
@@ -545,6 +548,7 @@ The best way to assess the effect of the PC scores on the shape of the tongue co
 
 ```{r}
 #| label: pc-curves
+#| echo: true
 
 # Get the PC score SD
 sd_fun <- sqrt(mfpca$values)
@@ -604,6 +608,7 @@ In order to plot tongue contours in the X/Y coordinate system, we simply need to
 
 ```{r}
 #| label: pc-curves-wide
+#| echo: true
 
 pc_curves_wide <- pc_curves |> 
   pivot_wider(names_from = dim)
@@ -633,6 +638,7 @@ Given the patterns in @fig-contours, we can expect to see differences in PC2 sco
 
 ```{r}
 #| label: pc-scores
+#| echo: true
 
 pc_scores <- mfpca$scores |>
   `colnames<-`(paste0("PC", 1:n_pc)) |>
@@ -655,11 +661,11 @@ pc_scores |>
   scale_color_brewer(palette = "Dark2")
 ```
 
-Once one has established which patterns each PC is capturing, PC scores can be submitted to further statistical modelling, like for example regression models where the PC scores are outcome variables and several predictors are include to assess possible differences in PC scores.
+Once one has established which patterns each PC is capturing, PC scores can be submitted to further statistical modelling, like for example regression models where the PC scores are outcome variables and several predictors are included to assess possible differences in PC scores.
 
 ## Emphaticness
 
-In this section we will run an MFPCA analysis on the Lebanese Arabic data. Since the procedure is the same as in the previous section, the code will not be shown here, but can be viewed in the Article Notebook, at <https://stefanocoretta.github.io/mv_uti/index-preview.html>.
+In this section we will run an MFPCA analysis on the Lebanese Arabic data. Since the procedure is the same as in the previous section, the code will not be shown here, but can be viewed in the [Article Notebook](index.qmd).
 
 ```{r}
 #| label: dlc-emph-long
@@ -783,7 +789,7 @@ pc_curves_wide <- pc_curves |>
   pivot_wider(names_from = dim)
 ```
 
-@fig-emph-curves-wide illustrates the reconstructed tongue contours (taken from 35 ms before the CV boundary) in Lebanese Arabic, based on the MFPCA. PC1 captures the low-back/high-front diagonal movement. PC2, on the other hand, seems to be restricted to high/low movement at the back of the oral cavity. Emphatic consonants, if produced with a constricted pharynx (i.e. pharyngealised), should have a lower PC1. If on the other hand they are produced with a raised tongue dorsum (i.e. velarised), they should have a lower PC2 (lower PC scores are in purple in @fig-emph-curves-wide).
+@fig-emph-curves-wide illustrates the reconstructed tongue contours (taken from 35 ms before the CV boundary) in Lebanese Arabic, based on the MFPCA. PC1 captures the low-back/high-front diagonal movement. PC2, on the other hand, seems to be restricted to high/low movement at the back of the oral cavity. Emphatic consonants, if produced with a constricted pharynx (i.e. pharyngealised), should have a lower PC1. If on the other hand they are produced with a raised tongue dorsum (i.e. uvularised/velarised), they should have a lower PC2 (lower PC scores are in purple in @fig-emph-curves-wide).
 
 ```{r}
 #| label: fig-emph-curves-wide
@@ -813,7 +819,7 @@ pc_scores <- mfpca$scores |>
   bind_cols(dlc_emph_long |> distinct(frame_id, emph, vowel, participant))
 ```
 
-@fig-emph-speakers plots the PC scores for each vowel, emphaticness and speaker combination. Points are coloured based on emphaticness: emphatic in green and plain in orange. This figure illustrates well how the PC scores can capture individual variation: some speakers show clear separation of emphatic and plain tokens, while others do not. In most cases, PC1 is doing the heavy lifting of distinguishing emphatic and plain: recall that PC1 captures the front-high/back-low diagonal; a low PC1 indicates tongue dorsum and root backing, in other words pharyngealisation. Indeed, PC1 tends to be lower in emphatic tokens in several speakers, like Bar, Bay, Mro and Sak, especially with the vowels /A, O, U/. On the other hand, Bar's emphatic and plain tokens for vowels /E, I/ do not show a PC1 difference, but rather a PC2 difference: PC2 captures tongue dorsum/body raising, hence indicating velarisation. It is possible that in Bar's productions of emphatic consonants followed by /E, I/ the distinction with plain is produced by velarisation, compared to the pharyngealisation of emphatic consonants followed by /A, O, U/. Velarisation, rather than pharyngealisation, in the /E, I/ contexts makes sense given that the tongue root has to be front in the production of those vowels.
+@fig-emph-speakers plots the PC scores for each vowel, emphaticness and speaker combination. Points are coloured based on emphaticness: emphatic in green and plain in orange. This figure illustrates well how the PC scores can capture individual variation: some speakers show clear separation of emphatic and plain tokens, while others do not. In most cases, PC1 is doing the heavy lifting of distinguishing emphatic and plain: recall that PC1 captures the front-high/back-low diagonal; a low PC1 indicates tongue dorsum and root backing, in other words pharyngealisation. Indeed, PC1 tends to be lower in emphatic tokens in several speakers, like Bar, Bay, Mro and Sak, especially with the vowels /A, O, U/. On the other hand, Bar's emphatic and plain tokens for vowels /E, I/ do not show a PC1 difference, but rather a PC2 difference: PC2 captures tongue dorsum/body raising, hence indicating velarisation. It is possible that in Bar's productions of emphatic consonants followed by /E, I/ the distinction with plain is produced by uvularisation/velarisation, compared to the pharyngealisation of emphatic consonants followed by /A, O, U/. Uvularisation/velarisation, rather than pharyngealisation, in the /E, I/ contexts makes sense given that the tongue root has to be front in the production of those vowels (see @sakr2025, Section 6.4 for more details).
 
 ```{r}
 #| label: fig-emph-speakers
@@ -918,13 +924,13 @@ pc_curves_2 |>
 
 Both Multivariate GAMs and FPCA are a useful way to model DLC-tracked ultrasound tongue imaging data. However, each possesses advantages and disadvantages.
 
-Multivariate GAMs can model tongue contours in specific contexts and combinations thereof, like different vowels, consonant, prosodic contexts and so on. The rather complex model structure required to fit multivariate GAMs to tongue data comes at a computational cost and interpretative cost. Computationally, multivariate GAMs can take hours to estimate even the most simple models. Interpretationally, comparing different tongue contours quantitatively based on the output of a multivariate GAM is non-trivial, given that the tongue contour is in fact a curve reconstructed from the smooths of the X and Y coordinates along knot (in other words, the model does not model tongue contours directly). Moreover, there is no straightforward way to use traditional methods to assess (frequentist) statistical significance. From a practical point of view, a multivariate GAM ends up being a mathematically complex way of obtaining a sort of average tongue contour.
+Multivariate GAMs can model tongue contours in specific contexts and combinations thereof, like different vowels, consonant, prosodic contexts and so on. The rather complex model structure required to fit multivariate GAMs to tongue data comes at a computational cost and an interpretative cost. Computationally, multivariate GAMs can take hours to estimate even the most simple models. Interpretationally, comparing different tongue contours quantitatively based on the output of a multivariate GAM is non-trivial, given that the tongue contour is in fact a curve reconstructed from the smooths of the X and Y coordinates along knot (in other words, the model does not model tongue contours directly). Moreover, there is no straightforward way to use traditional methods to assess (frequentist) statistical significance. From a practical point of view, a multivariate GAM ends up being a mathematically complex way of obtaining a sort of average tongue contour.
 
-Multivariate FPCA, on the other hand, are computationally efficient. Even with very large data sets, the computation of Principal Components is relatively quick. Moreover, the obtained PCs can be interpreted straightforwardly by plotting the effect of changing the PC score on the reconstructed tongue contour (as we did for example in @fig-contours). One possible disadvantage of multivariate FPCA is that it is usually not known what type of variation each obtained PC captures. This is illustrated in the two case studies in @sec-fpca. In the VC coarticulation data, PC1 corresponded to the coronal/velar difference in consonants, while PC2 to the difference in vowel. In the emphaticness data, PC1 captured the low-back/high-front diagonal movement, while PC2 to the high/low movement at the back of the oral cavity. In other words: until one has run the MFPCA, one cannot know which PC will correspond to which axis of differences, and whether the PCs will capture relevant differences at all. It can happen that the variation one is after, is so minimal relative to other, more substantial cases of variation, that it will not be captured by the MFPCA at all. It is possible that qualitatively homogeneous data sets might return PCs that have the same or very similar interpretations, but this has not been systematically tested [perhaps with the exception of simple PCA run on vowel formant data, which suggests that the first two PCs capture the two diagonals, @faber1995; @hoole1999; @strycharczuk2021; @strycharczuk2025 which make sense in light of the tongue position and shape model expounded by @honda1996].
+Multivariate FPCA, on the other hand, are computationally efficient. Even with very large data sets, the computation of Principal Components is relatively quick. Moreover, the obtained PCs can be interpreted straightforwardly by plotting the effect of changing the PC score on the reconstructed tongue contour (as we did for example in @fig-contours). One possible disadvantage of multivariate FPCA is that it is usually not known what type of variation each obtained PC captures. This is illustrated in the two case studies in @sec-fpca. In the VC coarticulation data, PC1 corresponded to the coronal/velar difference in consonants, while PC2 to the difference in vowel. In the emphaticness data, PC1 captured the low-back/high-front diagonal movement, while PC2 to the high/low movement at the back of the oral cavity. In other words: until one has run the MFPCA, one cannot know which PC will correspond to which axis of differences, and whether the PCs will capture relevant differences at all. It can happen that the variation one is after is so minimal relative to other, more substantial cases of variation, that it will not be captured by the MFPCA at all. It is possible that qualitatively homogeneous data sets might return PCs that have the same or very similar interpretations, but this has not been systematically tested, perhaps with the exception of simple PCA run on vowel formant data, which suggests that the first two PCs capture the two diagonals [@faber1995; @hoole1999; @strycharczuk2021; @strycharczuk2025], which make sense in light of the tongue position and shape model expounded by @honda1996.
 
 Another advantage of MFPCA is that, provided that the PCs have captured relevant characteristics, the PCs can be submitted to further modelling using regression with the inclusion of relevant predictors (like different categorical variables of interest). We have not done so in this tutorial to keep the scope and length of the tutorial manageable, but both case studies presented in @sec-fpca are amenable to such follow-up analysis.
 
-Based on the advantages and disadvantages of each of multivariate GAMs and FPCA, we suggest for researchers to use MFPCA as the preferred and default approach to analyse DLC-tracked tongue contour data and to resort to multivariate GAMs if MFPCA fails to capture relevant variation.
+Based on the advantages and disadvantages of each of multivariate GAMs and FPCA, we suggest to researchers to use MFPCA as the preferred and default approach to analyse DLC-tracked tongue contour data and to resort to multivariate GAMs if MFPCA fails to capture relevant variation.
 
 # Conclusions
 

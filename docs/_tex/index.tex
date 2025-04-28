@@ -229,7 +229,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.7},
+  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.8},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -239,7 +239,7 @@
 
 
 \title{Multivariate analyses of tongue contours from ultrasound tongue
-imaging. Draft v0.7}
+imaging. Draft v0.8}
 \author{Stefano
 Coretta$\textsuperscript{1}$~\orcidlink{0000-0001-9627-5532}, Georges
 Sakr$\textsuperscript{1}$~\orcidlink{0000-0003-3813-2669}}
@@ -254,7 +254,7 @@ Coretta. Email: \href{mailto:s.coretta@ed.ac.uk}{\nolinkurl{s.coretta@ed.ac.uk}}
 
 \section{Introduction}\label{introduction}
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, bottomrule=.15mm, colbacktitle=quarto-callout-warning-color!10!white, colframe=quarto-callout-warning-color-frame, breakable, toptitle=1mm, opacityback=0, rightrule=.15mm, left=2mm, colback=white, coltitle=black, titlerule=0mm, leftrule=.75mm, opacitybacktitle=0.6, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, arc=.35mm, toprule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, coltitle=black, breakable, opacityback=0, toprule=.15mm, colbacktitle=quarto-callout-warning-color!10!white, rightrule=.15mm, leftrule=.75mm, bottomrule=.15mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, titlerule=0mm, toptitle=1mm, colframe=quarto-callout-warning-color-frame, colback=white, opacitybacktitle=0.6, arc=.35mm, left=2mm, bottomtitle=1mm]
 
 This is a ``living'' draft, meaning it is work in progress. While the
 code is fully functional and usable, we will be updating the textual
@@ -275,21 +275,21 @@ developments in machine learning assisted image processing has enabled
 faster tracking of estimated points on the tongue contour (Wrench and
 Balch-Tomes 2022).
 
-Wrench and Balch-Tomes (2022) have trained a DeepLabCut (DLC) model to
-estimate and track specific flesh points on the tongue contour and
-anatomical landmarks as captured by UTI. The model estimates 11
-``knots'' from the vallecula to the tongue tip, plus three
-muscular-skeletal knots, the hyoid bone, the mandible base and the
-mental spine where the short tendon attaches (see Figure~\ref{fig-knots}
-for a schematic illustration of the position of the tracked knots). An
-advantage of DLC-tracked data over the traditional fan-line coordinate
-system is that (in theory) specific (moving) flesh points are tracked
-rather than simply the intersection of the tongue contour with fixed
-radii from the fan-line system. This makes DLC-tracked data resemble
-data obtained with electromagnetic articulography (EMA). The downside is
-that the tongue contour is represented by 11 freely moving points, which
-can move in any direction in the midsagittal two-dimensional space
-captured by UTI.
+Wrench and Balch-Tomes (2022) have trained a DeepLabCut (DLC, Mathis et
+al. 2018) model to estimate and track specific flesh points on the
+tongue contour and anatomical landmarks as captured by UTI. The model
+estimates 11 ``knots'' from the vallecula to the tongue tip, plus three
+muscular-skeletal knots (the hyoid bone, the mandible base and the
+mental spine where the short tendon attaches). See
+Figure~\ref{fig-knots} for a schematic illustration of the position of
+the tracked knots. An advantage of DLC-tracked data over the traditional
+fan-line coordinate system is that (in theory) specific (moving) flesh
+points are tracked rather than simply the intersection of the tongue
+contour with fixed radii from the fan-line system. This makes
+DLC-tracked data resemble data obtained with electromagnetic
+articulography (EMA). The downside is that the tongue contour is
+represented by 11 freely moving points, which can move in any direction
+in the midsagittal two-dimensional space captured by UTI.
 
 \begin{figure}
 
@@ -323,9 +323,9 @@ hence would produce the same type of error. Using polar coordinates
 would not solve the problem: while a fan-line system lends itself easily
 to using polar coordinates (since the origin of the probe can be used to
 approximate the origin of the coordinate system), this cannot be done
-with DLC data because there is, in reality, no single origin in the
-actual tongue anatomy from which vectors of displacement radiate, that
-would work for all tracked points.
+with DLC data because there is no single origin in the actual tongue
+anatomy from which vectors of displacement radiate, that would work for
+all tracked points.
 
 \phantomsection\label{cell-fig-curl}
 \begin{figure}[H]
@@ -362,9 +362,10 @@ models that allow flexible modelling of non-linear effects (Hastie and
 Tibshirani 1986; Wood 2006). GAMs are built upon smoothing splines
 functions, the components of which are multiplied by estimated
 coefficients to reconstruct an arbitrary time-changing curve. For a
-thorough introduction to GAMs we refer the reader to (Sóskuthy 2021b,
-2021a; Pedersen et al. 2019; Wieling 2018). Multivariate Generalised
-Additive Models (MGAMs) are GAMs with more than one outcome variable.
+thorough introduction to GAMs we refer the reader to Sóskuthy (2021b);
+Sóskuthy (2021a); Pedersen et al. (2019); Wieling (2018). Multivariate
+Generalised Additive Models (MGAMs) are GAMs with more than one outcome
+variable.
 
 As mentioned in the Introduction, the data tracked by DeepLabCut
 consists of the position on the horizontal (\emph{x}) and vertical
@@ -394,7 +395,7 @@ tongue tip to the right).}
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
-The same data is shown in Figure~\ref{fig-tongue-xy}, but in a different
+The same data is shown in Figure~\ref{fig-tongue-xy} in a different
 format. Instead of a Cartesian coordinate system of X and Y values, the
 plot has knot number on the \emph{x}-axis and X/Y coordinates on the
 \emph{y}-axis. The X/Y coordinates thus form ``trajectories'' along the
@@ -429,30 +430,30 @@ Notebook}}
 \subsection{VC coarticulation}\label{sec-gam-vc-coart}
 
 The data of the first case study, Coretta (2018a), comes from Coretta
-(2020b) and have been discussed in Coretta (2020a) (the analysis
+(2020b) and has been discussed in Coretta (2020a) (the analysis
 concerned the position of the tongue root during the duration of vowels
 followed by voiceless or voiced stops; in this paper we focus on tongue
 contours at the vowel offset). The materials are /pVCV/ words embedded
 in a frame sentence (\emph{Dico X lentamente} `I say X slowly' in
 Italian and \emph{Mówię X teraz} `I say X now' in Polish). In the /pVCV/
 words, C was /t, d, k, ɡ/ and V was /a, o, u/ (in each word, the two
-vowels where identical, so for example \emph{pata, poto, putu}). The
-data analysed here is from 9 speakers of Italian and 6 speakers of
-Polish (other speakers were not included due to the difficulty in
-processing their data with DeepLabCut).
+vowels were identical, so for example \emph{pata, poto, putu}). The data
+analysed here is from 9 speakers of Italian and 6 speakers of Polish
+(other speakers were not included due to the difficulty in processing
+their data with DeepLabCut).
 
-Ultrasound tongue imaging was obtained with the set up by Articulate
-Assistant Advanced™ (AAA, Ltd 2011). Spline data was extracted using a
-custom DeepLabCut (DLC) model developed by Wrench and Balch-Tomes
-(2022). When exporting from AAA™, the data was rotated based on the bite
-plane, obtained with the imaging of a bite plate (Scobbie et al. 2011),
-so that the bite plane is horizontal: this allows for a common
-coordinate system where vertical and horizontal movement are comparable
-across speakers. Once the DLC data was imported in R, we manually
-removed tracking errors and we calculated \emph{z}-scores within each
-speaker (the difference between the value and the mean, divided by the
-standard deviation). These steps are documented in the paper's notebook
-\href{notebooks/01_prepare_data.qmd}{Prepare data}.
+Video recordings of tongue ultrasound were obtained in Articulate
+Assistant Advanced™ (AAA, Articulate Instruments Ldt. 2011). Spline data
+was extracted using a custom DeepLabCut (DLC) model developed by Wrench
+and Balch-Tomes (2022). When exporting from AAA™, the data was rotated
+based on the bite plane, obtained with the imaging of a bite plate
+(Scobbie et al. 2011), so that the bite plane is horizontal: this allows
+for a common coordinate system where vertical and horizontal movement
+are comparable across speakers. Once the DLC data was imported in R, we
+manually removed tracking errors and we calculated \emph{z}-scores
+within each speaker (the difference between the value and the mean,
+divided by the standard deviation). These steps are documented in the
+paper's notebook \href{notebooks/01_prepare_data.qmd}{Prepare data}.
 
 The following code chunk reads the filtered data. A sample of the data
 is shown in Table~\ref{tbl-dlc-voff}. Figure~\ref{fig-voff} shows the
@@ -565,8 +566,8 @@ since they are by nature not very ``wiggly'' (which would require a
 higher \texttt{k}). We also include a factor smooth over knot for
 speaker (the equivalent of a non-linear random effect) with
 \texttt{s(knot,\ speaker,\ ...)}: since language is a between-speaker
-variable, we use \texttt{vow\_place} as the \texttt{by} variable
-(\texttt{vow\_place} is the interaction of vowel and place).
+variable, we use the interaction of vowel and place,
+\texttt{vow\_place}, as the \texttt{by} variable.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -593,7 +594,7 @@ Notebook}}
 
 The model summary is not particular insightful. What we are normally
 interested in is the reconstructed tongue contours and in which
-locations they are similar of different across conditions. To the best
+locations they are similar or different across conditions. To the best
 of our knowledge, there isn't a straightforward way to compute sensible
 measures of comparison, given the multidimensional nature of the model
 (i.e., only one or the other outcome can be inspected at a time;
@@ -768,23 +769,25 @@ multivariate GAM, with 95\% Confidence Intervals.}
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
+Figure~\ref{fig-voff-ci} strongly suggests greater VC coarticulation on
+the C closure in coronal that in velar contexts. Moreover, the vowels
+/a, o/ have a similar coarticulatory effect on the tongue contour. With
+velar consonants, we observe less coarticulation from the preceding
+vowel (an possible explanation of this is given at the end of
+Section~\ref{sec-fpca-vc}.
+
 \subsection{Emphaticness}\label{sec-gam-emphaticness}
 
 The second case study is about consonant ``emphaticness'' in Lebanese
-Arabic. The data is from Sakr (2025). {[}XXX TODO GEORGE description of
-the data, including a brief explanation of the LebAr context{]}. The
-second case study is about consonant ``emphaticness'' in Lebanese
-Arabic.
-
-Lebanese Arabic is a variety of Arabic primarily spoken in Lebanon,
-where it is in constant contact with a number of Indo-European languages
-(primarily English and French, as vectors of education and business, see
-eg. Shaaban and Ghaith 1999), as well as the written standard form of
-Arabic known as Modern Standard Arabic (MSA). The relationship between
-Lebanese Arabic (LA) and MSA in Lebanon is one of diglossia (see eg.
-Lian 2022), where LA is spoken in most contexts, but not written, and
-MSA is the written variety, and therefore also primarily used for legal
-and official purposes.
+Arabic. The data is from Sakr (2025). Lebanese Arabic is a variety of
+Arabic primarily spoken in Lebanon, where it is in constant contact with
+a number of Indo-European languages (primarily English and French, as
+vectors of education and business, see eg. Shaaban and Ghaith 1999), as
+well as the written standard form of Arabic known as Modern Standard
+Arabic (MSA). The relationship between Lebanese Arabic (LA) and MSA in
+Lebanon is one of diglossia (see eg. Lian 2022), where LA is spoken in
+most contexts, but not written, and MSA is the written variety, and
+therefore also primarily used for legal and official purposes.
 
 Emphasis is a phonologically contrastive feature of Semitic languages.
 In most varieties of Arabic, it is usually reported to be realised as
@@ -795,11 +798,11 @@ sociolinguistic factors (Khattab, Al-Tamimi, and Heselwood 2006). Older
 sources instead report the secondary place of articulation as being the
 velum (see eg. Obrecht 1968; Nasr 1959) or the uvula (see eg. Bin-Muqbil
 2006; Zawaydeh 1999; Ghazeli 1977). Whatever the specifics of this
-secondary place of articulation, the literature (see among others
-Sullivan 2017; El-Khaissi 2015; Elhij'a 2012; Alorifi 2008) additionally
-suggests the occurrence of a loss of emphasis in Lebanese, or more
-generally Levantine or Western dialects of Arabic, likely as a result of
-the contact with the Indo-European languages mentioned above.
+secondary place of articulation, the literature additionally suggests
+the occurrence of a loss of emphasis in Lebanese, or more generally
+Levantine or Western dialects of Arabic, likely as a result of the
+contact with the Indo-European languages mentioned above (see among
+others Sullivan 2017; El-Khaissi 2015; Elhij'a 2012; Alorifi 2008).
 
 It is against this background, and as part of efforts to document the
 precise place of secondary articulation of emphasis in Lebanese Arabic,
@@ -812,13 +815,11 @@ about a plain/emphatic pair, we denote them /T, D, S, Z/. The nucleus
 was one of five vowel qualities (see Sakr 2019) present in Lebanese,
 which we will denote with /A, E, I, O, U/ to signal that these are
 neither to be taken as phonemes or exact phonetic realisations. The coda
-was the voiced bilabial plosive /b/.
-
-Each recording consisted of four stimuli in randomized order, covering
-forty syllables, in five repetitions; for a total of 1000 recordings.
-The subset of the data used here is from 35ms before consonant offset,
-defined as the burst for the plosives and as the end of the frication
-noise for the fricatives.
+was the voiced bilabial plosive /b/. Each recording consisted of four
+stimuli in randomized order, covering forty syllables, in five
+repetitions; for a total of 1000 recordings. The subset of the data used
+here is from 35ms before consonant offset, defined as the burst for the
+plosives and as the end of the frication noise for the fricatives.
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -826,9 +827,8 @@ Notebook}}
 
 Since the procedure to fit and plot MGAMs is the same as the one
 presented in Section~\ref{sec-gam-vc-coart}, we won't be showing the
-code in this section, but readers can find the code in the Article
-Notebook, at
-\url{https://stefanocoretta.github.io/mv_uti/index-preview.html}.
+code in this section, but readers can find the code in the
+\href{index.qmd}{Article Notebook}.
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -879,11 +879,11 @@ code). First, there is a good deal of individual variation: some
 speakers show a clear differentiation of the tongue shape in emphatic
 and plain consonants, while in other speakers the difference is less
 obvious. FAK produced emphatic and plain consonants with virtually the
-same tongue shape. Just to pick another example, BAR velarised rather
-than pharyngealised the emphatic consonants followed by /I/, while BAY
-pharyngealised them. Plotting predictions of individual speakers can
-reveal idiosyncratic patterns which are not visible when plotting
-overall predictions.
+same tongue shape. Just to pick another example, BAR
+uvularised/velarised rather than pharyngealised the emphatic consonants
+followed by /I/, while BAY pharyngealised them. Plotting predictions of
+individual speakers can reveal idiosyncratic patterns which are not
+visible when plotting overall predictions.
 
 \phantomsection\label{cell-fig-emph-part}
 \begin{figure}[H]
@@ -917,7 +917,7 @@ numerical variables (Gubian et al. 2019; Gubian, Pastätter, and Pouplier
 2019; Gubian 2024): a typical example is time-series data, with a
 variable changing over time. The trajectory of the time-varying variable
 is encoded into a function with a set of coefficients and the values of
-those coefficients are submit to PCA. When more than one time-varying
+those coefficients are submitted to PCA. When more than one time-varying
 variable is needed, this is where Multivariate FPCA (MFPCA) come in
 (Gubian 2024).
 
@@ -929,13 +929,34 @@ Figure~\ref{fig-tongue-xy}: the two varying variables are the X and Y
 coordinates, which are varying along the DLC knots. As with MGAMs, it is
 these two varying trajectories that are submitted to MFPCA.
 
-\subsection{VC coarticulation}\label{vc-coarticulation}
+\subsection{VC coarticulation}\label{sec-fpca-vc}
 
 We will apply Multivariate Functional Principal Component Analysis
 (MFPCA) to the data introduced in Section~\ref{sec-gam-vc-coart}. The
 following code has been adapted from Gubian (2024). The packages below
 are needed to run MFPCA (except landmarkregUtils, they are available on
 CRAN).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(fda)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(funData)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(MFPCA)}
+\CommentTok{\# install.packages("remotes")}
+\CommentTok{\# remotes::install\_github("uasolo/landmarkregUtils")}
+\FunctionTok{library}\NormalTok{(landmarkregUtils)}
+\end{Highlighting}
+\end{Shaded}
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -947,7 +968,18 @@ coordinate) and another with the coordinate values. We can easily pivot
 the data with \texttt{pivot\_longer()}. Note that we are using the
 \emph{z}-scored coordinate values (\texttt{X\_z} and \texttt{Y\_z}). If
 you are not unsure about what the code in this section, it is always
-useful to inspect intermediate and final output.
+useful to inspect intermediate and final output in the pipe chains to
+familiarise yourself with the format of the input and resulting data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dlc\_voff\_long }\OtherTok{\textless{}{-}}\NormalTok{ dlc\_voff\_f }\SpecialCharTok{|\textgreater{}} 
+  \CommentTok{\# Select relevant columns}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(X\_z, Y\_z, frame\_id, knot, vowel, c2\_place, language, speaker) }\SpecialCharTok{|\textgreater{}} 
+  \CommentTok{\# Pivot data to longer format. Saves coordinate labels to column \textasciigrave{}dim\textasciigrave{}}
+  \FunctionTok{pivot\_longer}\NormalTok{(}\FunctionTok{c}\NormalTok{(X\_z, Y\_z), }\AttributeTok{names\_to =} \StringTok{"dim"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -963,23 +995,66 @@ with the id of each contour (in our data, \texttt{frame\_id}), a time or
 series column (\texttt{knot}) and the column with the coordinate values
 (\texttt{value}).
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{curves\_fun\_2d }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(}
+  \FunctionTok{c}\NormalTok{(}\StringTok{"X\_z"}\NormalTok{, }\StringTok{"Y\_z"}\NormalTok{),}
+  \ControlFlowTok{function}\NormalTok{(y) \{}
+    \FunctionTok{long2irregFunData}\NormalTok{(}
+\NormalTok{      dlc\_voff\_long }\SpecialCharTok{|\textgreater{}} \FunctionTok{filter}\NormalTok{(dim }\SpecialCharTok{==}\NormalTok{ \{\{y\}\}),}
+      \CommentTok{\# Tongue contour ID}
+      \AttributeTok{id =} \StringTok{"frame\_id"}\NormalTok{,}
+      \CommentTok{\# Knot column}
+      \AttributeTok{time =} \StringTok{"knot"}\NormalTok{,}
+      \CommentTok{\# X/Y coordinate values}
+      \AttributeTok{value =} \StringTok{"value"}
+\NormalTok{    ) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{as.funData}\NormalTok{()}
+\NormalTok{  \}}
+\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{multiFunData}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
-Once we have our \texttt{multFunData} object, we can use the
+Once we have our \texttt{multiFunData} object, we can use the
 \texttt{MFPCA()} function to compute an MFPCA. In this tutorial we will
 compute the first two PCs, but you can compute up to \(K-1\) PCs where
 \(K\) is the number of DLC knots in the data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Number of PC to compute}
+\NormalTok{n\_pc }\OtherTok{\textless{}{-}} \DecValTok{2}
+
+\CommentTok{\# Compute MFPCA}
+\NormalTok{mfpca }\OtherTok{\textless{}{-}} \FunctionTok{MFPCA}\NormalTok{(}
+\NormalTok{  curves\_fun\_2d,}
+  \AttributeTok{M =}\NormalTok{ n\_pc,}
+  \AttributeTok{uniExpansions =} \FunctionTok{list}\NormalTok{(}\FunctionTok{list}\NormalTok{(}\AttributeTok{type =} \StringTok{"uFPCA"}\NormalTok{), }\FunctionTok{list}\NormalTok{(}\AttributeTok{type =} \StringTok{"uFPCA"}\NormalTok{))}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
 We can quickly calculate the proportion of explained variance of each PC
-with the following code. PC1 and PC2 together explain almost 100\% of
-the variance in our data. The higher the variance explained, the better
-the variance patterns in the data are captured.
+with the following code. Since we have calculated only two PCs, PC1 and
+PC2 together explain 100\% of the variance in our data. For each PC that
+is calculated, the higher the variance explained, the better the
+variance patterns in the data are captured.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Proportion of explained variance}
+\NormalTok{mfpca}\SpecialCharTok{$}\NormalTok{values  }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(mfpca}\SpecialCharTok{$}\NormalTok{values)}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{verbatim}
 [1] 0.7108713 0.2891287
@@ -995,6 +1070,36 @@ of representative PC scores. In order to be able to plot the predicted
 contours, we need to calculate them from the MFPCA object. Gubian
 suggests plotting predicted curves at score intervals based on fractions
 of the scores standard deviation. This is what the following code does.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Get the PC score SD}
+\NormalTok{sd\_fun }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(mfpca}\SpecialCharTok{$}\NormalTok{values)}
+
+\CommentTok{\# PC curves to be plotted}
+\NormalTok{pc\_curves }\OtherTok{\textless{}{-}} \FunctionTok{expand\_grid}\NormalTok{(}
+  \AttributeTok{PC =} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n\_pc,}
+  \AttributeTok{dim =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{,}
+  \CommentTok{\# Set the SD fraction, from {-}1 SD to +1 SD, with increments by 0.25}
+  \AttributeTok{sd\_frac =} \FunctionTok{seq}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\AttributeTok{by =} \FloatTok{0.25}\NormalTok{)}
+\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(PC, dim, sd\_frac) }\SpecialCharTok{|\textgreater{}}
+  \CommentTok{\# We can now calculate the predicted contour with funData2long1().}
+  \CommentTok{\# reframe() is needed because the funData2long1() function returns a data frame}
+  \CommentTok{\# the has more rows than the original.}
+  \FunctionTok{reframe}\NormalTok{(}
+    \FunctionTok{funData2long1}\NormalTok{(}
+\NormalTok{      mfpca}\SpecialCharTok{$}\NormalTok{meanFunction[[dim]] }\SpecialCharTok{+}
+\NormalTok{        sd\_frac }\SpecialCharTok{*}\NormalTok{ sd\_fun[PC] }\SpecialCharTok{*}\NormalTok{ mfpca}\SpecialCharTok{$}\NormalTok{functions[[dim]][PC],}
+      \AttributeTok{time =} \StringTok{"knot"}\NormalTok{, }\AttributeTok{value =} \StringTok{"value"}
+\NormalTok{    )}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \CommentTok{\# We relabel the dimensions}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{dim =} \FunctionTok{factor}\NormalTok{(dim, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Y\_z\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}X\_z\textquotesingle{}}\NormalTok{))}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -1013,7 +1118,7 @@ coordinates (based on PC1 in the left panel and PC2 in the right panel).
 Interpreting the effect of the PCs on the X and Y coordinates separately
 allows one to observe vertical (Y coordinate) and horizontal (X
 coordinate) differences in tongue position independently. However, note
-that the vector of muscle contractions in the tongue are not simply
+that the vectors of muscle contractions in the tongue are not simply
 along a vertical/horizontal axis (Honda 1996; Wrench 2024). Looking at a
 full tongue contour (in an X/Y coordinates plot) will generally prove to
 be more straightforward.
@@ -1038,6 +1143,13 @@ Notebook}}
 
 In order to plot tongue contours in the X/Y coordinate system, we simply
 need to pivot the data to a wider format.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pc\_curves\_wide }\OtherTok{\textless{}{-}}\NormalTok{ pc\_curves }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{pivot\_wider}\NormalTok{(}\AttributeTok{names\_from =}\NormalTok{ dim)}
+\end{Highlighting}
+\end{Shaded}
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -1080,6 +1192,15 @@ differences in PC2 scores based on the vowel if there is VC
 coarticulation. We can obtain the PC scores of each observation in the
 data with the following code.
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pc\_scores }\OtherTok{\textless{}{-}}\NormalTok{ mfpca}\SpecialCharTok{$}\NormalTok{scores }\SpecialCharTok{|\textgreater{}}
+  \StringTok{\textasciigrave{}}\AttributeTok{colnames\textless{}{-}}\StringTok{\textasciigrave{}}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(}\StringTok{"PC"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\NormalTok{n\_pc)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{as\_tibble}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{bind\_cols}\NormalTok{(dlc\_voff\_long }\SpecialCharTok{|\textgreater{}} \FunctionTok{distinct}\NormalTok{(frame\_id, vowel, c2\_place, language))}
+\end{Highlighting}
+\end{Shaded}
+
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
@@ -1115,14 +1236,14 @@ Notebook}}
 Once one has established which patterns each PC is capturing, PC scores
 can be submitted to further statistical modelling, like for example
 regression models where the PC scores are outcome variables and several
-predictors are include to assess possible differences in PC scores.
+predictors are included to assess possible differences in PC scores.
 
 \subsection{Emphaticness}\label{emphaticness}
 
 In this section we will run an MFPCA analysis on the Lebanese Arabic
 data. Since the procedure is the same as in the previous section, the
-code will not be shown here, but can be viewed in the Article Notebook,
-at \url{https://stefanocoretta.github.io/mv_uti/index-preview.html}.
+code will not be shown here, but can be viewed in the
+\href{index.qmd}{Article Notebook}.
 
 Figure~\ref{fig-emph-curves-wide} illustrates the reconstructed tongue
 contours (taken from 35 ms before the CV boundary) in Lebanese Arabic,
@@ -1131,8 +1252,8 @@ movement. PC2, on the other hand, seems to be restricted to high/low
 movement at the back of the oral cavity. Emphatic consonants, if
 produced with a constricted pharynx (i.e.~pharyngealised), should have a
 lower PC1. If on the other hand they are produced with a raised tongue
-dorsum (i.e.~velarised), they should have a lower PC2 (lower PC scores
-are in purple in Figure~\ref{fig-emph-curves-wide}).
+dorsum (i.e.~uvularised/velarised), they should have a lower PC2 (lower
+PC scores are in purple in Figure~\ref{fig-emph-curves-wide}).
 
 \phantomsection\label{cell-fig-emph-curves-wide}
 \begin{figure}[H]
@@ -1167,10 +1288,12 @@ and plain tokens for vowels /E, I/ do not show a PC1 difference, but
 rather a PC2 difference: PC2 captures tongue dorsum/body raising, hence
 indicating velarisation. It is possible that in Bar's productions of
 emphatic consonants followed by /E, I/ the distinction with plain is
-produced by velarisation, compared to the pharyngealisation of emphatic
-consonants followed by /A, O, U/. Velarisation, rather than
-pharyngealisation, in the /E, I/ contexts makes sense given that the
-tongue root has to be front in the production of those vowels.
+produced by uvularisation/velarisation, compared to the
+pharyngealisation of emphatic consonants followed by /A, O, U/.
+Uvularisation/velarisation, rather than pharyngealisation, in the /E, I/
+contexts makes sense given that the tongue root has to be front in the
+production of those vowels (see Sakr (2025), Section 6.4 for more
+details).
 
 \phantomsection\label{cell-fig-emph-speakers}
 \begin{figure}[H]
@@ -1331,7 +1454,7 @@ disadvantages.
 Multivariate GAMs can model tongue contours in specific contexts and
 combinations thereof, like different vowels, consonant, prosodic
 contexts and so on. The rather complex model structure required to fit
-multivariate GAMs to tongue data comes at a computational cost and
+multivariate GAMs to tongue data comes at a computational cost and an
 interpretative cost. Computationally, multivariate GAMs can take hours
 to estimate even the most simple models. Interpretationally, comparing
 different tongue contours quantitatively based on the output of a
@@ -1356,14 +1479,19 @@ Section~\ref{sec-fpca}. In the VC coarticulation data, PC1 corresponded
 to the coronal/velar difference in consonants, while PC2 to the
 difference in vowel. In the emphaticness data, PC1 captured the
 low-back/high-front diagonal movement, while PC2 to the high/low
-movement at the back of the oral cavity. In other words, until one has
-run the MPFCA, one does not know what PC will correspond to which axis
-of differences and whether the PCs will capture relevant difference at
-all (it can happen that the variation one is after is so minimal
+movement at the back of the oral cavity. In other words: until one has
+run the MFPCA, one cannot know which PC will correspond to which axis of
+differences, and whether the PCs will capture relevant differences at
+all. It can happen that the variation one is after is so minimal
 relative to other, more substantial cases of variation, that it will not
-be captures at all). It is possible that qualitatively homogeneous data
-sets might return PCs that have the same or very similar interpretation,
-but this has not been systematically tested Honda (1996).
+be captured by the MFPCA at all. It is possible that qualitatively
+homogeneous data sets might return PCs that have the same or very
+similar interpretations, but this has not been systematically tested,
+perhaps with the exception of simple PCA run on vowel formant data,
+which suggests that the first two PCs capture the two diagonals (Faber
+and Di Paolo 1995; Hoole 1999; Strycharczuk, Ćavar, and Coretta 2021;
+Strycharczuk et al. 2025), which make sense in light of the tongue
+position and shape model expounded by Honda (1996).
 
 Another advantage of MFPCA is that, provided that the PCs have captured
 relevant characteristics, the PCs can be submitted to further modelling
@@ -1374,7 +1502,7 @@ but both case studies presented in Section~\ref{sec-fpca} are amenable
 to such follow-up analysis.
 
 Based on the advantages and disadvantages of each of multivariate GAMs
-and FPCA, we suggest researchers to use MFPCA as the preferred and
+and FPCA, we suggest to researchers to use MFPCA as the preferred and
 default approach to analyse DLC-tracked tongue contour data and to
 resort to multivariate GAMs if MFPCA fails to capture relevant
 variation.
@@ -1403,6 +1531,10 @@ Pharyngealization in Jordanian and Moroccan Arabic: Implications for
 Formal Representations.''} \emph{Laboratory Phonology: Journal of the
 Association for Laboratory Phonology} 8 (1): 28.
 \url{https://doi.org/10.5334/labphon.19}.
+
+\bibitem[\citeproctext]{ref-ltd2011}
+Articulate Instruments Ldt. 2011. {``Articulate Assistant Advanced User
+Guide. {Version} 2.16.''}
 
 \bibitem[\citeproctext]{ref-bin-muqbil2006}
 Bin-Muqbil, Musaed S. 2006. \emph{Phonetic and Phonological Aspects of
@@ -1516,15 +1648,18 @@ in the Arabic-Speaking World : A Study of the Discourse of Arabic
 Language Academies / Chaoqun Lian.} Edinburgh: Edinburgh University
 Press,. \url{https://doi.org/10.1515/9781474449960}.
 
-\bibitem[\citeproctext]{ref-ltd2011}
-Ltd, Articulate Instruments. 2011. {``Articulate Assistant Advanced User
-Guide. {Version} 2.16.''}
-
 \bibitem[\citeproctext]{ref-lulich2018}
 Lulich, Steven M., Kelly H. Berkson, and Kenneth de Jong. 2018.
 {``Acquiring and Visualizing 3d/4d Ultrasound Recordings of Tongue
 Motion.''} \emph{Journal of Phonetics} 71: 410424.
 \url{https://doi.org/10.1016/j.wocn.2018.10.001}.
+
+\bibitem[\citeproctext]{ref-mathis2018}
+Mathis, Alexander, Pranav Mamidanna, Kevin M. Cury, Taiga Abe, Venkatesh
+N. Murthy, Mackenzie Weygandt Mathis, and Matthias Bethge. 2018.
+{``DeepLabCut: Markerless Pose Estimation of User-Defined Body Parts
+with Deep Learning.''} \emph{Nature Neuroscience} 21 (9): 1281--89.
+\url{https://doi.org/10.1038/s41593-018-0209-y}.
 
 \bibitem[\citeproctext]{ref-nasr1959}
 Nasr, Raja T. 1959. {``Velarization in Lebanese Arabic.''}
