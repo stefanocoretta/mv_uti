@@ -1,5 +1,5 @@
 ---
-title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.8"
+title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.9"
 authors:
   - name: Stefano Coretta
     affiliation: University of Edinburgh
@@ -16,6 +16,8 @@ citation:
   url: "https://stefanocoretta.github.io/mv_uti/"
 google-scholar: true
 date: "`r Sys.Date()`"
+abstract: |
+  This tutorial paper introduces two approaches to modelling tongue conoutr data obtained with DeepLabCut using Multivariate Generalised Additive Models (MGAMs) and Multivariate Functional Principal Component Analysis (MFPCA). For each method, we present a fully commented analysis of two illustrative data sets: VC coarticulation in Italian and Polish, and consonant emphaticness in Lebanese Arabic. All the materials (inlcuding data and code) are available in the research compendium of the tutorial at <https://github.com/stefanocoretta/mv_uti>. We conclude by discussing advantages and disadvantages of the two methods (MGAM and MFPCA) and we recommend researchers to prefer MFPCA over MGAM as an initial step for modelling tongue contours.
 ---
 
 # Introduction
@@ -934,7 +936,19 @@ Based on the advantages and disadvantages of each of multivariate GAMs and FPCA,
 
 # Conclusions
 
+This tutorial demonstrates two methods for analysing tongue contour data derived from DeepLabCut: Multivariate Generalised Additive Models (MGAMs) and Multivariate Functional Principal Component Analysis (MFPCA). We offer detailed, annotated analyses of two example datasets, focusing on vowel-to-consonant coarticulation in Italian and Polish, and emphatic consonants in Lebanese Arabic. All associated materials, including datasets and code, are accessible through the tutorial’s research compendium at <https://github.com/stefanocoretta/mv_uti>. In closing, we evaluate the strengths and limitations of each method and advise adopting MFPCA as the preferred initial modelling strategy for tongue contour data.
+
+## Disclosure statement  {.unnumbered}
+
+The authors report there are no competing interests to declare.
+
+## Biographical note  {.unnumbered}
+
 TBA
+
+## **Data availability statement**  {.unnumbered}
+
+All the materials (inlcuding data and code) are available in the research compendium of the tutorial at <https://github.com/stefanocoretta/mv_uti>. An online version of the manuscript is available at <https://stefanocoretta.github.io/mv_uti/>.
 
 # References
 

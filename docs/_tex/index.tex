@@ -1,25 +1,27 @@
 % Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
 ]{interact}
-
+\usepackage{xcolor}
 \usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
 \usepackage{lmodern}
-\ifPDFTeX\else  
-    % xetex/luatex font selection
+\ifPDFTeX\else
+  % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -37,9 +39,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
 \makeatletter
 \ifx\paragraph\undefined\else
@@ -105,8 +104,7 @@
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -131,6 +129,8 @@
 % Set default figure placement to htbp
 \def\fps@figure{htbp}
 \makeatother
+
+
 % definitions for citeproc citations
 \NewDocumentCommand\citeproctext{}{}
 \NewDocumentCommand\citeproc{mm}{%
@@ -164,6 +164,18 @@
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
 
 \usepackage{orcidlink}
 \makeatletter
@@ -223,13 +235,11 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
 \usepackage{bookmark}
-
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same} % disable monospaced font for URLs
+\urlstyle{same}
 \hypersetup{
-  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.8},
+  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.9},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -239,7 +249,7 @@
 
 
 \title{Multivariate analyses of tongue contours from ultrasound tongue
-imaging. Draft v0.8}
+imaging. Draft v0.9}
 \author{Stefano
 Coretta$\textsuperscript{1}$~\orcidlink{0000-0001-9627-5532}, Georges
 Sakr$\textsuperscript{1}$~\orcidlink{0000-0003-3813-2669}}
@@ -250,11 +260,24 @@ Coretta. Email: \href{mailto:s.coretta@ed.ac.uk}{\nolinkurl{s.coretta@ed.ac.uk}}
 \captionsetup{labelsep=space}
 \maketitle
 \textsuperscript{1}  University of Edinburgh,  
+\begin{abstract}
+This tutorial paper introduces two approaches to modelling tongue
+conoutr data obtained with DeepLabCut using Multivariate Generalised
+Additive Models (MGAMs) and Multivariate Functional Principal Component
+Analysis (MFPCA). For each method, we present a fully commented analysis
+of two illustrative data sets: VC coarticulation in Italian and Polish,
+and consonant emphaticness in Lebanese Arabic. All the materials
+(inlcuding data and code) are available in the research compendium of
+the tutorial at \url{https://github.com/stefanocoretta/mv_uti}. We
+conclude by discussing advantages and disadvantages of the two methods
+(MGAM and MFPCA) and we recommend researchers to prefer MFPCA over MGAM
+as an initial step for modelling tongue contours.
+\end{abstract}
 
 
 \section{Introduction}\label{introduction}
 
-\begin{tcolorbox}[enhanced jigsaw, coltitle=black, breakable, opacityback=0, toprule=.15mm, colbacktitle=quarto-callout-warning-color!10!white, rightrule=.15mm, leftrule=.75mm, bottomrule=.15mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, titlerule=0mm, toptitle=1mm, colframe=quarto-callout-warning-color-frame, colback=white, opacitybacktitle=0.6, arc=.35mm, left=2mm, bottomtitle=1mm]
+\begin{tcolorbox}[enhanced jigsaw, left=2mm, toprule=.15mm, colback=white, opacityback=0, rightrule=.15mm, breakable, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, colbacktitle=quarto-callout-warning-color!10!white, bottomrule=.15mm, opacitybacktitle=0.6, colframe=quarto-callout-warning-color-frame, arc=.35mm, bottomtitle=1mm, toptitle=1mm, titlerule=0mm, leftrule=.75mm, coltitle=black]
 
 This is a ``living'' draft, meaning it is work in progress. While the
 code is fully functional and usable, we will be updating the textual
@@ -1509,7 +1532,37 @@ variation.
 
 \section{Conclusions}\label{conclusions}
 
+This tutorial demonstrates two methods for analysing tongue contour data
+derived from DeepLabCut: Multivariate Generalised Additive Models
+(MGAMs) and Multivariate Functional Principal Component Analysis
+(MFPCA). We offer detailed, annotated analyses of two example datasets,
+focusing on vowel-to-consonant coarticulation in Italian and Polish, and
+emphatic consonants in Lebanese Arabic. All associated materials,
+including datasets and code, are accessible through the tutorial's
+research compendium at~\url{https://github.com/stefanocoretta/mv_uti}.
+In closing, we evaluate the strengths and limitations of each method and
+advise adopting MFPCA as the preferred initial modelling strategy for
+tongue contour data.
+
+\subsection*{Disclosure statement}\label{disclosure-statement}
+\addcontentsline{toc}{subsection}{Disclosure statement}
+
+The authors report there are no competing interests to declare.
+
+\subsection*{Biographical note}\label{biographical-note}
+\addcontentsline{toc}{subsection}{Biographical note}
+
 TBA
+
+\subsection*{\texorpdfstring{\textbf{Data availability
+statement}}{Data availability statement}}\label{data-availability-statement}
+\addcontentsline{toc}{subsection}{\textbf{Data availability statement}}
+
+All the materials (inlcuding data and code) are available in the
+research compendium of the tutorial at
+\url{https://github.com/stefanocoretta/mv_uti}. An online version of the
+manuscript is available at
+\url{https://stefanocoretta.github.io/mv_uti/}.
 
 \section{References}\label{references}
 
