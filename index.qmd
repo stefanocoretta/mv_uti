@@ -1,5 +1,5 @@
 ---
-title: "Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.10"
+title: "Multivariate analyses of tongue contours from ultrasound tongue imaging"
 authors:
   - name: Stefano Coretta
     affiliation: University of Edinburgh
@@ -31,8 +31,10 @@ theme_set(theme_light())
 library(knitr)
 ```
 
+::: {.content-visible when-format="html"}
 ::: callout-warning
-This is a "living" draft, meaning it is work in progress. While the code is fully functional and usable, we will be updating the textual explanation and might make minor changes to the code to improve clarity. Please, if using in research, cite the version you have consulted. The version of the draft is given in the title as "Draft vX.X" where "X" are incremental digits. See citation recommendation at the bottom of the document.
+This is a [Quarto manuscript](https://quarto.org/docs/manuscripts/). The outline to the left can be used to navigate to specific sections in the manuscript and the links below the outline take you to the Article Notebook and the data preparation notebook, Prepare Data. The Article Notebook is the same as the main article in the homepage but all code is shown. 
+:::
 :::
 
 Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows researchers to image the shape of the tongue during speech at medium temporal resolution [30-100 frames per second, @epstein2005; @stone2005]. Typically, the midsagittal contour of the tongue is imaged, although 3D systems exist [@lulich2018]. Recent developments in machine learning assisted image processing has enabled faster tracking of estimated points on the tongue contour [@wrench2022].
@@ -938,15 +940,17 @@ Based on the advantages and disadvantages of each of multivariate GAMs and FPCA,
 
 This tutorial demonstrates two methods for analysing tongue contour data derived from DeepLabCut: Multivariate Generalised Additive Models (MGAMs) and Multivariate Functional Principal Component Analysis (MFPCA). We offer detailed, annotated analyses of two example datasets, focusing on vowel-to-consonant coarticulation in Italian and Polish, and emphatic consonants in Lebanese Arabic. All associated materials, including datasets and code, are accessible through the tutorial’s research compendium at <https://github.com/stefanocoretta/mv_uti>. In closing, we evaluate the strengths and limitations of each method and advise adopting MFPCA as the preferred initial modelling strategy for tongue contour data.
 
-## Disclosure statement {.unnumbered}
+# Disclosure statement {.unnumbered}
 
 The authors report there are no competing interests to declare.
 
-## Biographical note {.unnumbered}
+# Biographical note {.unnumbered}
 
 Stefano Coretta is an assistant professor at the Linguistics and English Language department of the University of Edinburgh. Stefano's academic expertise is in acoustic and articulatory phonetics and in quantitative methods. He teaches a course in quantitative data analysis and training workshops in statistics. Stefano is also normally leading or being involved in research projects that span different areas of linguistics, from phonetics to language endangerment. He is an active advocate of Open Research practices. Stefano's philosophical stance is based on a syncretic synthesis of holistic monism, anti-realism, idealism, panpsychism and Bayesian epistemology.
 
-## **Data availability statement** {.unnumbered}
+Georges Sakr is a research assistant at the Linguistics and English Language department of the University of Edinburgh and at the School of Education, Communication and Language Sciences of Newcastle University. Georges’s academic expertise spans acoustic and articulatory phonetics, laboratory phonology, and sociophonetics, with particular interests in data collection and analytical methods.
+
+# **Data availability statement** {.unnumbered}
 
 All the materials (inlcuding data and code) are available in the research compendium of the tutorial at <https://github.com/stefanocoretta/mv_uti>. An online version of the manuscript is available at <https://stefanocoretta.github.io/mv_uti/>.
 

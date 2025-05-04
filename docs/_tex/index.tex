@@ -1,25 +1,27 @@
 % Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
 ]{interact}
-
+\usepackage{xcolor}
 \usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
 \usepackage{lmodern}
-\ifPDFTeX\else  
-    % xetex/luatex font selection
+\ifPDFTeX\else
+  % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -37,9 +39,6 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
-\usepackage{xcolor}
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
 \makeatletter
 \ifx\paragraph\undefined\else
@@ -105,8 +104,7 @@
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -131,6 +129,8 @@
 % Set default figure placement to htbp
 \def\fps@figure{htbp}
 \makeatother
+
+
 % definitions for citeproc citations
 \NewDocumentCommand\citeproctext{}{}
 \NewDocumentCommand\citeproc{mm}{%
@@ -164,6 +164,18 @@
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
 
 \usepackage{orcidlink}
 \makeatletter
@@ -223,13 +235,11 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
 \usepackage{bookmark}
-
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same} % disable monospaced font for URLs
+\urlstyle{same}
 \hypersetup{
-  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging. Draft v0.10},
+  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -239,7 +249,7 @@
 
 
 \title{Multivariate analyses of tongue contours from ultrasound tongue
-imaging. Draft v0.10}
+imaging}
 \author{Stefano
 Coretta$\textsuperscript{1}$~\orcidlink{0000-0001-9627-5532}, Georges
 Sakr$\textsuperscript{1}$~\orcidlink{0000-0003-3813-2669}}
@@ -266,18 +276,6 @@ as an initial step for modelling tongue contours.
 
 
 \section{Introduction}\label{introduction}
-
-\begin{tcolorbox}[enhanced jigsaw, colframe=quarto-callout-warning-color-frame, coltitle=black, bottomrule=.15mm, bottomtitle=1mm, opacitybacktitle=0.6, breakable, leftrule=.75mm, left=2mm, toprule=.15mm, colbacktitle=quarto-callout-warning-color!10!white, arc=.35mm, titlerule=0mm, toptitle=1mm, title=\textcolor{quarto-callout-warning-color}{\faExclamationTriangle}\hspace{0.5em}{Warning}, rightrule=.15mm, opacityback=0, colback=white]
-
-This is a ``living'' draft, meaning it is work in progress. While the
-code is fully functional and usable, we will be updating the textual
-explanation and might make minor changes to the code to improve clarity.
-Please, if using in research, cite the version you have consulted. The
-version of the draft is given in the title as ``Draft vX.X'' where ``X''
-are incremental digits. See citation recommendation at the bottom of the
-document.
-
-\end{tcolorbox}
 
 Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows
 researchers to image the shape of the tongue during speech at medium
@@ -1534,13 +1532,13 @@ In closing, we evaluate the strengths and limitations of each method and
 advise adopting MFPCA as the preferred initial modelling strategy for
 tongue contour data.
 
-\subsection*{Disclosure statement}\label{disclosure-statement}
-\addcontentsline{toc}{subsection}{Disclosure statement}
+\section*{Disclosure statement}\label{disclosure-statement}
+\addcontentsline{toc}{section}{Disclosure statement}
 
 The authors report there are no competing interests to declare.
 
-\subsection*{Biographical note}\label{biographical-note}
-\addcontentsline{toc}{subsection}{Biographical note}
+\section*{Biographical note}\label{biographical-note}
+\addcontentsline{toc}{section}{Biographical note}
 
 Stefano Coretta is an assistant professor at the Linguistics and English
 Language department of the University of Edinburgh. Stefano's academic
@@ -1553,9 +1551,16 @@ Open Research practices. Stefano's philosophical stance is based on a
 syncretic synthesis of holistic monism, anti-realism, idealism,
 panpsychism and Bayesian epistemology.
 
-\subsection*{\texorpdfstring{\textbf{Data availability
+Georges Sakr is a research assistant at the Linguistics and English
+Language department of the University of Edinburgh and at the School of
+Education, Communication and Language Sciences of Newcastle University.
+Georges's academic expertise spans acoustic and articulatory phonetics,
+laboratory phonology, and sociophonetics, with particular interests in
+data collection and analytical methods.
+
+\section*{\texorpdfstring{\textbf{Data availability
 statement}}{Data availability statement}}\label{data-availability-statement}
-\addcontentsline{toc}{subsection}{\textbf{Data availability statement}}
+\addcontentsline{toc}{section}{\textbf{Data availability statement}}
 
 All the materials (inlcuding data and code) are available in the
 research compendium of the tutorial at
