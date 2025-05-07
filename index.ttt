@@ -1,0 +1,24 @@
+\begin{table*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+
+{\caption{{A sample of the VC coarticulation data from Coretta
+(\citeproc{ref-coretta2018f}{2018a}).}{\label{tbl-dlc-voff}}}
+\vspace{-20pt}}
+
+\begin{longtable}[]{@{}llrrrl@{}}
+\toprule\noalign{}
+speaker & word & X & Y & knot & knot\_label \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+it01 & pugu & -55.2105 & -44.1224 & 0 & Vallecula \\
+it01 & pugu & -60.6994 & -31.3486 & 1 & Root\_1 \\
+it01 & pugu & -65.1434 & -17.7311 & 2 & Root\_2 \\
+it01 & pugu & -63.6757 & -4.2022 & 3 & Body\_1 \\
+it01 & pugu & -57.2505 & 7.8483 & 4 & Body\_2 \\
+it01 & pugu & -44.9086 & 13.3162 & 5 & Dorsum\_1 \\
+\end{longtable}
+
+\end{table*}

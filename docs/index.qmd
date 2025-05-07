@@ -18,6 +18,7 @@ google-scholar: true
 date: "`r Sys.Date()`"
 abstract: |
   This tutorial paper introduces two approaches to modelling tongue conoutr data obtained with DeepLabCut using Multivariate Generalised Additive Models (MGAMs) and Multivariate Functional Principal Component Analysis (MFPCA). For each method, we present a fully commented analysis of two illustrative data sets: VC coarticulation in Italian and Polish, and consonant emphaticness in Lebanese Arabic. All the materials (inlcuding data and code) are available in the research compendium of the tutorial at <https://github.com/stefanocoretta/mv_uti>. We conclude by discussing advantages and disadvantages of the two methods (MGAM and MFPCA) and we recommend researchers to prefer MFPCA over MGAM as an initial step for modelling tongue contours.
+keywords: [ultrasound tongue imaging, multivariate statistics, functional principal component analysis, generalised additive models, phonetics, articulation]
 ---
 
 # Introduction
@@ -944,11 +945,11 @@ This tutorial demonstrates two methods for analysing tongue contour data derived
 
 The authors report there are no competing interests to declare.
 
-# Biographical note {.unnumbered}
+<!-- # Biographical note {.unnumbered} -->
 
-Stefano Coretta is an assistant professor at the Linguistics and English Language department of the University of Edinburgh. Stefano's academic expertise is in acoustic and articulatory phonetics and in quantitative methods. He teaches a course in quantitative data analysis and training workshops in statistics. Stefano is also normally leading or being involved in research projects that span different areas of linguistics, from phonetics to language endangerment. He is an active advocate of Open Research practices. Stefano's philosophical stance is based on a syncretic synthesis of holistic monism, anti-realism, idealism, panpsychism and Bayesian epistemology.
+<!-- Stefano Coretta is an assistant professor at the Linguistics and English Language department of the University of Edinburgh. Stefano's academic expertise is in acoustic and articulatory phonetics and in quantitative methods. He teaches a course in quantitative data analysis and training workshops in statistics. Stefano is also normally leading or being involved in research projects that span different areas of linguistics, from phonetics to language endangerment. He is an active advocate of Open Research practices. Stefano's philosophical stance is based on a syncretic synthesis of holistic monism, anti-realism, idealism, panpsychism and Bayesian epistemology. -->
 
-Georges Sakr is a research assistant at the Linguistics and English Language department of the University of Edinburgh and at the School of Education, Communication and Language Sciences of Newcastle University. Georges’s academic expertise spans acoustic and articulatory phonetics, laboratory phonology, and sociophonetics, with particular interests in data collection and analytical methods.
+<!-- Georges Sakr is a research assistant at the Linguistics and English Language department of the University of Edinburgh and at the School of Education, Communication and Language Sciences of Newcastle University. Georges’s academic expertise spans acoustic and articulatory phonetics, laboratory phonology, and sociophonetics, with particular interests in data collection and analytical methods. -->
 
 # **Data availability statement** {.unnumbered}
 

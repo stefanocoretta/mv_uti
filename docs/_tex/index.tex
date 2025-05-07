@@ -1,67 +1,70 @@
-% Options for packages loaded elsewhere
-% Options for packages loaded elsewhere
-\PassOptionsToPackage{unicode}{hyperref}
-\PassOptionsToPackage{hyphens}{url}
-\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
-%
 \documentclass[
-]{interact}
-\usepackage{xcolor}
-\usepackage{amsmath,amssymb}
-\setcounter{secnumdepth}{5}
-\usepackage{iftex}
-\ifPDFTeX
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
-  \usepackage{unicode-math} % this also loads fontspec
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-\usepackage{lmodern}
-\ifPDFTeX\else
-  % xetex/luatex font selection
-\fi
-% Use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
-}{}
+  man,
+  longtable,
+  nolmodern,
+  notxfonts,
+  notimes,
+  colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{apa7}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+
+
+
+\RequirePackage{longtable}
+\RequirePackage{threeparttablex}
+
 \makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
+\renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
+	{0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+	{-.5em}%
+	{\normalfont\normalsize\bfseries\typesectitle}}
+
+\renewcommand{\subparagraph}[1]{\@startsection{subparagraph}{5}{0.5em}%
+	{0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+	{-\z@\relax}%
+	{\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
 \makeatother
-% Make \paragraph and \subparagraph free-standing
-\makeatletter
-\ifx\paragraph\undefined\else
-  \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
-\fi
-\ifx\subparagraph\undefined\else
-  \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
-\fi
-\makeatother
+
+
+
+
+\usepackage{longtable, booktabs, multirow, multicol, colortbl, hhline, caption, array, float, xpatch}
+\usepackage{subcaption}
+\renewcommand\thesubfigure{\Alph{subfigure}}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\floatpagefraction}{0.7}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{listings,theorems, breakable, skins}
+\usepackage{fontawesome5}
+
+\definecolor{quarto-callout-color}{HTML}{909090}
+\definecolor{quarto-callout-note-color}{HTML}{0758E5}
+\definecolor{quarto-callout-important-color}{HTML}{CC1914}
+\definecolor{quarto-callout-warning-color}{HTML}{EB9113}
+\definecolor{quarto-callout-tip-color}{HTML}{00A047}
+\definecolor{quarto-callout-caution-color}{HTML}{FC5300}
+\definecolor{quarto-callout-color-frame}{HTML}{ACACAC}
+\definecolor{quarto-callout-note-color-frame}{HTML}{4582EC}
+\definecolor{quarto-callout-important-color-frame}{HTML}{D9534F}
+\definecolor{quarto-callout-warning-color-frame}{HTML}{F0AD4E}
+\definecolor{quarto-callout-tip-color-frame}{HTML}{02B875}
+\definecolor{quarto-callout-caution-color-frame}{HTML}{FD7E14}
+
+%\newlength\Oldarrayrulewidth
+%\newlength\Oldtabcolsep
+
+
+\usepackage{hyperref}
+
+
 
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -104,6 +107,8 @@
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
@@ -114,6 +119,7 @@
 % Allow footnotes in longtable head/foot
 \IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
 \makesavenoteenv{longtable}
+
 \usepackage{graphicx}
 \makeatletter
 \newsavebox\pandoc@box
@@ -167,17 +173,96 @@
 
 
 
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 
+\usepackage{newtx}
 
- 
+\defaultfontfeatures{Scale=MatchLowercase}
+\defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 
 
-\usepackage{orcidlink}
+
+
+
+\title{Multivariate analyses of tongue contours from ultrasound tongue
+imaging}
+
+
+\shorttitle{Multivariate analyses of tongue contours from ultrasound
+tongue imaging}
+
+
+\usepackage{etoolbox}
+
+
+
+
+
+
+
+
+\authorsnames{Stefano Coretta,Georges Sakr}
+
+
+
+
+
+\affiliation{
+{University of Edinburgh}}
+
+
+
+
+\leftheader{Coretta and Sakr}
+
+\date{2025-05-07}
+
+
+\abstract{This tutorial paper introduces two approaches to modelling
+tongue conoutr data obtained with DeepLabCut using Multivariate
+Generalised Additive Models (MGAMs) and Multivariate Functional
+Principal Component Analysis (MFPCA). For each method, we present a
+fully commented analysis of two illustrative data sets: VC
+coarticulation in Italian and Polish, and consonant emphaticness in
+Lebanese Arabic. All the materials (inlcuding data and code) are
+available in the research compendium of the tutorial at
+\url{https://github.com/stefanocoretta/mv_uti}. We conclude by
+discussing advantages and disadvantages of the two methods (MGAM and
+MFPCA) and we recommend researchers to prefer MFPCA over MGAM as an
+initial step for modelling tongue contours. }
+
+\keywords{ultrasound tongue imaging, multivariate statistics, functional
+principal component analysis, generalised additive
+models, phonetics, articulation}
+
+\authornote{\par{\addORCIDlink{Stefano
+Coretta}{0000-0001-9627-5532}}\par{\addORCIDlink{Georges
+Sakr}{0000-0003-3813-2669}} 
+
+\par{       Author roles were classified using the Contributor Role
+Taxonomy (CRediT; https://credit.niso.org/) as follows:  Stefano
+Coretta:   conceptualisation, data
+curation, methodology, software, supervision, validation, visualisation, writing, editing; Georges
+Sakr:   data curation, methodology, writing, editing}
+\par{Correspondence concerning this article should be addressed
+to Stefano
+Coretta, Email: \href{mailto:s.coretta@ed.ac.uk}{s.coretta@ed.ac.uk}}
+}
+
+\makeatletter
+\let\endoldlt\endlongtable
+\def\endlongtable{
+\hline
+\endoldlt
+}
+\makeatother
+\RequirePackage{longtable}
+\DeclareDelayedFloatFlavor{longtable}{table}
+
+\urlstyle{same}
+
+
+
 \makeatletter
 \@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
 \@ifpackageloaded{fontawesome5}{}{\usepackage{fontawesome5}}
@@ -235,61 +320,65 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-\usepackage{bookmark}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same}
-\hypersetup{
-  pdftitle={Multivariate analyses of tongue contours from ultrasound tongue imaging},
-  colorlinks=true,
-  linkcolor={blue},
-  filecolor={Maroon},
-  citecolor={Blue},
-  urlcolor={Blue},
-  pdfcreator={LaTeX via pandoc}}
 
+% From https://tex.stackexchange.com/a/645996/211326
+%%% apa7 doesn't want to add appendix section titles in the toc
+%%% let's make it do it
+\makeatletter
+\xpatchcmd{\appendix}
+  {\par}
+  {\addcontentsline{toc}{section}{\@currentlabelname}\par}
+  {}{}
+\makeatother
 
-\title{Multivariate analyses of tongue contours from ultrasound tongue
-imaging}
-\author{Stefano
-Coretta$\textsuperscript{1}$~\orcidlink{0000-0001-9627-5532}, Georges
-Sakr$\textsuperscript{1}$~\orcidlink{0000-0003-3813-2669}}
+%% Disable longtable counter
+%% https://tex.stackexchange.com/a/248395/211326
 
-\thanks{CONTACT: Stefano
-Coretta. Email: \href{mailto:s.coretta@ed.ac.uk}{\nolinkurl{s.coretta@ed.ac.uk}}. }
+\usepackage{etoolbox}
+
+\makeatletter
+\patchcmd{\LT@caption}
+  {\bgroup}
+  {\bgroup\global\LTpatch@captiontrue}
+  {}{}
+\patchcmd{\longtable}
+  {\par}
+  {\par\global\LTpatch@captionfalse}
+  {}{}
+\apptocmd{\endlongtable}
+  {\ifLTpatch@caption\else\addtocounter{table}{-1}\fi}
+  {}{}
+\newif\ifLTpatch@caption
+\makeatother
+
 \begin{document}
-\captionsetup{labelsep=space}
+
 \maketitle
-\textsuperscript{1}  University of Edinburgh,  
-\begin{abstract}
-This tutorial paper introduces two approaches to modelling tongue
-conoutr data obtained with DeepLabCut using Multivariate Generalised
-Additive Models (MGAMs) and Multivariate Functional Principal Component
-Analysis (MFPCA). For each method, we present a fully commented analysis
-of two illustrative data sets: VC coarticulation in Italian and Polish,
-and consonant emphaticness in Lebanese Arabic. All the materials
-(inlcuding data and code) are available in the research compendium of
-the tutorial at \url{https://github.com/stefanocoretta/mv_uti}. We
-conclude by discussing advantages and disadvantages of the two methods
-(MGAM and MFPCA) and we recommend researchers to prefer MFPCA over MGAM
-as an initial step for modelling tongue contours.
-\end{abstract}
+
+
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\setlength\LTleft{0pt}
 
 
 \section{Introduction}\label{introduction}
 
 Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows
 researchers to image the shape of the tongue during speech at medium
-temporal resolution (30-100 frames per second, Epstein and Stone 2005;
-Stone 2005). Typically, the midsagittal contour of the tongue is imaged,
-although 3D systems exist (Lulich, Berkson, and Jong 2018). Recent
-developments in machine learning assisted image processing has enabled
-faster tracking of estimated points on the tongue contour (Wrench and
-Balch-Tomes 2022).
+temporal resolution (30-100 frames per second,
+\citeproc{ref-epstein2005}{Epstein \& Stone, 2005};
+\citeproc{ref-stone2005}{Stone, 2005}). Typically, the midsagittal
+contour of the tongue is imaged, although 3D systems exist
+(\citeproc{ref-lulich2018}{Lulich et al., 2018}). Recent developments in
+machine learning assisted image processing has enabled faster tracking
+of estimated points on the tongue contour
+(\citeproc{ref-wrench2022}{Wrench \& Balch-Tomes, 2022}).
 
-Wrench and Balch-Tomes (2022) have trained a DeepLabCut (DLC, Mathis et
-al. 2018) model to estimate and track specific flesh points on the
-tongue contour and anatomical landmarks as captured by UTI. The model
-estimates 11 ``knots'' from the vallecula to the tongue tip, plus three
+Wrench and Balch-Tomes (\citeproc{ref-wrench2022}{2022}) have trained a
+DeepLabCut (DLC, \citeproc{ref-mathis2018}{Mathis et al., 2018}) model
+to estimate and track specific flesh points on the tongue contour and
+anatomical landmarks as captured by UTI. The model estimates 11
+``knots'' from the vallecula to the tongue tip, plus three
 muscular-skeletal knots (the hyoid bone, the mandible base and the
 mental spine where the short tendon attaches). See
 Figure~\ref{fig-knots} for a schematic illustration of the position of
@@ -304,51 +393,54 @@ in the midsagittal two-dimensional space captured by UTI.
 
 \begin{figure}
 
+\caption{\label{fig-knots}Schematic representation of the knots tracked
+by DeepLabCut. CC-BY Wrench and Balch-Tomes
+(\citeproc{ref-wrench2024}{Wrench, 2024}).}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{img/sensors-22-01133-g002.jpg}}
 
 }
 
-\caption{\label{fig-knots}Schematic representation of the knots tracked
-by DeepLabCut. CC-BY Wrench and Balch-Tomes (Wrench 2024).}
-
 \end{figure}%
 
 Classical ways to analyse tongue contour data obtained from a fan-line
-system, like SS-ANOVA (Davidson 2006; Chen and Lin 2011) and Generalised
-Additive Models using polar coordinates (Coretta 2018b, n.d.), are not
-appropriate with DLC-tracked data, due to the tongue contour ``curling''
-onto itself along the root. This is illustrated in
-Figure~\ref{fig-curl}: the plot shows the DLC-tracked points (in black)
-of the data from a Polish speaker and the traced tongue contours based
-on the points (see Section~\ref{sec-gam-vc-coart} for details on the
-data). The contours clearly curl onto themselves along the root (on the
-left of the contour). The red smooths represent a LOESS smooth,
-calculated for Y along X. This approach clearly miscalculates the smooth
-for the back half of the tongue, simply because there are two Y values
-for the same X value, and the procedure, in that case, returns something
-like an average of the two values. Generalised Additive Models
-(introduced in the following section) work on the same principle and
-hence would produce the same type of error. Using polar coordinates
-would not solve the problem: while a fan-line system lends itself easily
-to using polar coordinates (since the origin of the probe can be used to
-approximate the origin of the coordinate system), this cannot be done
-with DLC data because there is no single origin in the actual tongue
-anatomy from which vectors of displacement radiate, that would work for
-all tracked points.
+system, like SS-ANOVA (\citeproc{ref-chen2011}{Chen \& Lin, 2011};
+\citeproc{ref-davidson2006}{Davidson, 2006}) and Generalised Additive
+Models using polar coordinates (\citeproc{ref-coretta2019g}{Coretta,
+n.d.}, \citeproc{ref-coretta2018c}{2018b}), are not appropriate with
+DLC-tracked data, due to the tongue contour ``curling'' onto itself
+along the root. This is illustrated in Figure~\ref{fig-curl}: the plot
+shows the DLC-tracked points (in black) of the data from a Polish
+speaker and the traced tongue contours based on the points (see
+Section~\ref{sec-gam-vc-coart} for details on the data). The contours
+clearly curl onto themselves along the root (on the left of the
+contour). The red smooths represent a LOESS smooth, calculated for Y
+along X. This approach clearly miscalculates the smooth for the back
+half of the tongue, simply because there are two Y values for the same X
+value, and the procedure, in that case, returns something like an
+average of the two values. Generalised Additive Models (introduced in
+the following section) work on the same principle and hence would
+produce the same type of error. Using polar coordinates would not solve
+the problem: while a fan-line system lends itself easily to using polar
+coordinates (since the origin of the probe can be used to approximate
+the origin of the coordinate system), this cannot be done with DLC data
+because there is no single origin in the actual tongue anatomy from
+which vectors of displacement radiate, that would work for all tracked
+points.
 
 \phantomsection\label{cell-fig-curl}
 \begin{figure}[H]
+
+\caption{\label{fig-curl}Illustrating tongue contours curling up along
+the root. The estimated smooths in red fail to capture the curl.}
 
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-curl-1.pdf}}
 
 }
-
-\caption{\label{fig-curl}Illustrating tongue contours curling up along
-the root. The estimated smooths in red fail to capture the curl.}
 
 \end{figure}%
 
@@ -369,14 +461,17 @@ latter over the former.
 \section{Multivariate Generalised Additive Models}\label{sec-gam}
 
 Generalised Additive Models (GAMs) are an extension of generalised
-models that allow flexible modelling of non-linear effects (Hastie and
-Tibshirani 1986; Wood 2006). GAMs are built upon smoothing splines
-functions, the components of which are multiplied by estimated
+models that allow flexible modelling of non-linear effects
+(\citeproc{ref-hastie1986}{Hastie \& Tibshirani, 1986};
+\citeproc{ref-wood2006}{Wood, 2006}). GAMs are built upon smoothing
+splines functions, the components of which are multiplied by estimated
 coefficients to reconstruct an arbitrary time-changing curve. For a
-thorough introduction to GAMs we refer the reader to Sóskuthy (2021b);
-Sóskuthy (2021a); Pedersen et al. (2019); Wieling (2018). Multivariate
-Generalised Additive Models (MGAMs) are GAMs with more than one outcome
-variable.
+thorough introduction to GAMs we refer the reader to Sóskuthy
+(\citeproc{ref-soskuthy2017a}{2021b}); Sóskuthy
+(\citeproc{ref-soskuthy2021}{2021a}); Pedersen et al.
+(\citeproc{ref-pedersen2019}{2019}); Wieling
+(\citeproc{ref-wieling2018}{2018}). Multivariate Generalised Additive
+Models (MGAMs) are GAMs with more than one outcome variable.
 
 As mentioned in the Introduction, the data tracked by DeepLabCut
 consists of the position on the horizontal (\emph{x}) and vertical
@@ -390,15 +485,15 @@ speaker (see Section~\ref{sec-gam-vc-coart}).
 \phantomsection\label{cell-fig-tongue}
 \begin{figure}[H]
 
+\caption{\label{fig-tongue}The eleven knots on the tongue contour taken
+from the offset of {[}o{]} followed by {[}t{]} (Polish speaker PL04,
+tongue tip to the right).}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-tongue-1.pdf}}
 
 }
-
-\caption{\label{fig-tongue}The eleven knots on the tongue contour taken
-from the offset of {[}o{]} followed by {[}t{]} (Polish speaker PL04,
-tongue tip to the right).}
 
 \end{figure}%
 
@@ -423,14 +518,14 @@ plain vs emphatic consonants in Lebanese Arabic.
 \phantomsection\label{cell-fig-tongue-xy}
 \begin{figure}[H]
 
+\caption{\label{fig-tongue-xy}The horizontal and vertical positions of
+the elevel knots (same data as Figure~\ref{fig-tongue}).}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-tongue-xy-1.pdf}}
 
 }
-
-\caption{\label{fig-tongue-xy}The horizontal and vertical positions of
-the elevel knots (same data as Figure~\ref{fig-tongue}).}
 
 \end{figure}%
 
@@ -440,31 +535,35 @@ Notebook}}
 
 \subsection{VC coarticulation}\label{sec-gam-vc-coart}
 
-The data of the first case study, Coretta (2018a), comes from Coretta
-(2020b) and has been discussed in Coretta (2020a) (the analysis
-concerned the position of the tongue root during the duration of vowels
-followed by voiceless or voiced stops; in this paper we focus on tongue
-contours at the vowel offset). The materials are /pVCV/ words embedded
-in a frame sentence (\emph{Dico X lentamente} `I say X slowly' in
-Italian and \emph{Mówię X teraz} `I say X now' in Polish). In the /pVCV/
-words, C was /t, d, k, ɡ/ and V was /a, o, u/ (in each word, the two
-vowels were identical, so for example \emph{pata, poto, putu}). The data
-analysed here is from 9 speakers of Italian and 6 speakers of Polish
-(other speakers were not included due to the difficulty in processing
-their data with DeepLabCut).
+The data of the first case study, Coretta
+(\citeproc{ref-coretta2018f}{2018a}), comes from Coretta
+(\citeproc{ref-coretta2020b}{2020b}) and has been discussed in Coretta
+(\citeproc{ref-coretta2020}{2020a}) (the analysis concerned the position
+of the tongue root during the duration of vowels followed by voiceless
+or voiced stops; in this paper we focus on tongue contours at the vowel
+offset). The materials are /pVCV/ words embedded in a frame sentence
+(\emph{Dico X lentamente} `I say X slowly' in Italian and \emph{Mówię X
+teraz} `I say X now' in Polish). In the /pVCV/ words, C was /t, d, k, ɡ/
+and V was /a, o, u/ (in each word, the two vowels were identical, so for
+example \emph{pata, poto, putu}). The data analysed here is from 9
+speakers of Italian and 6 speakers of Polish (other speakers were not
+included due to the difficulty in processing their data with
+DeepLabCut).
 
 Video recordings of tongue ultrasound were obtained in Articulate
-Assistant Advanced™ (AAA, Articulate Instruments Ldt. 2011). Spline data
-was extracted using a custom DeepLabCut (DLC) model developed by Wrench
-and Balch-Tomes (2022). When exporting from AAA™, the data was rotated
-based on the bite plane, obtained with the imaging of a bite plate
-(Scobbie et al. 2011), so that the bite plane is horizontal: this allows
-for a common coordinate system where vertical and horizontal movement
-are comparable across speakers. Once the DLC data was imported in R, we
-manually removed tracking errors and we calculated \emph{z}-scores
-within each speaker (the difference between the value and the mean,
-divided by the standard deviation). These steps are documented in the
-paper's notebook \href{notebooks/01_prepare_data.qmd}{Prepare data}.
+Assistant Advanced™ (AAA, \citeproc{ref-ltd2011}{Articulate Instruments
+Ldt., 2011}). Spline data was extracted using a custom DeepLabCut (DLC)
+model developed by Wrench and Balch-Tomes
+(\citeproc{ref-wrench2022}{2022}). When exporting from AAA™, the data
+was rotated based on the bite plane, obtained with the imaging of a bite
+plate (\citeproc{ref-scobbie2011}{Scobbie et al., 2011}), so that the
+bite plane is horizontal: this allows for a common coordinate system
+where vertical and horizontal movement are comparable across speakers.
+Once the DLC data was imported in R, we manually removed tracking errors
+and we calculated \emph{z}-scores within each speaker (the difference
+between the value and the mean, divided by the standard deviation).
+These steps are documented in the paper's notebook
+\href{notebooks/01_prepare_data.qmd}{Prepare data}.
 
 The following code chunk reads the filtered data. A sample of the data
 is shown in Table~\ref{tbl-dlc-voff}. Figure~\ref{fig-voff} shows the
@@ -489,13 +588,13 @@ vowel production) in velar than in coronal stops.
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
 Notebook}}
 
+\begin{table}
+
+{\caption{{A sample of the VC coarticulation data from Coretta
+(\citeproc{ref-coretta2018f}{2018a}).}{\label{tbl-dlc-voff}}}
+\vspace{-20pt}}
+
 \begin{longtable}[]{@{}llrrrl@{}}
-
-\caption{\label{tbl-dlc-voff}A sample of the VC coarticulation data from
-Coretta (2018a).}
-
-\tabularnewline
-
 \toprule\noalign{}
 speaker & word & X & Y & knot & knot\_label \\
 \midrule\noalign{}
@@ -508,8 +607,9 @@ it01 & pugu & -65.1434 & -17.7311 & 2 & Root\_2 \\
 it01 & pugu & -63.6757 & -4.2022 & 3 & Body\_1 \\
 it01 & pugu & -57.2505 & 7.8483 & 4 & Body\_2 \\
 it01 & pugu & -44.9086 & 13.3162 & 5 & Dorsum\_1 \\
-
 \end{longtable}
+
+\end{table}
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -518,15 +618,15 @@ Notebook}}
 \phantomsection\label{cell-fig-voff}
 \begin{figure}[H]
 
+\caption{\label{fig-voff}Tongue contours of 9 Italian speakers and6
+Polish speakers, taken from the offset of the first vowel in /pCVCV/
+target words.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-voff-1.pdf}}
 
 }
-
-\caption{\label{fig-voff}Tongue contours of 9 Italian speakers and6
-Polish speakers, taken from the offset of the first vowel in /pCVCV/
-target words.}
 
 \end{figure}%
 
@@ -537,15 +637,15 @@ Notebook}}
 \phantomsection\label{cell-fig-pl04}
 \begin{figure}[H]
 
+\caption{\label{fig-pl04}Tongue contours of PL04 (Polish) taken from the
+offset of vowels followed by coronal or velar stops. Tip is on the
+right.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-pl04-1.pdf}}
 
 }
-
-\caption{\label{fig-pl04}Tongue contours of PL04 (Polish) taken from the
-offset of vowels followed by coronal or velar stops. Tip is on the
-right.}
 
 \end{figure}%
 
@@ -609,14 +709,16 @@ locations they are similar or different across conditions. To the best
 of our knowledge, there isn't a straightforward way to compute sensible
 measures of comparison, given the multidimensional nature of the model
 (i.e., only one or the other outcome can be inspected at a time;
-moreover, difference smooths, like in Sóskuthy (2021b) and Wieling
-(2018), represent the difference of the \emph{sum} of the outcome
-variables, rather than each outcome separately, Michele Gubian pers.
-comm.) We thus recommend to plot the predicted tongue contours and base
-any further inference on impressionistic observations on such predicted
-contours. Alas, there is also no straightforward way to plot predicted
-tongue contours, but to extract the predictions following a step-by-step
-procedure, like the one illustrated in the following paragraphs.
+moreover, difference smooths, like in Sóskuthy
+(\citeproc{ref-soskuthy2017a}{2021b}) and Wieling
+(\citeproc{ref-wieling2018}{2018}), represent the difference of the
+\emph{sum} of the outcome variables, rather than each outcome
+separately, Michele Gubian pers. comm.) We thus recommend to plot the
+predicted tongue contours and base any further inference on
+impressionistic observations on such predicted contours. Alas, there is
+also no straightforward way to plot predicted tongue contours, but to
+extract the predictions following a step-by-step procedure, like the one
+illustrated in the following paragraphs.
 
 First off, one has to create a grid of predictor values to obtain
 predictions for. We do this with \texttt{expand\_grid()} in the
@@ -747,14 +849,14 @@ with the figure.
 \phantomsection\label{cell-fig-voff-pred}
 \begin{figure}[H]
 
+\caption{\label{fig-voff-pred}Predicted tongue contours based on a
+multivariate GAM. Uncertainty not shown.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-voff-pred-1.pdf}}
 
 }
-
-\caption{\label{fig-voff-pred}Predicted tongue contours based on a
-multivariate GAM. Uncertainty not shown.}
 
 \end{figure}%
 
@@ -765,14 +867,14 @@ Notebook}}
 \phantomsection\label{cell-fig-voff-ci}
 \begin{figure}[H]
 
+\caption{\label{fig-voff-ci}Predicted tongue contours based on a
+multivariate GAM, with 95\% Confidence Intervals.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-voff-ci-1.pdf}}
 
 }
-
-\caption{\label{fig-voff-ci}Predicted tongue contours based on a
-multivariate GAM, with 95\% Confidence Intervals.}
 
 \end{figure}%
 
@@ -790,47 +892,59 @@ Section~\ref{sec-fpca-vc}.
 \subsection{Emphaticness}\label{sec-gam-emphaticness}
 
 The second case study is about consonant ``emphaticness'' in Lebanese
-Arabic. The data is from Sakr (2025). Lebanese Arabic is a variety of
-Arabic primarily spoken in Lebanon, where it is in constant contact with
-a number of Indo-European languages (primarily English and French, as
-vectors of education and business, see eg. Shaaban and Ghaith 1999), as
-well as the written standard form of Arabic known as Modern Standard
-Arabic (MSA). The relationship between Lebanese Arabic (LA) and MSA in
-Lebanon is one of diglossia (see eg. Lian 2022), where LA is spoken in
-most contexts, but not written, and MSA is the written variety, and
-therefore also primarily used for legal and official purposes.
+Arabic. The data is from Sakr (\citeproc{ref-sakr2025}{2025}). Lebanese
+Arabic is a variety of Arabic primarily spoken in Lebanon, where it is
+in constant contact with a number of Indo-European languages (primarily
+English and French, as vectors of education and business, see eg.
+\citeproc{ref-shaaban1999}{Shaaban \& Ghaith, 1999}), as well as the
+written standard form of Arabic known as Modern Standard Arabic (MSA).
+The relationship between Lebanese Arabic (LA) and MSA in Lebanon is one
+of diglossia (see eg. \citeproc{ref-lian2022}{Lian, 2022}), where LA is
+spoken in most contexts, but not written, and MSA is the written
+variety, and therefore also primarily used for legal and official
+purposes.
 
 Emphasis is a phonologically contrastive feature of Semitic languages.
 In most varieties of Arabic, it is usually reported to be realised as
-pharyngealisation (Sakr 2023; J. Al-Tamimi 2017; Zeroual, Esling, and
-Hoole 2011; Watson 2002) with some variation depending on phonological
-context (Sakr 2025; F. Al-Tamimi and Heselwood 2011) or on
-sociolinguistic factors (Khattab, Al-Tamimi, and Heselwood 2006). Older
-sources instead report the secondary place of articulation as being the
-velum (see eg. Obrecht 1968; Nasr 1959) or the uvula (see eg. Bin-Muqbil
-2006; Zawaydeh 1999; Ghazeli 1977). Whatever the specifics of this
-secondary place of articulation, the literature additionally suggests
-the occurrence of a loss of emphasis in Lebanese, or more generally
-Levantine or Western dialects of Arabic, likely as a result of the
-contact with the Indo-European languages mentioned above (see among
-others Sullivan 2017; El-Khaissi 2015; Elhij'a 2012; Alorifi 2008).
+pharyngealisation (\citeproc{ref-al-tamimi2017}{J. Al-Tamimi, 2017};
+\citeproc{ref-sakr2023}{Sakr, 2023}; \citeproc{ref-watson2002}{Watson,
+2002}; \citeproc{ref-zeroual2011}{Zeroual et al., 2011}) with some
+variation depending on phonological context
+(\citeproc{ref-al-tamimi2011}{F. Al-Tamimi \& Heselwood, 2011};
+\citeproc{ref-sakr2025}{Sakr, 2025}) or on sociolinguistic factors
+(\citeproc{ref-khattab2006}{Khattab et al., 2006}). Older sources
+instead report the secondary place of articulation as being the velum
+(\citeproc{ref-nasr1959}{Nasr, 1959}; see eg.
+\citeproc{ref-obrecht1968}{Obrecht, 1968}) or the uvula (see eg.
+\citeproc{ref-bin-muqbil2006}{Bin-Muqbil, 2006};
+\citeproc{ref-ghazeli1977}{Ghazeli, 1977};
+\citeproc{ref-zawaydeh1999}{Zawaydeh, 1999}). Whatever the specifics of
+this secondary place of articulation, the literature additionally
+suggests the occurrence of a loss of emphasis in Lebanese, or more
+generally Levantine or Western dialects of Arabic, likely as a result of
+the contact with the Indo-European languages mentioned above
+(\citeproc{ref-alorifi2008}{Alorifi, 2008};
+\citeproc{ref-elhija2012}{Elhij'a, 2012};
+\citeproc{ref-el-khaissi2015}{El-Khaissi, 2015}; see among others
+\citeproc{ref-sullivan2017}{Sullivan, 2017}).
 
 It is against this background, and as part of efforts to document the
 precise place of secondary articulation of emphasis in Lebanese Arabic,
 as well as to document whether or not emphasis has, indeed, been lost in
-the variety, that the data used here (from Sakr 2025) was collected. It
-consists of UTI recordings, by 5 participants, of CVb stimuli. The onset
-was either an emphatic or an unemphatic (`plain'), voiced or voiceless,
-alveolar, plosive or fricative /t, ṭ, d, ḍ, s, ṣ, z, ẓ/; when talking
-about a plain/emphatic pair, we denote them /T, D, S, Z/. The nucleus
-was one of five vowel qualities (see Sakr 2019) present in Lebanese,
-which we will denote with /A, E, I, O, U/ to signal that these are
-neither to be taken as phonemes or exact phonetic realisations. The coda
-was the voiced bilabial plosive /b/. Each recording consisted of four
-stimuli in randomized order, covering forty syllables, in five
-repetitions; for a total of 1000 recordings. The subset of the data used
-here is from 35ms before consonant offset, defined as the burst for the
-plosives and as the end of the frication noise for the fricatives.
+the variety, that the data used here (from \citeproc{ref-sakr2025}{Sakr,
+2025}) was collected. It consists of UTI recordings, by 5 participants,
+of CVb stimuli. The onset was either an emphatic or an unemphatic
+(`plain'), voiced or voiceless, alveolar, plosive or fricative /t, ṭ, d,
+ḍ, s, ṣ, z, ẓ/; when talking about a plain/emphatic pair, we denote them
+/T, D, S, Z/. The nucleus was one of five vowel qualities (see
+\citeproc{ref-sakr2019}{Sakr, 2019}) present in Lebanese, which we will
+denote with /A, E, I, O, U/ to signal that these are neither to be taken
+as phonemes or exact phonetic realisations. The coda was the voiced
+bilabial plosive /b/. Each recording consisted of four stimuli in
+randomized order, covering forty syllables, in five repetitions; for a
+total of 1000 recordings. The subset of the data used here is from 35ms
+before consonant offset, defined as the burst for the plosives and as
+the end of the frication noise for the fricatives.
 
 \textsubscript{Source:
 \href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
@@ -865,14 +979,14 @@ complex.
 \phantomsection\label{cell-fig-emph-ci}
 \begin{figure}[H]
 
+\caption{\label{fig-emph-ci}Predicted tongue contours with 95\% CIs from
+an MGAM of Lebanese Arabic emphatic and plain coronal consonants.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-ci-1.pdf}}
 
 }
-
-\caption{\label{fig-emph-ci}Predicted tongue contours with 95\% CIs from
-an MGAM of Lebanese Arabic emphatic and plain coronal consonants.}
 
 \end{figure}%
 
@@ -899,15 +1013,15 @@ visible when plotting overall predictions.
 \phantomsection\label{cell-fig-emph-part}
 \begin{figure}[H]
 
+\caption{\label{fig-emph-part}Predicted tongue contours with 95\% CIs
+from an MGAM of Lebanese Arabic emphatic and plain coronal consonants
+split by speaker.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-part-1.pdf}}
 
 }
-
-\caption{\label{fig-emph-part}Predicted tongue contours with 95\% CIs
-from an MGAM of Lebanese Arabic emphatic and plain coronal consonants
-split by speaker.}
 
 \end{figure}%
 
@@ -919,18 +1033,21 @@ Notebook}}
 Analysis}\label{sec-fpca}
 
 Principal Component Analysis (PCA) is a dimensionality reduction
-technique. For an introduction to PCA we recommend Kassambara (2017).
-Functional PCA (FPCA) is an extension of PCA: while classical PCA works
-by finding common variance in a set of variables (and by reducing the
-variables to Principal Components that explain that common variance),
-FPCA is a PCA applied to a functional representation of varying
-numerical variables (Gubian et al. 2019; Gubian, Pastätter, and Pouplier
-2019; Gubian 2024): a typical example is time-series data, with a
-variable changing over time. The trajectory of the time-varying variable
-is encoded into a function with a set of coefficients and the values of
-those coefficients are submitted to PCA. When more than one time-varying
-variable is needed, this is where Multivariate FPCA (MFPCA) come in
-(Gubian 2024).
+technique. For an introduction to PCA we recommend Kassambara
+(\citeproc{ref-kassambara2017a}{2017}). Functional PCA (FPCA) is an
+extension of PCA: while classical PCA works by finding common variance
+in a set of variables (and by reducing the variables to Principal
+Components that explain that common variance), FPCA is a PCA applied to
+a functional representation of varying numerical variables
+(\citeproc{ref-gubian2019}{Gubian, Harrington, et al., 2019};
+\citeproc{ref-gubian2019a}{Gubian, Pastätter, et al., 2019};
+\citeproc{ref-gubian2024}{Gubian, 2024}): a typical example is
+time-series data, with a variable changing over time. The trajectory of
+the time-varying variable is encoded into a function with a set of
+coefficients and the values of those coefficients are submitted to PCA.
+When more than one time-varying variable is needed, this is where
+Multivariate FPCA (MFPCA) come in (\citeproc{ref-gubian2024}{Gubian,
+2024}).
 
 MFPCA is an FPCA applied to two or more varying variables. Note that the
 variable does not have to be \emph{time}-varying. The variation can be
@@ -944,9 +1061,9 @@ these two varying trajectories that are submitted to MFPCA.
 
 We will apply Multivariate Functional Principal Component Analysis
 (MFPCA) to the data introduced in Section~\ref{sec-gam-vc-coart}. The
-following code has been adapted from Gubian (2024). The packages below
-are needed to run MFPCA (except landmarkregUtils, they are available on
-CRAN).
+following code has been adapted from Gubian
+(\citeproc{ref-gubian2024}{2024}). The packages below are needed to run
+MFPCA (except landmarkregUtils, they are available on CRAN).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1130,21 +1247,22 @@ Interpreting the effect of the PCs on the X and Y coordinates separately
 allows one to observe vertical (Y coordinate) and horizontal (X
 coordinate) differences in tongue position independently. However, note
 that the vectors of muscle contractions in the tongue are not simply
-along a vertical/horizontal axis (Honda 1996; Wrench 2024). Looking at a
-full tongue contour (in an X/Y coordinates plot) will generally prove to
-be more straightforward.
+along a vertical/horizontal axis (\citeproc{ref-honda1996}{Honda, 1996};
+\citeproc{ref-wrench2024}{Wrench, 2024}). Looking at a full tongue
+contour (in an X/Y coordinates plot) will generally prove to be more
+straightforward.
 
 \phantomsection\label{cell-fig-pc-curves}
 \begin{figure}[H]
+
+\caption{\label{fig-pc-curves}Predicted curves along knot number for X
+and Y coordinates, as obtained from an MFPCA.}
 
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-pc-curves-1.pdf}}
 
 }
-
-\caption{\label{fig-pc-curves}Predicted curves along knot number for X
-and Y coordinates, as obtained from an MFPCA.}
 
 \end{figure}%
 
@@ -1183,14 +1301,14 @@ tongue shape at closure onset.
 \phantomsection\label{cell-fig-contours}
 \begin{figure}[H]
 
+\caption{\label{fig-contours}Predicted tongue contours as obtained from
+an MFPCA.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-contours-1.pdf}}
 
 }
-
-\caption{\label{fig-contours}Predicted tongue contours as obtained from
-an MFPCA.}
 
 \end{figure}%
 
@@ -1229,14 +1347,14 @@ body/dorsum that is raised to produce the velar closure.
 \phantomsection\label{cell-fig-pc-scores}
 \begin{figure}[H]
 
+\caption{\label{fig-pc-scores}PC1/PC2 scores by language, consonant
+place of articulation and vowel.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-pc-scores-1.pdf}}
 
 }
-
-\caption{\label{fig-pc-scores}PC1/PC2 scores by language, consonant
-place of articulation and vowel.}
 
 \end{figure}%
 
@@ -1269,14 +1387,14 @@ PC scores are in purple in Figure~\ref{fig-emph-curves-wide}).
 \phantomsection\label{cell-fig-emph-curves-wide}
 \begin{figure}[H]
 
+\caption{\label{fig-emph-curves-wide}Predicted tongue contours of
+Lebanese Arabic coronal consonants as obtained from an MFPCA.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-curves-wide-1.pdf}}
 
 }
-
-\caption{\label{fig-emph-curves-wide}Predicted tongue contours of
-Lebanese Arabic coronal consonants as obtained from an MFPCA.}
 
 \end{figure}%
 
@@ -1303,20 +1421,20 @@ produced by uvularisation/velarisation, compared to the
 pharyngealisation of emphatic consonants followed by /A, O, U/.
 Uvularisation/velarisation, rather than pharyngealisation, in the /E, I/
 contexts makes sense given that the tongue root has to be front in the
-production of those vowels (see Sakr (2025), Section 6.4 for more
-details).
+production of those vowels (see Sakr (\citeproc{ref-sakr2025}{2025}),
+Section 6.4 for more details).
 
 \phantomsection\label{cell-fig-emph-speakers}
 \begin{figure}[H]
+
+\caption{\label{fig-emph-speakers}PC1 and PC2 scores by vowel, consonant
+type and speaker.}
 
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-speakers-1.pdf}}
 
 }
-
-\caption{\label{fig-emph-speakers}PC1 and PC2 scores by vowel, consonant
-type and speaker.}
 
 \end{figure}%
 
@@ -1333,14 +1451,14 @@ be helpful in illustrating specific patterns in PC1 or PC2.
 \phantomsection\label{cell-fig-emph-pc1}
 \begin{figure}[H]
 
+\caption{\label{fig-emph-pc1}PC1 scores of emphatic and plain consonants
+by speaker and vowel.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-pc1-1.pdf}}
 
 }
-
-\caption{\label{fig-emph-pc1}PC1 scores of emphatic and plain consonants
-by speaker and vowel.}
 
 \end{figure}%
 
@@ -1351,14 +1469,14 @@ Notebook}}
 \phantomsection\label{cell-fig-emph-pc2}
 \begin{figure}[H]
 
+\caption{\label{fig-emph-pc2}PC2 scores of emphatic and plain consonants
+by speaker and vowel.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-pc2-1.pdf}}
 
 }
-
-\caption{\label{fig-emph-pc2}PC2 scores of emphatic and plain consonants
-by speaker and vowel.}
 
 \end{figure}%
 
@@ -1441,14 +1559,14 @@ absent in the context of /E, I/.
 \phantomsection\label{cell-fig-vow-emph}
 \begin{figure}[H]
 
+\caption{\label{fig-vow-emph}Reconstructed tongue contours based on
+PC1/PC2.}
+
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-vow-emph-1.pdf}}
 
 }
-
-\caption{\label{fig-vow-emph}Reconstructed tongue contours based on
-PC1/PC2.}
 
 \end{figure}%
 
@@ -1499,10 +1617,13 @@ be captured by the MFPCA at all. It is possible that qualitatively
 homogeneous data sets might return PCs that have the same or very
 similar interpretations, but this has not been systematically tested,
 perhaps with the exception of simple PCA run on vowel formant data,
-which suggests that the first two PCs capture the two diagonals (Faber
-and Di Paolo 1995; Hoole 1999; Strycharczuk, Ćavar, and Coretta 2021;
-Strycharczuk et al. 2025), which make sense in light of the tongue
-position and shape model expounded by Honda (1996).
+which suggests that the first two PCs capture the two diagonals
+(\citeproc{ref-faber1995}{Faber \& Di Paolo, 1995};
+\citeproc{ref-hoole1999}{Hoole, 1999};
+\citeproc{ref-strycharczuk2021}{Strycharczuk et al., 2021};
+\citeproc{ref-strycharczuk2025}{Strycharczuk et al., 2025}), which make
+sense in light of the tongue position and shape model expounded by Honda
+(\citeproc{ref-honda1996}{1996}).
 
 Another advantage of MFPCA is that, provided that the PCs have captured
 relevant characteristics, the PCs can be submitted to further modelling
@@ -1537,27 +1658,6 @@ tongue contour data.
 
 The authors report there are no competing interests to declare.
 
-\section*{Biographical note}\label{biographical-note}
-\addcontentsline{toc}{section}{Biographical note}
-
-Stefano Coretta is an assistant professor at the Linguistics and English
-Language department of the University of Edinburgh. Stefano's academic
-expertise is in acoustic and articulatory phonetics and in quantitative
-methods. He teaches a course in quantitative data analysis and training
-workshops in statistics. Stefano is also normally leading or being
-involved in research projects that span different areas of linguistics,
-from phonetics to language endangerment. He is an active advocate of
-Open Research practices. Stefano's philosophical stance is based on a
-syncretic synthesis of holistic monism, anti-realism, idealism,
-panpsychism and Bayesian epistemology.
-
-Georges Sakr is a research assistant at the Linguistics and English
-Language department of the University of Edinburgh and at the School of
-Education, Communication and Language Sciences of Newcastle University.
-Georges's academic expertise spans acoustic and articulatory phonetics,
-laboratory phonology, and sociophonetics, with particular interests in
-data collection and analytical methods.
-
 \section*{\texorpdfstring{\textbf{Data availability
 statement}}{Data availability statement}}\label{data-availability-statement}
 \addcontentsline{toc}{section}{\textbf{Data availability statement}}
@@ -1573,257 +1673,258 @@ manuscript is available at
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
 \bibitem[\citeproctext]{ref-alorifi2008}
-Alorifi, Fawzi S. 2008. {``Automatic Identification of Arabic Dialects
-Using Hidden Markov Models.''} PhD thesis.
+Alorifi, F. S. (2008). \emph{Automatic identification of arabic dialects
+using hidden markov models} {[}PhD thesis{]}.
 
 \bibitem[\citeproctext]{ref-al-tamimi2011}
-Al-Tamimi, Feda, and Barry Heselwood. 2011. {``Nasoendoscopic,
-Videofluoroscopic and Acoustic Study of Plain and Emphatic Coronals in
-Jordanian Arabic.''} \emph{Instrumental Studies in Arabic Phonetics}
-319: 165191.
+Al-Tamimi, F., \& Heselwood, B. (2011). Nasoendoscopic,
+videofluoroscopic and acoustic study of plain and emphatic coronals in
+jordanian arabic. \emph{Instrumental Studies in Arabic Phonetics},
+\emph{319}, 165191.
 
 \bibitem[\citeproctext]{ref-al-tamimi2017}
-Al-Tamimi, Jalal. 2017. {``Revisiting Acoustic Correlates of
-Pharyngealization in Jordanian and Moroccan Arabic: Implications for
-Formal Representations.''} \emph{Laboratory Phonology: Journal of the
-Association for Laboratory Phonology} 8 (1): 28.
-\url{https://doi.org/10.5334/labphon.19}.
+Al-Tamimi, J. (2017). Revisiting acoustic correlates of
+pharyngealization in jordanian and moroccan arabic: Implications for
+formal representations. \emph{Laboratory Phonology: Journal of the
+Association for Laboratory Phonology}, \emph{8}(1), 28.
+\url{https://doi.org/10.5334/labphon.19}
 
 \bibitem[\citeproctext]{ref-ltd2011}
-Articulate Instruments Ldt. 2011. {``Articulate Assistant Advanced User
-Guide. {Version} 2.16.''}
+Articulate Instruments Ldt. (2011). \emph{Articulate assistant advanced
+user guide. {Version} 2.16}.
 
 \bibitem[\citeproctext]{ref-bin-muqbil2006}
-Bin-Muqbil, Musaed S. 2006. \emph{Phonetic and Phonological Aspects of
-Arabic Emphatics and Gutturals}. The University of Wisconsin-Madison.
+Bin-Muqbil, M. S. (2006). \emph{Phonetic and phonological aspects of
+arabic emphatics and gutturals}. The University of Wisconsin-Madison.
 
 \bibitem[\citeproctext]{ref-chen2011}
-Chen, Yu, and Hua Lin. 2011. {``Analysing Tongue Shape and Movement in
-Vowel Production Using SS-ANOVA in Ultrasound Imaging.''} In, 1721.
-
-\bibitem[\citeproctext]{ref-coretta2018f}
-Coretta, Stefano. 2018a. {``An Exploratory Study of the Voicing Effect
-in Italian and Polish {[}Data V1.0.0{]}.''}
-\url{https://doi.org/10.17605/OSF.IO/8ZHKU}.
-
-\bibitem[\citeproctext]{ref-coretta2018c}
----------. 2018b. {``Using Generalised Additive Models (GAM) with Polar
-Coordinates for Assessing Tongue Contours.''}
-\url{https://stefanocoretta.github.io/rticulate/articles/polar-gams.html}.
-
-\bibitem[\citeproctext]{ref-coretta2020}
----------. 2020a. {``Longer Vowel Duration Correlates with Greater
-Tongue Root Advancement at Vowel Offset: Acoustic and Articulatory Data
-from Italian and Polish.''} \emph{The Journal of the Acoustical Society
-of America} 147: 245259. \url{https://doi.org/10.1121/10.0000556}.
-
-\bibitem[\citeproctext]{ref-coretta2020b}
----------. 2020b. {``Vowel Duration and Consonant Voicing: A Production
-Study.''} PhD thesis.
+Chen, Y., \& Lin, H. (2011). \emph{Analysing tongue shape and movement
+in vowel production using SS-ANOVA in ultrasound imaging}. 1721.
 
 \bibitem[\citeproctext]{ref-coretta2019g}
----------. n.d. {``Assessing Mid-Saggital Tongue Contours in Polar
-Coordinates Using Generalised Additive (Mixed) Models.''}
-\url{https://doi.org/10.31219/osf.io/q6vzb}.
+Coretta, S. (n.d.). \emph{Assessing mid-saggital tongue contours in
+polar coordinates using generalised additive (mixed) models}.
+\url{https://doi.org/10.31219/osf.io/q6vzb}
+
+\bibitem[\citeproctext]{ref-coretta2018f}
+Coretta, S. (2018a). \emph{An exploratory study of the voicing effect in
+italian and polish {[}data v1.0.0{]}}.
+\url{https://doi.org/10.17605/OSF.IO/8ZHKU}
+
+\bibitem[\citeproctext]{ref-coretta2018c}
+Coretta, S. (2018b). \emph{Using generalised additive models (GAM) with
+polar coordinates for assessing tongue contours}.
+\url{https://stefanocoretta.github.io/rticulate/articles/polar-gams.html}
+
+\bibitem[\citeproctext]{ref-coretta2020}
+Coretta, S. (2020a). Longer vowel duration correlates with greater
+tongue root advancement at vowel offset: Acoustic and articulatory data
+from italian and polish. \emph{The Journal of the Acoustical Society of
+America}, \emph{147}, 245259. \url{https://doi.org/10.1121/10.0000556}
+
+\bibitem[\citeproctext]{ref-coretta2020b}
+Coretta, S. (2020b). \emph{Vowel duration and consonant voicing: A
+production study} {[}PhD thesis{]}.
 
 \bibitem[\citeproctext]{ref-davidson2006}
-Davidson, Lisa. 2006. {``Comparing Tongue Shapes from Ultrasound Imaging
-Using Smoothing Spline Analysis of Variance.''} \emph{The Journal of the
-Acoustical Society of America} 120 (1): 407415.
-\url{https://doi.org/10.1121/1.2205133}.
+Davidson, L. (2006). Comparing tongue shapes from ultrasound imaging
+using smoothing spline analysis of variance. \emph{The Journal of the
+Acoustical Society of America}, \emph{120}(1), 407415.
+\url{https://doi.org/10.1121/1.2205133}
 
 \bibitem[\citeproctext]{ref-elhija2012}
-Elhij'a, Dua'a Abu. 2012. {``Facebook Written Levantine Vernacular
-Languages.''} \emph{Levantine Review} 1 (1): 68105.
-\url{https://doaj.org/article/6698290a36c244f783a59ba49617e821}.
+Elhij'a, D. A. (2012). Facebook Written Levantine Vernacular Languages.
+\emph{Levantine Review}, \emph{1}(1), 68105.
+\url{https://doaj.org/article/6698290a36c244f783a59ba49617e821}
 
 \bibitem[\citeproctext]{ref-el-khaissi2015}
-El-Khaissi, Charbel. 2015. {``The Romanisation of Arabic: A Comparative
-Analysis of Romanised Spoken Arabic and Romanised Modern Standard
-Arabic.''} PhD thesis.
+El-Khaissi, C. (2015). \emph{The romanisation of arabic: A comparative
+analysis of romanised spoken arabic and romanised modern standard
+arabic} {[}PhD thesis{]}.
 
 \bibitem[\citeproctext]{ref-epstein2005}
-Epstein, Melissa A., and Maureen Stone. 2005. {``The Tongue Stops Here:
-Ultrasound Imaging of the Palate.''} \emph{The Journal of the Acoustical
-Society of America} 118 (4): 21282131.
-\url{https://doi.org/10.1121/1.2031977}.
+Epstein, M. A., \& Stone, M. (2005). The tongue stops here: Ultrasound
+imaging of the palate. \emph{The Journal of the Acoustical Society of
+America}, \emph{118}(4), 21282131.
+\url{https://doi.org/10.1121/1.2031977}
 
 \bibitem[\citeproctext]{ref-faber1995}
-Faber, Alice, and Marianna Di Paolo. 1995. {``The Discriminability of
-Nearly Merged Sounds.''} \emph{Language Variation and Change} 7 (1):
-35--78. \url{https://doi.org/10.1017/S0954394500000892}.
+Faber, A., \& Di Paolo, M. (1995). The discriminability of nearly merged
+sounds. \emph{Language Variation and Change}, \emph{7}(1), 35--78.
+\url{https://doi.org/10.1017/S0954394500000892}
 
 \bibitem[\citeproctext]{ref-ghazeli1977}
-Ghazeli, Salem. 1977. {``Back Consonants and Backing Coarticulation in
-Arabic.''} PhD thesis.
+Ghazeli, S. (1977). \emph{Back consonants and backing coarticulation in
+arabic} {[}PhD thesis{]}.
 
 \bibitem[\citeproctext]{ref-gubian2024}
-Gubian, Michele. 2024. \emph{Workshop on Functional PCA for Phonetics
-and Prosody}. \url{https://github.com/uasolo/FPCA-phonetics-workshop}.
+Gubian, M. (2024). \emph{Workshop on functional PCA for phonetics and
+prosody}. \url{https://github.com/uasolo/FPCA-phonetics-workshop}
 
 \bibitem[\citeproctext]{ref-gubian2019}
-Gubian, Michele, Jonathan Harrington, Mary Stevens, Florian Schiel, and
-Paul Warren. 2019. {``Tracking the New Zealand English NEAR/SQUARE
-Merger Using Functional Principal Components Analysis.''}
-\emph{Proceedings of INTERSPEECH 2019}, 296300.
-\url{https://doi.org/10.21437/interspeech.2019-2115}.
+Gubian, M., Harrington, J., Stevens, M., Schiel, F., \& Warren, P.
+(2019). Tracking the new zealand english NEAR/SQUARE merger using
+functional principal components analysis. \emph{Proceedings of
+INTERSPEECH 2019}, 296300.
+\url{https://doi.org/10.21437/interspeech.2019-2115}
 
 \bibitem[\citeproctext]{ref-gubian2019a}
-Gubian, Michele, Manfred Pastätter, and Marianne Pouplier. 2019.
-{``Zooming in on Spatiotemporal v-to-c Coarticulation with Functional
-PCA.''} \emph{Proceedings of INTERSPEECH 2019}, 889893.
-\url{https://doi.org/10.21437/Interspeech.2019-2143}.
+Gubian, M., Pastätter, M., \& Pouplier, M. (2019). Zooming in on
+spatiotemporal v-to-c coarticulation with functional PCA.
+\emph{Proceedings of INTERSPEECH 2019}, 889893.
+\url{https://doi.org/10.21437/Interspeech.2019-2143}
 
 \bibitem[\citeproctext]{ref-hastie1986}
-Hastie, Trevor, and Robert Tibshirani. 1986. {``Generalized Additive
-Models.''} \emph{Statistical Science} 1 (3): 297310.
-\url{https://doi.org/10.1201/9780203753781-6}.
+Hastie, T., \& Tibshirani, R. (1986). Generalized additive models.
+\emph{Statistical Science}, \emph{1}(3), 297310.
+\url{https://doi.org/10.1201/9780203753781-6}
 
 \bibitem[\citeproctext]{ref-honda1996}
-Honda, Kiyoshi. 1996. {``Organization of Tongue Articulation for
-Vowels.''} \emph{Journal of Phonetics} 24 (1): 3952.
-\url{https://doi.org/10.1006/jpho.1996.0004}.
+Honda, K. (1996). Organization of tongue articulation for vowels.
+\emph{Journal of Phonetics}, \emph{24}(1), 3952.
+\url{https://doi.org/10.1006/jpho.1996.0004}
 
 \bibitem[\citeproctext]{ref-hoole1999}
-Hoole, Philip. 1999. {``On the Lingual Organization of the German Vowel
-System.''} \emph{The Journal of the Acoustical Society of America} 106
-(2): 10201032. \url{https://doi.org/10.1121/1.428053}.
+Hoole, P. (1999). On the lingual organization of the german vowel
+system. \emph{The Journal of the Acoustical Society of America},
+\emph{106}(2), 10201032. \url{https://doi.org/10.1121/1.428053}
 
 \bibitem[\citeproctext]{ref-kassambara2017a}
-Kassambara, Alboukadel. 2017. \emph{Practical Guide to Principal
-Component Methods in r}. STHDA.
+Kassambara, A. (2017). \emph{Practical guide to principal component
+methods in r}. STHDA.
 
 \bibitem[\citeproctext]{ref-khattab2006}
-Khattab, Ghada, Feda Al-Tamimi, and Barry Heselwood. 2006. {``Acoustic
-and Auditory Differences in the /t/-/ṭ/ Opposition in Male and Female
-Speakers of Jordanian Arabic.''} In, edited by Sami Boudelaa,
-XVI:131--60. The Netherlands: John Benjamins Publishing Company.
+Khattab, G., Al-Tamimi, F., \& Heselwood, B. (2006). \emph{Acoustic and
+auditory differences in the /t/-/ṭ/ opposition in male and female
+speakers of jordanian arabic: Vol. XVI} (S. Boudelaa, Ed.; pp.
+131--160). John Benjamins Publishing Company.
 
 \bibitem[\citeproctext]{ref-lian2022}
-Lian, Chaoqun,. 2022. \emph{Language, Ideology and Sociopolitical Change
-in the Arabic-Speaking World : A Study of the Discourse of Arabic
-Language Academies / Chaoqun Lian.} Edinburgh: Edinburgh University
-Press,. \url{https://doi.org/10.1515/9781474449960}.
+Lian, C. (2022). \emph{Language, ideology and sociopolitical change in
+the arabic-speaking world : A study of the discourse of arabic language
+academies / chaoqun lian.} Edinburgh University Press,.
+\url{https://doi.org/10.1515/9781474449960}
 
 \bibitem[\citeproctext]{ref-lulich2018}
-Lulich, Steven M., Kelly H. Berkson, and Kenneth de Jong. 2018.
-{``Acquiring and Visualizing 3d/4d Ultrasound Recordings of Tongue
-Motion.''} \emph{Journal of Phonetics} 71: 410424.
-\url{https://doi.org/10.1016/j.wocn.2018.10.001}.
+Lulich, S. M., Berkson, K. H., \& Jong, K. de. (2018). Acquiring and
+visualizing 3d/4d ultrasound recordings of tongue motion. \emph{Journal
+of Phonetics}, \emph{71}, 410424.
+\url{https://doi.org/10.1016/j.wocn.2018.10.001}
 
 \bibitem[\citeproctext]{ref-mathis2018}
-Mathis, Alexander, Pranav Mamidanna, Kevin M. Cury, Taiga Abe, Venkatesh
-N. Murthy, Mackenzie Weygandt Mathis, and Matthias Bethge. 2018.
-{``DeepLabCut: Markerless Pose Estimation of User-Defined Body Parts
-with Deep Learning.''} \emph{Nature Neuroscience} 21 (9): 1281--89.
-\url{https://doi.org/10.1038/s41593-018-0209-y}.
+Mathis, A., Mamidanna, P., Cury, K. M., Abe, T., Murthy, V. N., Mathis,
+M. W., \& Bethge, M. (2018). DeepLabCut: markerless pose estimation of
+user-defined body parts with deep learning. \emph{Nature Neuroscience},
+\emph{21}(9), 1281--1289.
+\url{https://doi.org/10.1038/s41593-018-0209-y}
 
 \bibitem[\citeproctext]{ref-nasr1959}
-Nasr, Raja T. 1959. {``Velarization in Lebanese Arabic.''}
-\emph{Phonetica} 3 (4): 203--9. \url{https://doi.org/10.1159/000257920}.
+Nasr, R. T. (1959). Velarization in Lebanese Arabic. \emph{Phonetica},
+\emph{3}(4), 203--209. \url{https://doi.org/10.1159/000257920}
 
 \bibitem[\citeproctext]{ref-obrecht1968}
-Obrecht, Dean H. 1968. \emph{Effects of the second formant on the
-perception of velarization consonants in Arabic}. Reprint 2017. Janua
-linguarum ; 39, Ser. practica. Berlin ;Boston: De Gruyter Mouton.
+Obrecht, D. H. (1968). \emph{Effects of the second formant on the
+perception of velarization consonants in Arabic} (Reprint 2017). De
+Gruyter Mouton.
 
 \bibitem[\citeproctext]{ref-pedersen2019}
-Pedersen, Eric J., David L. Miller, Gavin L. Simpson, and Noam Ross.
-2019. {``Hierarchical Generalized Additive Models in Ecology: An
-Introduction with Mgcv.''} \emph{PeerJ} 7: e6876.
-\url{https://doi.org/10.7717/peerj.6876}.
+Pedersen, E. J., Miller, D. L., Simpson, G. L., \& Ross, N. (2019).
+Hierarchical generalized additive models in ecology: An introduction
+with mgcv. \emph{PeerJ}, \emph{7}, e6876.
+\url{https://doi.org/10.7717/peerj.6876}
 
 \bibitem[\citeproctext]{ref-sakr2019}
-Sakr, Georges. 2019. {``A Laboratory Phonology Investigation Into The
-Vocalic Inventory of Lebanese.''} Master's thesis, United Kingdom.
+Sakr, G. (2019). \emph{A Laboratory Phonology Investigation Into The
+Vocalic Inventory of Lebanese} {[}Master's thesis{]}.
 
 \bibitem[\citeproctext]{ref-sakr2023}
----------. 2023. {``On the Acoustics of Emphasis in Central Mount
-Lebanon Lebanese.''} \emph{Journal of Semitic Studies}.
-\url{https://doi.org/10.1093/jss/fgad024}.
+Sakr, G. (2023). On the acoustics of emphasis in central mount lebanon
+lebanese. \emph{Journal of Semitic Studies}.
+\url{https://doi.org/10.1093/jss/fgad024}
 
 \bibitem[\citeproctext]{ref-sakr2025}
----------. 2025. {``The Phonetics of Emphasis in Central Mount Lebanon
-Lebanese: Acoustics, Perception, Articulation.''} PhD thesis.
+Sakr, G. (2025). \emph{The phonetics of emphasis in central mount
+lebanon lebanese: Acoustics, perception, articulation} {[}PhD thesis{]}.
 
 \bibitem[\citeproctext]{ref-scobbie2011}
-Scobbie, James M., Eleanor Lawson, Steve Cowen, Joanne Cleland, and Alan
-A. Wrench. 2011. {``A Common Co-Ordinate System for Mid-Sagittal
-Articulatory Measurement.''} In, 14.
+Scobbie, J. M., Lawson, E., Cowen, S., Cleland, J., \& Wrench, A. A.
+(2011). \emph{A common co-ordinate system for mid-sagittal articulatory
+measurement}. 14.
 
 \bibitem[\citeproctext]{ref-shaaban1999}
-Shaaban, Kassim, and Ghazi Ghaith. 1999. {``Lebanon's
-language-in-education policies: From bilingualism to trilingualism.''}
-\emph{Language Problems and Language Planning} 23 (1): 116.
+Shaaban, K., \& Ghaith, G. (1999). Lebanon's language-in-education
+policies: From bilingualism to trilingualism. \emph{Language Problems
+and Language Planning}, \emph{23}(1), 116.
 
 \bibitem[\citeproctext]{ref-soskuthy2021}
-Sóskuthy, Márton. 2021a. {``Evaluating Generalised Additive Mixed
-Modelling Strategies for Dynamic Speech Analysis.''} \emph{Journal of
-Phonetics} 84: 101017. \url{https://doi.org/10.1016/j.wocn.2020.101017}.
+Sóskuthy, M. (2021a). Evaluating generalised additive mixed modelling
+strategies for dynamic speech analysis. \emph{Journal of Phonetics},
+\emph{84}, 101017. \url{https://doi.org/10.1016/j.wocn.2020.101017}
 
 \bibitem[\citeproctext]{ref-soskuthy2017a}
----------. 2021b. {``Generalised Additive Mixed Models for Dynamic
-Analysis in Linguistics: A Practical Introduction.''}
-\url{https://doi.org/10.48550/arXiv.1703.05339}.
+Sóskuthy, M. (2021b). \emph{Generalised additive mixed models for
+dynamic analysis in linguistics: A practical introduction}.
+\url{https://doi.org/10.48550/arXiv.1703.05339}
 
 \bibitem[\citeproctext]{ref-stone2005}
-Stone, Maureen. 2005. {``A Guide to Analysing Tongue Motion from
-Ultrasound Images.''} \emph{Clinical Linguistics \& Phonetics} 19 (6-7):
-455501. \url{https://doi.org/10.1080/02699200500113558}.
+Stone, M. (2005). A guide to analysing tongue motion from ultrasound
+images. \emph{Clinical Linguistics \& Phonetics}, \emph{19}(6-7),
+455501. \url{https://doi.org/10.1080/02699200500113558}
 
 \bibitem[\citeproctext]{ref-strycharczuk2021}
-Strycharczuk, Patrycja, Małgorzata Ćavar, and Stefano Coretta. 2021.
-{``Distance Vs Time. Acoustic and Articulatory Consequences of Reduced
-Vowel Duration in Polish.''} \emph{The Journal of the Acoustical Society
-of America} 150 (1): 592607. \url{https://doi.org/10.1121/10.0005585}.
+Strycharczuk, P., Ćavar, M., \& Coretta, S. (2021). Distance vs time.
+Acoustic and articulatory consequences of reduced vowel duration in
+polish. \emph{The Journal of the Acoustical Society of America},
+\emph{150}(1), 592607. \url{https://doi.org/10.1121/10.0005585}
 
 \bibitem[\citeproctext]{ref-strycharczuk2025}
-Strycharczuk, Patrycja, Sam Kirkham, Emily Gorman, and Takayuki
-Nagamine. 2025. {``Dimensionality Reduction in Lingual Articulation of
-Vowels: Evidence From Lax Vowels in Northern Anglo-English.''}
-\emph{Language and Speech}, March, 00238309251320581.
-\url{https://doi.org/10.1177/00238309251320581}.
+Strycharczuk, P., Kirkham, S., Gorman, E., \& Nagamine, T. (2025).
+Dimensionality Reduction in Lingual Articulation of Vowels: Evidence
+From Lax Vowels in Northern Anglo-English. \emph{Language and Speech},
+00238309251320581. \url{https://doi.org/10.1177/00238309251320581}
 
 \bibitem[\citeproctext]{ref-sullivan2017}
-Sullivan, Natalie. 2017. {``Writing Arabizi: Orthographic Variation in
-Romanized Lebanese Arabic on Twitter.''} PhD thesis.
+Sullivan, N. (2017). \emph{Writing arabizi: Orthographic variation in
+romanized lebanese arabic on twitter} {[}PhD thesis{]}.
 
 \bibitem[\citeproctext]{ref-watson2002}
-Watson, Janet C. E. 2002. \emph{The phonology and morphology of Arabic}.
-Phonology of the world's languages. Oxford: Oxford University Press.
+Watson, J. C. E. (2002). \emph{The phonology and morphology of Arabic}.
+Oxford University Press.
 
 \bibitem[\citeproctext]{ref-wieling2018}
-Wieling, Martijn. 2018. {``Analyzing Dynamic Phonetic Data Using
-Generalized Additive Mixed Modeling: A Tutorial Focusing on Articulatory
-Differences Between L1 and L2 Speakers of English.''} \emph{Journal of
-Phonetics} 70: 86116. \url{https://doi.org/10.1016/j.wocn.2018.03.002}.
+Wieling, M. (2018). Analyzing dynamic phonetic data using generalized
+additive mixed modeling: A tutorial focusing on articulatory differences
+between L1 and L2 speakers of english. \emph{Journal of Phonetics},
+\emph{70}, 86116. \url{https://doi.org/10.1016/j.wocn.2018.03.002}
 
 \bibitem[\citeproctext]{ref-wood2006}
-Wood, Simon. 2006. \emph{Generalized Additive Models: An Introduction
-with r}. CRC Press.
+Wood, S. (2006). \emph{Generalized additive models: An introduction with
+r}. CRC Press.
 
 \bibitem[\citeproctext]{ref-wrench2024}
-Wrench, Alan. 2024. {``The Compartmental Tongue.''} \emph{Journal of
-Speech, Language, and Hearing Research} 67 (10S): 38873913.
-\url{https://doi.org/10.1044/2024_jslhr-23-00125}.
+Wrench, A. (2024). The compartmental tongue. \emph{Journal of Speech,
+Language, and Hearing Research}, \emph{67}(10S), 38873913.
+\url{https://doi.org/10.1044/2024_jslhr-23-00125}
 
 \bibitem[\citeproctext]{ref-wrench2022}
-Wrench, Alan, and Jonathan Balch-Tomes. 2022. {``Beyond the Edge:
-Markerless Pose Estimation of Speech Articulators from Ultrasound and
-Camera Images Using DeepLabCut.''} \emph{Sensors} 22 (3): 1133.
-\url{https://doi.org/10.3390/s22031133}.
+Wrench, A., \& Balch-Tomes, J. (2022). Beyond the Edge: Markerless Pose
+Estimation of Speech Articulators from Ultrasound and Camera Images
+Using DeepLabCut. \emph{Sensors}, \emph{22}(3), 1133.
+\url{https://doi.org/10.3390/s22031133}
 
 \bibitem[\citeproctext]{ref-zawaydeh1999}
-Zawaydeh, Bushra Adnan. 1999. {``The phonetics and phonology of
-gutturals in Arabic.''} PhD thesis.
+Zawaydeh, B. A. (1999). \emph{The phonetics and phonology of gutturals
+in Arabic} {[}PhD thesis{]}.
 
 \bibitem[\citeproctext]{ref-zeroual2011}
-Zeroual, Chakir, John H Esling, and Philip Hoole. 2011. {``EMA,
-Endoscopic, Ultrasound and Acoustic Study of Two Secondary Articulations
-in Moroccan Arabic.''} \emph{Instrumental Studies in Arabic Phonetics}
-319: 277.
+Zeroual, C., Esling, J. H., \& Hoole, P. (2011). EMA, endoscopic,
+ultrasound and acoustic study of two secondary articulations in moroccan
+arabic. \emph{Instrumental Studies in Arabic Phonetics}, \emph{319},
+277.
 
 \end{CSLReferences}
+
+
 
 
 

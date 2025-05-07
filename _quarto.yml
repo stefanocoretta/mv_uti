@@ -18,7 +18,9 @@ format:
           display: none;
         }
         </style>
-  tandf-pdf:
+  apaquarto-pdf:
+    # Can be jou (journal), man (manuscript), stu (student), or doc (document)
+    documentmode: man
     keep-tex: true
 
 execute:

@@ -1,0 +1,291 @@
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+
+
+\caption{\label{fig-knots}Schematic representation of the knots tracked
+by DeepLabCut. CC-BY Wrench and Balch-Tomes
+(\citeproc{ref-wrench2024}{Wrench, 2024}).}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{img/sensors-22-01133-g002.jpg}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-curl}Illustrating tongue contours curling up along
+the root. The estimated smooths in red fail to capture the curl.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-curl-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-tongue}The eleven knots on the tongue contour taken
+from the offset of {[}o{]} followed by {[}t{]} (Polish speaker PL04,
+tongue tip to the right).}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-tongue-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-tongue-xy}The horizontal and vertical positions of
+the elevel knots (same data as Figure~\ref{fig-tongue}).}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-tongue-xy-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-voff}Tongue contours of 9 Italian speakers and6
+Polish speakers, taken from the offset of the first vowel in /pCVCV/
+target words.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-voff-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-pl04}Tongue contours of PL04 (Polish) taken from the
+offset of vowels followed by coronal or velar stops. Tip is on the
+right.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-pl04-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-voff-pred}Predicted tongue contours based on a
+multivariate GAM. Uncertainty not shown.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-voff-pred-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-voff-ci}Predicted tongue contours based on a
+multivariate GAM, with 95\% Confidence Intervals.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-voff-ci-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-emph-ci}Predicted tongue contours with 95\% CIs from
+an MGAM of Lebanese Arabic emphatic and plain coronal consonants.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-ci-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-emph-part}Predicted tongue contours with 95\% CIs
+from an MGAM of Lebanese Arabic emphatic and plain coronal consonants
+split by speaker.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-part-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-pc-curves}Predicted curves along knot number for X
+and Y coordinates, as obtained from an MFPCA.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-pc-curves-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-contours}Predicted tongue contours as obtained from
+an MFPCA.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-contours-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-pc-scores}PC1/PC2 scores by language, consonant
+place of articulation and vowel.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-pc-scores-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-emph-curves-wide}Predicted tongue contours of
+Lebanese Arabic coronal consonants as obtained from an MFPCA.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-curves-wide-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-emph-speakers}PC1 and PC2 scores by vowel, consonant
+type and speaker.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-speakers-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-emph-pc1}PC1 scores of emphatic and plain consonants
+by speaker and vowel.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-pc1-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-emph-pc2}PC2 scores of emphatic and plain consonants
+by speaker and vowel.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-pc2-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-vow-emph}Reconstructed tongue contours based on
+PC1/PC2.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-vow-emph-1.pdf}}
+
+}
+
+\end{figure*}
