@@ -32,17 +32,17 @@ theme_set(theme_light())
 library(knitr)
 ```
 
-::: {.content-visible when-format="html"}
+:::: {.content-visible when-format="html"}
 ::: callout-warning
-This is a [Quarto manuscript](https://quarto.org/docs/manuscripts/). The outline to the left can be used to navigate to specific sections in the manuscript and the links below the outline take you to the Article Notebook and the data preparation notebook, Prepare Data. The Article Notebook is the same as the main article in the homepage but all code is shown. 
+This is a [Quarto manuscript](https://quarto.org/docs/manuscripts/). The outline to the left can be used to navigate to specific sections in the manuscript and the links below the outline take you to the Article Notebook and the data preparation notebook, Prepare Data. The Article Notebook is the same as the main article in the homepage but all code is shown.
 :::
-:::
+::::
 
 Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows researchers to image the shape of the tongue during speech at medium temporal resolution [30-100 frames per second, @epstein2005; @stone2005]. Typically, the midsagittal contour of the tongue is imaged, although 3D systems exist [@lulich2018]. Recent developments in machine learning assisted image processing has enabled faster tracking of estimated points on the tongue contour [@wrench2022].
 
 @wrench2022 have trained a DeepLabCut [DLC, @mathis2018] model to estimate and track specific flesh points on the tongue contour and anatomical landmarks as captured by UTI. The model estimates 11 "knots" from the vallecula to the tongue tip, plus three muscular-skeletal knots (the hyoid bone, the mandible base and the mental spine where the short tendon attaches). See @fig-knots for a schematic illustration of the position of the tracked knots. An advantage of DLC-tracked data over the traditional fan-line coordinate system is that (in theory) specific (moving) flesh points are tracked rather than simply the intersection of the tongue contour with fixed radii from the fan-line system. This makes DLC-tracked data resemble data obtained with electromagnetic articulography (EMA). The downside is that the tongue contour is represented by 11 freely moving points, which can move in any direction in the midsagittal two-dimensional space captured by UTI.
 
-![Schematic representation of the knots tracked by DeepLabCut. CC-BY Wrench and Balch-Tomes [@wrench2024].](img/sensors-22-01133-g002.jpg){#fig-knots fig-align="center"}
+![Schematic representation of the knots tracked by DeepLabCut. CC-BY Wrench and Balch-Tomes [@wrench2024].](img/sensors-22-01133-g002.jpg){#fig-knots fig-align="center" width="500"}
 
 Classical ways to analyse tongue contour data obtained from a fan-line system, like SS-ANOVA [@davidson2006; @chen2011] and Generalised Additive Models using polar coordinates [@coretta2018c; @coretta2019g], are not appropriate with DLC-tracked data, due to the tongue contour "curling" onto itself along the root. This is illustrated in @fig-curl: the plot shows the DLC-tracked points (in black) of the data from a Polish speaker and the traced tongue contours based on the points (see @sec-gam-vc-coart for details on the data). The contours clearly curl onto themselves along the root (on the left of the contour). The red smooths represent a LOESS smooth, calculated for Y along X. This approach clearly miscalculates the smooth for the back half of the tongue, simply because there are two Y values for the same X value, and the procedure, in that case, returns something like an average of the two values. Generalised Additive Models (introduced in the following section) work on the same principle and hence would produce the same type of error. Using polar coordinates would not solve the problem: while a fan-line system lends itself easily to using polar coordinates (since the origin of the probe can be used to approximate the origin of the coordinate system), this cannot be done with DLC data because there is no single origin in the actual tongue anatomy from which vectors of displacement radiate, that would work for all tracked points.
 

@@ -215,7 +215,7 @@ tongue imaging}
 
 \leftheader{Coretta and Sakr}
 
-\date{2025-05-07}
+\date{2025-05-08}
 
 
 \abstract{This tutorial paper introduces two approaches to modelling
@@ -444,10 +444,6 @@ the root. The estimated smooths in red fail to capture the curl.}
 
 \end{figure}%
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 In this tutorial, we introduce two alternative methods to analyse
 DLC-tracked tongue contour data: Multivariate Generalised Additive
 Models (Section~\ref{sec-gam}) and Multivariate Functional Principal
@@ -497,10 +493,6 @@ tongue tip to the right).}
 
 \end{figure}%
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 The same data is shown in Figure~\ref{fig-tongue-xy} in a different
 format. Instead of a Cartesian coordinate system of X and Y values, the
 plot has knot number on the \emph{x}-axis and X/Y coordinates on the
@@ -528,10 +520,6 @@ the elevel knots (same data as Figure~\ref{fig-tongue}).}
 }
 
 \end{figure}%
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 \subsection{VC coarticulation}\label{sec-gam-vc-coart}
 
@@ -584,10 +572,6 @@ vowel production) in velar than in coronal stops.
 \end{Highlighting}
 \end{Shaded}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 \begin{table}
 
 {\caption{{A sample of the VC coarticulation data from Coretta
@@ -611,10 +595,6 @@ it01 & pugu & -44.9086 & 13.3162 & 5 & Dorsum\_1 \\
 
 \end{table}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 \phantomsection\label{cell-fig-voff}
 \begin{figure}[H]
 
@@ -630,10 +610,6 @@ target words.}
 
 \end{figure}%
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 \phantomsection\label{cell-fig-pl04}
 \begin{figure}[H]
 
@@ -648,10 +624,6 @@ right.}
 }
 
 \end{figure}%
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 We can now run a multivariate GAM to model the tongue contours. A
 multivariate GAM can be fitted by providing model formulae for each
@@ -698,10 +670,6 @@ variable, we use the interaction of vowel and place,
 \NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 The model summary is not particular insightful. What we are normally
 interested in is the reconstructed tongue contours and in which
@@ -751,10 +719,6 @@ must be included in the prediction grid.
 \end{Highlighting}
 \end{Shaded}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 With the prediction grid \texttt{frame\_voff} we can now extract
 predictions from the model \texttt{voff\_gam} with \texttt{predict()}.
 This function requires the GAM model object (\texttt{voff\_gam}) and the
@@ -796,10 +760,6 @@ the name of the outcome variables.
 \end{Highlighting}
 \end{Shaded}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 Now we have to join the prediction in \texttt{voff\_gam\_p} with the
 prediction frame, so that we have all the predictor values in the same
 data frame. We do so here with \texttt{bind\_cols()} from the dplyr
@@ -835,10 +795,6 @@ coordinate axis independently.
 \end{Highlighting}
 \end{Shaded}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 Figure~\ref{fig-voff-pred} and Figure~\ref{fig-voff-ci} show the
 predicted tongue contours based on the \texttt{voff\_gam} model, without
 and with 95\% CIs respectively. As mentioned earlier, there isn't a
@@ -860,10 +816,6 @@ multivariate GAM. Uncertainty not shown.}
 
 \end{figure}%
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 \phantomsection\label{cell-fig-voff-ci}
 \begin{figure}[H]
 
@@ -877,10 +829,6 @@ multivariate GAM, with 95\% Confidence Intervals.}
 }
 
 \end{figure}%
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 Figure~\ref{fig-voff-ci} strongly suggests greater VC coarticulation on
 the C closure in coronal that in velar contexts. Moreover, the vowels
@@ -946,22 +894,10 @@ total of 1000 recordings. The subset of the data used here is from 35ms
 before consonant offset, defined as the burst for the plosives and as
 the end of the frication noise for the fricatives.
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 Since the procedure to fit and plot MGAMs is the same as the one
 presented in Section~\ref{sec-gam-vc-coart}, we won't be showing the
 code in this section, but readers can find the code in the
 \href{index.qmd}{Article Notebook}.
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 Figure~\ref{fig-emph-ci} shows the predicted tongue contours of emphatic
 and plain consonants, split by following vowel. First, the following
@@ -990,14 +926,6 @@ an MGAM of Lebanese Arabic emphatic and plain coronal consonants.}
 
 \end{figure}%
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 In Figure~\ref{fig-emph-part}, predictions have been calculated for
 individual speakers (see Article Notebook online, linked above, for the
 code). First, there is a good deal of individual variation: some
@@ -1024,10 +952,6 @@ split by speaker.}
 }
 
 \end{figure}%
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 \section{Multivariate Functional Principal Component
 Analysis}\label{sec-fpca}
@@ -1086,10 +1010,6 @@ MFPCA (except landmarkregUtils, they are available on CRAN).
 \end{Highlighting}
 \end{Shaded}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 The format required to work through MFPCA is a ``long'' format with one
 column containing the coordinate labels (\emph{x} or \emph{y}
 coordinate) and another with the coordinate values. We can easily pivot
@@ -1108,10 +1028,6 @@ familiarise yourself with the format of the input and resulting data.
   \FunctionTok{pivot\_longer}\NormalTok{(}\FunctionTok{c}\NormalTok{(X\_z, Y\_z), }\AttributeTok{names\_to =} \StringTok{"dim"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 In the second step, we create a \texttt{multiFunData} object: this is a
 special type of list object, with the observations of the two
@@ -1144,10 +1060,6 @@ series column (\texttt{knot}) and the column with the coordinate values
 \end{Highlighting}
 \end{Shaded}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 Once we have our \texttt{multiFunData} object, we can use the
 \texttt{MFPCA()} function to compute an MFPCA. In this tutorial we will
 compute the first two PCs, but you can compute up to \(K-1\) PCs where
@@ -1167,10 +1079,6 @@ compute the first two PCs, but you can compute up to \(K-1\) PCs where
 \end{Highlighting}
 \end{Shaded}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 We can quickly calculate the proportion of explained variance of each PC
 with the following code. Since we have calculated only two PCs, PC1 and
 PC2 together explain 100\% of the variance in our data. For each PC that
@@ -1187,10 +1095,6 @@ variance patterns in the data are captured.
 \begin{verbatim}
 [1] 0.7108713 0.2891287
 \end{verbatim}
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 The best way to assess the effect of the PC scores on the shape of the
 tongue contours is to plot the predicted tongue contours based on a set
@@ -1229,10 +1133,6 @@ of the scores standard deviation. This is what the following code does.
 \end{Highlighting}
 \end{Shaded}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 The created data frame \texttt{pc\_curves} has the predicted values of
 the X and Y coordinates \emph{along the knots}. This is the same
 structure as Figure~\ref{fig-tongue-xy}, with the knot number on the
@@ -1266,10 +1166,6 @@ and Y coordinates, as obtained from an MFPCA.}
 
 \end{figure}%
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 In order to plot tongue contours in the X/Y coordinate system, we simply
 need to pivot the data to a wider format.
 
@@ -1279,10 +1175,6 @@ need to pivot the data to a wider format.
   \FunctionTok{pivot\_wider}\NormalTok{(}\AttributeTok{names\_from =}\NormalTok{ dim)}
 \end{Highlighting}
 \end{Shaded}
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 Figure~\ref{fig-contours} plots the predicted contours based on the the
 PC scores (specifically, fractions of the standard deviation of the PC
@@ -1312,10 +1204,6 @@ an MFPCA.}
 
 \end{figure}%
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 Given the patterns in Figure~\ref{fig-contours}, we can expect to see
 differences in PC2 scores based on the vowel if there is VC
 coarticulation. We can obtain the PC scores of each observation in the
@@ -1329,10 +1217,6 @@ data with the following code.
   \FunctionTok{bind\_cols}\NormalTok{(dlc\_voff\_long }\SpecialCharTok{|\textgreater{}} \FunctionTok{distinct}\NormalTok{(frame\_id, vowel, c2\_place, language))}
 \end{Highlighting}
 \end{Shaded}
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 Figure~\ref{fig-pc-scores} plots PC scores by language (rows), consonant
 place (columns) and vowel (colour). Both in Italian and Polish, we can
@@ -1357,10 +1241,6 @@ place of articulation and vowel.}
 }
 
 \end{figure}%
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 Once one has established which patterns each PC is capturing, PC scores
 can be submitted to further statistical modelling, like for example
@@ -1398,10 +1278,6 @@ Lebanese Arabic coronal consonants as obtained from an MFPCA.}
 
 \end{figure}%
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 Figure~\ref{fig-emph-speakers} plots the PC scores for each vowel,
 emphaticness and speaker combination. Points are coloured based on
 emphaticness: emphatic in green and plain in orange. This figure
@@ -1438,10 +1314,6 @@ type and speaker.}
 
 \end{figure}%
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 Figure~\ref{fig-emph-pc1} and Figure~\ref{fig-emph-pc2} illustrate one
 way to plot the PC scores individually for PC1 and PC2. We won't include
 here a full description of the plots, since they should be
@@ -1462,10 +1334,6 @@ by speaker and vowel.}
 
 \end{figure}%
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 \phantomsection\label{cell-fig-emph-pc2}
 \begin{figure}[H]
 
@@ -1479,10 +1347,6 @@ by speaker and vowel.}
 }
 
 \end{figure}%
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 Finally, it will usually be helpful to reconstruct the predicted tongue
 contours of specific context. For example, we might be interested in
@@ -1512,10 +1376,6 @@ can be done through the following code. We recommend to inspect the
   \FunctionTok{unnest}\NormalTok{(dim)}
 \end{Highlighting}
 \end{Shaded}
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 The following code calculates the reconstructed tongue contours based on
 both PC1 and PC2. One could also calculate the reconstructed contours at
@@ -1547,10 +1407,6 @@ it was done above.
 \end{Highlighting}
 \end{Shaded}
 
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
-
 Finally, Figure~\ref{fig-vow-emph} plots the reconstructed contours.
 Based on this figure, we do find pharyngealisation in emphatic
 consonants followed by /A, O, U/ on average, while pharyngealisation is
@@ -1569,10 +1425,6 @@ PC1/PC2.}
 }
 
 \end{figure}%
-
-\textsubscript{Source:
-\href{https://stefanocoretta.github.io/mv_uti/index.qmd.html}{Article
-Notebook}}
 
 \section{Advantages and disadvantages}\label{sec-procons}
 

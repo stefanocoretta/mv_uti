@@ -7,6 +7,8 @@ project:
 manuscript:
   article: index.qmd
 
+notebook-links: false
+
 format:
   html:
     comments:
@@ -22,6 +24,7 @@ format:
     # Can be jou (journal), man (manuscript), stu (student), or doc (document)
     documentmode: man
     keep-tex: true
+  docx: default
 
 execute:
   freeze: auto
