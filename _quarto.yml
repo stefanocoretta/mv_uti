@@ -7,7 +7,7 @@ project:
 manuscript:
   article: index.qmd
 
-notebook-links: false
+notebook-links: global
 
 format:
   html:
