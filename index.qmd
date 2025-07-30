@@ -44,7 +44,7 @@ Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows research
 
 ![Schematic representation of the knots tracked by DeepLabCut. CC-BY Wrench and Balch-Tomes [@wrench2024].](img/sensors-22-01133-g002.jpg){#fig-knots fig-align="center" width="500"}
 
-Classical ways to analyse tongue contour data obtained from a fan-line system, like SS-ANOVA [@davidson2006; @chen2011] and Generalised Additive Models using polar coordinates [@coretta2018c; @coretta2019g], are not appropriate with DLC-tracked data, due to the tongue contour "curling" onto itself along the root. This is illustrated in @fig-curl: the plot shows the DLC-tracked points (in black) of the data from a Polish speaker and the traced tongue contours based on the points (see @sec-gam-vc-coart for details on the data). The contours clearly curl onto themselves along the root (on the left of the contour). The red smooths represent a LOESS smooth, calculated for Y along X. This approach clearly miscalculates the smooth for the back half of the tongue, simply because there are two Y values for the same X value, and the procedure, in that case, returns something like an average of the two values. Generalised Additive Models (introduced in the following section) work on the same principle and hence would produce the same type of error. Using polar coordinates would not solve the problem: while a fan-line system lends itself easily to using polar coordinates (since the origin of the probe can be used to approximate the origin of the coordinate system), this cannot be done with DLC data because there is no single origin in the actual tongue anatomy from which vectors of displacement radiate, that would work for all tracked points.
+Classical ways to analyse tongue contour data obtained from a fan-line system, like SS-ANOVA [@davidson2006; @chen2011] and Generalised Additive Models using polar coordinates [@coretta2018c; @coretta2019g], are not appropriate with DLC-tracked data, due to the tongue contour "curling" onto itself along the root. This is illustrated in @fig-curl: the plot shows the DLC-tracked points (in black) of the data from a Polish speaker and the traced tongue contours based on the points (see @sec-gam-vc-coart for details on the data). The contours clearly curl onto themselves along the root (on the left of the contour). The red smooths represent a LOESS smooth, calculated for Y along X. This approach clearly miscalculates the smooth for the back half of the tongue, simply because there are two Y values for the same X value, and the procedure, in that case, returns something like an average of the two values. Generalised Additive Models (introduced in the following section) work on the same principle and hence would produce the same type of error. While using polar coordinates would work mathematically, it is less ideal from an articulatory perspective: a polar-based fan-line system with a single origin fails to capture the the vectors of movement of the individual knots estimated by DLC. @fig-vect illustrates this point: the polar radii in grey radiate from a manually selected origin with coordinates (100, 30). While the radii would correctly capture the position of each knot on the bi-dimensional space, the representation of displacement of each knot is constrained by the direction of the radii. We don't consider this constraint to be fatal, but Generalised Additive Models allow for a more accurate depiction of knot movement by removing such constraints.
 
 ```{r}
 #| label: fig-curl
@@ -61,6 +61,47 @@ dlc_voff_f |>
   coord_fixed() +
   facet_grid(vowel ~ c2) +
   theme(legend.position = "none")
+```
+
+```{r}
+#| label: fig-vect
+#| fig-cap: "Illustrating vectors of articulatory movement vs polar coordinates."
+#| warning: false
+
+dlc_emph_f <- readRDS("data/sakr2025/dlc_emph_f.rds")
+
+p <- dlc_emph_f |> 
+  filter(participant == "Sak") |> 
+  ggplot(aes(X, Y, colour = as.factor(knot))) +
+  geom_point(alpha = 0.5) +
+  geom_segment(x = 45, y = 30, xend = 75, yend = 40) +
+  geom_segment(x = 35, y = 42, xend = 75, yend = 52) +
+  geom_segment(x = 35, y = 60, xend = 75, yend = 67) +
+  geom_segment(x = 40, y = 75, xend = 75, yend = 75) +
+  geom_segment(x = 78, y = 60, xend = 92, yend = 90) +
+  geom_segment(x = 85, y = 60, xend = 105, yend = 90) +
+  geom_segment(x = 90, y = 55, xend = 111, yend = 85) +
+  geom_segment(x = 100, y = 55, xend = 120, yend = 80) +
+  geom_segment(x = 104, y = 52, xend = 123, yend = 75) +
+  geom_segment(x = 108, y = 50, xend = 125, yend = 67) +
+  coord_fixed(xlim = c(27, 125), ylim = c(25, 95)) +
+  scale_color_brewer(palette = "PuOr") +
+  theme_dark() +
+  theme(legend.position = "none")
+
+cx <- 100
+cy <- 30
+radii <- 120
+angles <- seq(0, 360, by = 20)
+
+for (a in angles) {
+  rad <- a * pi / 180
+  xend <- cx + max(radii) * cos(rad)
+  yend <- cy + max(radii) * sin(rad)
+  p <- p + annotate("segment", x = cx, y = cy, xend = xend, yend = yend, color = "grey80")
+}
+
+p
 ```
 
 In this tutorial, we introduce two alternative methods to analyse DLC-tracked tongue contour data: Multivariate Generalised Additive Models (@sec-gam) and Multivariate Functional Principal Component Analysis (@sec-fpca). We will present the pros and cons of each method in @sec-procons, but to summarise we are inclined to recommend Multivariate Functional Principal Component Analysis over Multivariate Generalised Additive Models due to the substantial computational overhead and reduced practical utility of the latter over the former.
