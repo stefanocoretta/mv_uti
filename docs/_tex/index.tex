@@ -215,7 +215,7 @@ tongue imaging}
 
 \leftheader{Coretta and Sakr}
 
-\date{2025-05-08}
+\date{2025-07-31}
 
 
 \abstract{This tutorial paper introduces two approaches to modelling
@@ -422,13 +422,17 @@ half of the tongue, simply because there are two Y values for the same X
 value, and the procedure, in that case, returns something like an
 average of the two values. Generalised Additive Models (introduced in
 the following section) work on the same principle and hence would
-produce the same type of error. Using polar coordinates would not solve
-the problem: while a fan-line system lends itself easily to using polar
-coordinates (since the origin of the probe can be used to approximate
-the origin of the coordinate system), this cannot be done with DLC data
-because there is no single origin in the actual tongue anatomy from
-which vectors of displacement radiate, that would work for all tracked
-points.
+produce the same type of error. While using polar coordinates would work
+mathematically, it is less ideal from an articulatory perspective: a
+polar-based fan-line system with a single origin fails to capture the
+the vectors of movement of the individual knots estimated by DLC.
+Figure~\ref{fig-vect} illustrates this point: the polar radii in grey
+radiate from a manually selected origin with coordinates (100, 30).
+While the radii would correctly capture the position of each knot on the
+bi-dimensional space, the representation of displacement of each knot is
+constrained by the direction of the radii. We don't consider this
+constraint to be fatal, but Generalised Additive Models allow for a more
+accurate depiction of knot movement by removing such constraints.
 
 \phantomsection\label{cell-fig-curl}
 \begin{figure}[H]
@@ -439,6 +443,20 @@ the root. The estimated smooths in red fail to capture the curl.}
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-curl-1.pdf}}
+
+}
+
+\end{figure}%
+
+\phantomsection\label{cell-fig-vect}
+\begin{figure}[H]
+
+\caption{\label{fig-vect}Illustrating vectors of articulatory movement
+vs polar coordinates.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-vect-1.pdf}}
 
 }
 
@@ -1244,8 +1262,9 @@ place of articulation and vowel.}
 
 Once one has established which patterns each PC is capturing, PC scores
 can be submitted to further statistical modelling, like for example
-regression models where the PC scores are outcome variables and several
-predictors are included to assess possible differences in PC scores.
+regression models in which the PC scores are outcome variables and
+predictors are included to assess possible differences in PC scores, or
+in which the PC scores are predictors themselves.
 
 \subsection{Emphaticness}\label{emphaticness}
 
@@ -1426,6 +1445,57 @@ PC1/PC2.}
 
 \end{figure}%
 
+To illustrate how the PC scores can be further modelled using
+regressions, we fitted a Bayesian Gaussian regression model using brms
+(\citeproc{ref-burkner2017}{Bürkner, 2017}) with PC1 as the outcome,
+emphaticness (emphatic vs plain) and vowel (A, E, I, O, U) and their
+interaction as predictors. We also included by-participant varying
+intercepts and varying slopes for the emphaticness/vowel interaction.
+Both emphaticness and vowel were coded using sum contrasts. This is the
+R formula we used:
+\texttt{PC1\ \textasciitilde{}\ emph\_fac\ *\ vowel\_fac\ +\ (emph\_fac\ *\ vowel\_fac\ \textbar{}\ participant)}.
+We used the default priors as set by brms. Since a full introduction to
+regression modelling and Bayesian inference is beyond the scope of this
+paper, we refer the readers to the many resources now available. See the
+online version of the manuscript for the full code of the Bayesian
+analysis of PC1: \url{https://stefanocoretta.github.io/mv_uti/}.
+
+\phantomsection\label{cell-fig-emph-bm}
+\begin{figure}[H]
+
+\caption{\label{fig-emph-bm}}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-bm-1.pdf}}
+
+}
+
+\end{figure}%
+
+\begin{table}
+
+{\caption{{}{\label{tbl-emph-bm}}}
+\vspace{-20pt}}
+
+\begin{longtable}[]{@{}lrrrrrrrr@{}}
+\toprule\noalign{}
+variable & mean & sd & 2.5\% & 97.5\% & 10\% & 90\% & 15\% & 85\% \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+A\_diff & -0.58 & 0.25 & -1.03 & -0.08 & -0.83 & -0.33 & -0.77 &
+-0.39 \\
+E\_diff & -0.18 & 0.25 & -0.68 & 0.34 & -0.44 & 0.09 & -0.38 & 0.03 \\
+I\_diff & -0.22 & 0.42 & -1.06 & 0.59 & -0.65 & 0.24 & -0.55 & 0.14 \\
+O\_diff & -0.38 & 0.23 & -0.81 & 0.09 & -0.62 & -0.14 & -0.57 & -0.20 \\
+U\_diff & -1.08 & 0.49 & -2.06 & -0.07 & -1.60 & -0.52 & -1.49 &
+-0.64 \\
+\end{longtable}
+
+\end{table}
+
 \section{Advantages and disadvantages}\label{sec-procons}
 
 Both Multivariate GAMs and FPCA are a useful way to model DLC-tracked
@@ -1548,6 +1618,11 @@ user guide. {Version} 2.16}.
 \bibitem[\citeproctext]{ref-bin-muqbil2006}
 Bin-Muqbil, M. S. (2006). \emph{Phonetic and phonological aspects of
 arabic emphatics and gutturals}. The University of Wisconsin-Madison.
+
+\bibitem[\citeproctext]{ref-burkner2017}
+Bürkner, P.-C. (2017). Brms: An r package for bayesian multilevel models
+using stan. \emph{Journal of Statistical Software}, \emph{80}(1), 128.
+\url{https://doi.org/10.18637/jss.v080.i01}
 
 \bibitem[\citeproctext]{ref-chen2011}
 Chen, Y., \& Lin, H. (2011). \emph{Analysing tongue shape and movement

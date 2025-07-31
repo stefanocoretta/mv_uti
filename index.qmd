@@ -17,7 +17,7 @@ citation:
 google-scholar: true
 date: "`r Sys.Date()`"
 abstract: |
-  This tutorial paper introduces two approaches to modelling tongue conoutr data obtained with DeepLabCut using Multivariate Generalised Additive Models (MGAMs) and Multivariate Functional Principal Component Analysis (MFPCA). For each method, we present a fully commented analysis of two illustrative data sets: VC coarticulation in Italian and Polish, and consonant emphaticness in Lebanese Arabic. All the materials (inlcuding data and code) are available in the research compendium of the tutorial at <https://github.com/stefanocoretta/mv_uti>. We conclude by discussing advantages and disadvantages of the two methods (MGAM and MFPCA) and we recommend researchers to prefer MFPCA over MGAM as an initial step for modelling tongue contours.
+  This tutorial paper introduces two approaches to modelling tongue contour data obtained with DeepLabCut using Multivariate Generalised Additive Models (MGAMs) and Multivariate Functional Principal Component Analysis (MFPCA). For each method, we present a fully commented analysis of two illustrative data sets: VC coarticulation in Italian and Polish, and consonant emphaticness in Lebanese Arabic. All the materials (inlcuding data and code) are available in the research compendium of the tutorial at <https://github.com/stefanocoretta/mv_uti>. We conclude by discussing advantages and disadvantages of the two methods (MGAM and MFPCA) and we recommend researchers to prefer MFPCA over MGAM as an initial step for modelling tongue contours.
 keywords: [ultrasound tongue imaging, multivariate statistics, functional principal component analysis, generalised additive models, phonetics, articulation]
 ---
 
@@ -30,6 +30,9 @@ keywords: [ultrasound tongue imaging, multivariate statistics, functional princi
 library(tidyverse)
 theme_set(theme_light())
 library(knitr)
+library(brms)
+library(ggdist)
+library(posterior)
 ```
 
 :::: {.content-visible when-format="html"}
@@ -40,7 +43,7 @@ This is a [Quarto manuscript](https://quarto.org/docs/manuscripts/). The outline
 
 Ultrasound Tongue Imaging (UTI) is a non-invasive technique that allows researchers to image the shape of the tongue during speech at medium temporal resolution [30-100 frames per second, @epstein2005; @stone2005]. Typically, the midsagittal contour of the tongue is imaged, although 3D systems exist [@lulich2018]. Recent developments in machine learning assisted image processing has enabled faster tracking of estimated points on the tongue contour [@wrench2022].
 
-@wrench2022 have trained a DeepLabCut [DLC, @mathis2018] model to estimate and track specific flesh points on the tongue contour and anatomical landmarks as captured by UTI. The model estimates 11 "knots" from the vallecula to the tongue tip, plus three muscular-skeletal knots (the hyoid bone, the mandible base and the mental spine where the short tendon attaches). See @fig-knots for a schematic illustration of the position of the tracked knots. An advantage of DLC-tracked data over the traditional fan-line coordinate system is that (in theory) specific (moving) flesh points are tracked rather than simply the intersection of the tongue contour with fixed radii from the fan-line system. This makes DLC-tracked data resemble data obtained with electromagnetic articulography (EMA). The downside is that the tongue contour is represented by 11 freely moving points, which can move in any direction in the midsagittal two-dimensional space captured by UTI.
+@wrench2022 have trained a DeepLabCut [DLC, @mathis2018] model to estimate and track specific flesh points on the tongue contour and anatomical landmarks as captured by UTI. The model estimates 11 "knots" from the vallecula to the tongue tip, plus three muscular-skeletal knots (the hyoid bone, the mandible base and the mental spine where the short tendon attaches). See @fig-knots for a schematic illustration of the position of the tracked knots. An advantage of DLC-tracked data over the traditional fan-line coordinate system is that (in theory) specific (moving) flesh points are tracked rather than simply the intersection of the tongue contour with fixed radii from the fan-line system. This makes DLC-tracked data resemble data obtained with electromagnetic articulography (EMA). The downside is that the tongue contour is represented by 11 freely moving points, which can move in any direction in the midsagittal two-dimensional space captured by UTI, and this requires more advanced statistical approaches than those commonly employed to analyse tongue contour data.
 
 ![Schematic representation of the knots tracked by DeepLabCut. CC-BY Wrench and Balch-Tomes [@wrench2024].](img/sensors-22-01133-g002.jpg){#fig-knots fig-align="center" width="500"}
 
@@ -106,7 +109,7 @@ for (a in angles) {
 p
 ```
 
-In this tutorial, we introduce two alternative methods to analyse DLC-tracked tongue contour data: Multivariate Generalised Additive Models (@sec-gam) and Multivariate Functional Principal Component Analysis (@sec-fpca). We will present the pros and cons of each method in @sec-procons, but to summarise we are inclined to recommend Multivariate Functional Principal Component Analysis over Multivariate Generalised Additive Models due to the substantial computational overhead and reduced practical utility of the latter over the former.
+In this tutorial, we introduce two alternative methods to analyse DLC-tracked tongue contour data: Multivariate Generalised Additive Models (@sec-gam) and Multivariate Functional Principal Component Analysis (@sec-fpca). We will present the pros and cons of each method in @sec-procons, but to summarise we are inclined to recommend Multivariate Functional Principal Component Analysis over Multivariate Generalised Additive Models due to the substantial computational overhead and reduced practical utility of the latter over the former. This tutorial illustrates how to conduct static analyses of tongue contours (i.e. modelling contours at specific time-points), but the techniques discussed here can be extended to dynamic (time-varying) analyses as shown in @gubian2025.
 
 # Multivariate Generalised Additive Models {#sec-gam}
 
@@ -366,9 +369,9 @@ voff_gam_p |>
 
 ## Emphaticness {#sec-gam-emphaticness}
 
-The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from @sakr2025. Lebanese Arabic is a variety of Arabic primarily spoken in Lebanon, where it is in constant contact with a number of Indo-European languages [primarily English and French, as vectors of education and business, see eg. @shaaban1999], as well as the written standard form of Arabic known as Modern Standard Arabic (MSA). The relationship between Lebanese Arabic (LA) and MSA in Lebanon is one of diglossia [see eg. @lian2022], where LA is spoken in most contexts, but not written, and MSA is the written variety, and therefore also primarily used for legal and official purposes.
+The second case study is about consonant "emphaticness" in Lebanese Arabic. The data is from @sakr2025. Lebanese Arabic is a variety of Arabic primarily spoken in Lebanon, where it is in constant contact with a number of Indo-European languages [primarily English and French, as vectors of education and business, see e.g.. @shaaban1999], as well as the written standard form of Arabic known as Modern Standard Arabic (MSA). The relationship between Lebanese Arabic (LA) and MSA in Lebanon is one of diglossia [see e.g.. @lian2022], where LA is spoken in most contexts, but not written, and MSA is the written variety, and therefore also primarily used for legal and official purposes.
 
-Emphasis is a phonologically contrastive feature of Semitic languages. In most varieties of Arabic, it is usually reported to be realised as pharyngealisation [@sakr2023; @al-tamimi2017; @zeroual2011; @watson2002] with some variation depending on phonological context [@sakr2025; @al-tamimi2011] or on sociolinguistic factors [@khattab2006]. Older sources instead report the secondary place of articulation as being the velum [see eg. @obrecht1968; @nasr1959] or the uvula [see eg. @bin-muqbil2006; @zawaydeh1999; @ghazeli1977]. Whatever the specifics of this secondary place of articulation, the literature additionally suggests the occurrence of a loss of emphasis in Lebanese, or more generally Levantine or Western dialects of Arabic, likely as a result of the contact with the Indo-European languages mentioned above [see among others @sullivan2017; @el-khaissi2015; @elhija2012; @alorifi2008].
+Emphasis is a phonologically contrastive feature of Semitic languages. In most varieties of Arabic, it is usually reported to be realised as pharyngealisation [@sakr2023; @al-tamimi2017; @zeroual2011; @watson2002] with some variation depending on phonological context [@sakr2025; @al-tamimi2011] or on sociolinguistic factors [@khattab2006]. Older sources instead report the secondary place of articulation as being the velum [see e.g.. @obrecht1968; @nasr1959] or the uvula [see e.g.. @bin-muqbil2006; @zawaydeh1999; @ghazeli1977]. Whatever the specifics of this secondary place of articulation, the literature additionally suggests the occurrence of a loss of emphasis in Lebanese, or more generally Levantine or Western dialects of Arabic, likely as a result of the contact with the Indo-European languages mentioned above [see among others @sullivan2017; @el-khaissi2015; @elhija2012; @alorifi2008].
 
 It is against this background, and as part of efforts to document the precise place of secondary articulation of emphasis in Lebanese Arabic, as well as to document whether or not emphasis has, indeed, been lost in the variety, that the data used here [from @sakr2025] was collected. It consists of UTI recordings, by 5 participants, of CVb stimuli. The onset was either an emphatic or an unemphatic ('plain'), voiced or voiceless, alveolar, plosive or fricative /t, ṭ, d, ḍ, s, ṣ, z, ẓ/; when talking about a plain/emphatic pair, we denote them /T, D, S, Z/. The nucleus was one of five vowel qualities [see @sakr2019] present in Lebanese, which we will denote with /A, E, I, O, U/ to signal that these are neither to be taken as phonemes or exact phonetic realisations. The coda was the voiced bilabial plosive /b/. Each recording consisted of four stimuli in randomized order, covering forty syllables, in five repetitions; for a total of 1000 recordings. The subset of the data used here is from 35ms before consonant offset, defined as the burst for the plosives and as the end of the frication noise for the fricatives.
 
@@ -709,7 +712,7 @@ pc_scores |>
   scale_color_brewer(palette = "Dark2")
 ```
 
-Once one has established which patterns each PC is capturing, PC scores can be submitted to further statistical modelling, like for example regression models where the PC scores are outcome variables and several predictors are included to assess possible differences in PC scores.
+Once one has established which patterns each PC is capturing, PC scores can be submitted to further statistical modelling, like for example regression models in which the PC scores are outcome variables and predictors are included to assess possible differences in PC scores, or in which the PC scores are predictors themselves.
 
 ## Emphaticness
 
@@ -902,7 +905,7 @@ pc_scores |>
   ggplot(aes(vowel, PC2, colour = emph)) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2), alpha = 0.25) +
   scale_color_brewer(palette = "Dark2") +
-    facet_wrap(vars(participant))
+  facet_wrap(vars(participant))
 ```
 
 Finally, it will usually be helpful to reconstruct the predicted tongue contours of specific context. For example, we might be interested in showing the average tongue contours for emphatic and plain consonant followed by each of the five vowels in the data. This is shown in @fig-vow-emph. In order to obtain the reconstructed contours, we first need to calculate mean PC scores for each vowel. This can be done through the following code. We recommend to inspect the `pc_scores_mean` object.
@@ -965,7 +968,140 @@ Finally, @fig-vow-emph plots the reconstructed contours. Based on this figure, w
 pc_curves_2 |> 
   ggplot(aes(X_z, Y_z, colour = emph)) +
   geom_path() +
-  facet_wrap(vars(vowel))
+  facet_wrap(vars(vowel)) +
+  scale_color_brewer(palette = "Dark2")
+```
+
+To illustrate how the PC scores can be further modelled using regressions, we fitted a Bayesian Gaussian regression model using brms [@burkner2017] with PC1 as the outcome, emphaticness (emphatic vs plain) and vowel (A, E, I, O, U) and their interaction as predictors. We also included by-participant varying intercepts and varying slopes for the emphaticness/vowel interaction. Both emphaticness and vowel were coded using sum contrasts. This is the R formula we used: `PC1 ~ emph_fac * vowel_fac + (emph_fac * vowel_fac | participant)`. We used the default priors as set by brms. Since a full introduction to regression modelling and Bayesian inference is beyond the scope of this paper, we refer the readers to the many resources now available. See the online version of the manuscript for the full code of the Bayesian analysis of PC1: <https://stefanocoretta.github.io/mv_uti/>.
+
+::: {.content-visible when-format="html"}
+Before fitting the model, we create a factor version of the columns `emph` and `vowel` so that we can set the contrasts to sum coding. We then fit a Bayesian Gaussian regression with brms.
+
+```{r}
+#| label: emph-bm
+
+pc_scores_bm <- pc_scores |> 
+  mutate(
+    # Make factors
+    emph_fac = factor(emph, levels = c("emphatic", "plain")),
+    vowel_fac = factor(vowel, levels = c("A", "E", "I", "O", "U"))
+  )
+
+# Set contrasts to sum coding
+contrasts(pc_scores_bm$emph_fac) <- "contr.sum"
+contrasts(pc_scores_bm$vowel_fac) <- "contr.sum"
+
+# Attach brms package
+library(brms)
+
+# Fit a Gaussian regression
+emph_bm <- brm(
+  PC1 ~ emph_fac * vowel_fac + (emph_fac * vowel_fac | participant),
+  family = gaussian,
+  data = pc_scores_bm,
+  # Uses 4 cores to run MCMC in parallel
+  cores = 4,
+  # Set the seed for reproducibility
+  seed = 4235,
+  # Save the model fit to file
+  file = "data/cache/emph_bm"
+)
+```
+
+Here's the summary of the model (multilevel hyperparameters not shown). Because of the sum coding, the `Intercept` indicates the grand mean PC1 across emphaticness and vowel type. `emph_fac1` corresponds to the difference of emphatic vs the grand mean. If we double the posterior draws of `emph_fac1`, we get the posterior of the estimated difference between emphatic and plain.
+
+```{r}
+#| label: emph-bm-regcoef
+
+fixef(emph_bm)
+```
+
+To proceed, we need to obtain the posterior draws from the model.
+
+```{r}
+#| label: emph-bm-draws
+
+emph_bm_draws <- as_draws_df(emph_bm) |> 
+  mutate(
+    emph_plain = 2 * b_emph_fac1
+  )
+
+emph_bm_draws |> 
+  dplyr::select(emph_plain) |> 
+  summarise_draws(
+    "mean", "sd",
+    # 95%
+    ~quantile(.x, probs = c(0.025, 0.975)),
+    # 80%
+    ~quantile(.x, probs = c(0.1, 0.9)),
+    # 70%
+    ~quantile(.x, probs = c(0.15, 0.85))
+  ) |> 
+  mutate(across(is.numeric, ~round(.x, 2)))
+```
+
+To plot the expected PC1 based on the model, we can conveniently get the expected predictions for each draw using `posterior_epred()` from brms. We also calculate the expected difference between emphatic and plain for each vowel, which we will use to output the summary table below (@tbl-emph-bm).
+
+```{r}
+#| label: emph-bm-epred
+
+# Define newdata to get predictions for
+newdata <- expand_grid(
+  emph_fac = c("emphatic", "plain"),
+  vowel_fac = c("A", "E", "I", "O", "U")
+)
+
+# Get posterior draws for the newdata
+emph_bm_epred <- posterior_epred(emph_bm, re_formula = NA, newdata = newdata)
+
+colnames(emph_bm_epred) <- paste(newdata$emph_fac, newdata$vowel_fac, sep = "_")
+
+# Calculate differences between emphatic and plain for each vowel
+emph_bm_epred <- as_tibble(emph_bm_epred) |> 
+  mutate(
+    A_diff = emphatic_A - plain_A,
+    E_diff = emphatic_E - plain_E,
+    I_diff = emphatic_I - plain_I,
+    O_diff = emphatic_O - plain_O,
+    U_diff = emphatic_U - plain_U
+  )
+```
+:::
+
+```{r}
+#| label: fig-emph-bm
+#| fig-cap: ""
+#| echo: false
+
+emph_bm_epred |> 
+  dplyr::select(emphatic_A:plain_U) |> 
+  pivot_longer(everything(), names_to = "emph_vowel") |> 
+  separate(emph_vowel, c("emph", "vowel")) |> 
+  ggplot(aes(value, vowel, fill = emph)) +
+  stat_halfeye(alpha = 0.5, position = position_dodge(width = 0.5)) +
+  scale_fill_brewer(palette = "Dark2") +
+  labs(
+    x = "PC1 score", y = "Vowel"
+  )
+```
+
+```{r}
+#| label: tbl-emph-bm
+#| tbl-cap: ""
+
+emph_bm_epred |>
+  dplyr::select(A_diff:U_diff) |> 
+  summarise_draws(
+    "mean", "sd",
+    # 95%
+    ~quantile(.x, probs = c(0.025, 0.975)),
+    # 80%
+    ~quantile(.x, probs = c(0.1, 0.9)),
+    # 70%
+    ~quantile(.x, probs = c(0.15, 0.85))
+  ) |> 
+  mutate(across(is.numeric, ~round(.x, 2))) |> 
+  knitr::kable()
 ```
 
 # Advantages and disadvantages {#sec-procons}
@@ -996,7 +1132,7 @@ The authors report there are no competing interests to declare.
 
 # **Data availability statement** {.unnumbered}
 
-All the materials (inlcuding data and code) are available in the research compendium of the tutorial at <https://github.com/stefanocoretta/mv_uti>. An online version of the manuscript is available at <https://stefanocoretta.github.io/mv_uti/>.
+All the materials (including data and code) are available in the research compendium of the tutorial at <https://github.com/stefanocoretta/mv_uti>. An online version of the manuscript is available at <https://stefanocoretta.github.io/mv_uti/>.
 
 # References
 

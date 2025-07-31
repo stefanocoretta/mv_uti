@@ -35,6 +35,22 @@ the root. The estimated smooths in red fail to capture the curl.}
 \ifnextchar[{\eatarg}{}
 [H]
 
+\caption{\label{fig-vect}Illustrating vectors of articulatory movement
+vs polar coordinates.}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-vect-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
 \caption{\label{fig-tongue}The eleven knots on the tongue contour taken
 from the offset of {[}o{]} followed by {[}t{]} (Polish speaker PL04,
 tongue tip to the right).}
@@ -285,6 +301,21 @@ PC1/PC2.}
 \centering{
 
 \pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-vow-emph-1.pdf}}
+
+}
+
+\end{figure*}
+\efloatseparator
+ 
+\begin{figure*}[hbt]
+\ifnextchar[{\eatarg}{}
+[H]
+
+\caption{\label{fig-emph-bm}}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{index_files/figure-pdf/fig-emph-bm-1.pdf}}
 
 }
 
