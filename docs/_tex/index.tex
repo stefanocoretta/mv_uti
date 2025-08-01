@@ -1289,7 +1289,9 @@ Once one has established which patterns each PC is capturing, PC scores
 can be submitted to further statistical modelling, like for example
 regression models in which the PC scores are outcome variables and
 predictors are included to assess possible differences in PC scores, or
-in which the PC scores are predictors themselves.
+in which the PC scores are predictors themselves. We illustrate an
+example regression model at the end of the following section for the
+Lebanese Arabic emphaticness data.
 
 \subsection{Emphaticness}\label{emphaticness}
 
@@ -1474,10 +1476,10 @@ To illustrate how the PC scores can be further modelled using
 regressions, we fitted a Bayesian Gaussian regression model using brms
 (\citeproc{ref-burkner2017}{Bürkner, 2017}) with PC1 as the outcome,
 emphaticness (emphatic vs plain) and vowel (A, E, I, O, U) and their
-interaction as predictors. We also included by-participant varying
-intercepts and varying slopes for the emphaticness/vowel interaction.
-Both emphaticness and vowel were coded using sum contrasts. This is the
-R formula we used:
+interaction as predictors (frequentist methods are of course also
+possible). We also included by-participant varying intercepts and
+varying slopes for the emphaticness/vowel interaction. Both emphaticness
+and vowel were coded using sum contrasts. This is the R formula we used:
 \texttt{PC1\ \textasciitilde{}\ emph\_fac\ *\ vowel\_fac\ +\ (emph\_fac\ *\ vowel\_fac\ \textbar{}\ participant)}.
 We used the default priors as set by brms. Since a full introduction to
 regression modelling and Bayesian inference is beyond the scope of this
@@ -1485,10 +1487,23 @@ paper, we refer the readers to the many resources now available. See the
 online version of the manuscript for the full code of the Bayesian
 analysis of PC1: \url{https://stefanocoretta.github.io/mv_uti/}.
 
+Figure~\ref{fig-emph-bm} shows the posterior distributions of the
+expected PC1 scores for emphatic and plain consonants followed by each
+of the vowels, based on the Bayesian regression model. A lower PC1 score
+suggests pharyngealisation as established above. It can be observed that
+emphatic consonants have a lower PC1 score compared to plain consonants,
+across all vowels, albeit with different magnitudes in different vowels.
+Overall, the model suggests that the PC1 score of emphatic consonants is
+on average 0.04 to 0.88 units lower than plain consonants, at 95\%
+confidence (mean effect = -0.48, SE = 0.22, 95\% CrI {[}-0.88, -0.04{]},
+80\% CrI {[}-0.7, -0.28{]}, 70\% CrI {[}-0.65, -0.32{]}).
+
 \phantomsection\label{cell-fig-emph-bm}
 \begin{figure}[H]
 
-\caption{\label{fig-emph-bm}}
+\caption{\label{fig-emph-bm}Posterior distributions of expected PC1
+scores for emphatic and plain consonants, followed by different vowels,
+from a Bayesian regression model.}
 
 \centering{
 
@@ -1498,14 +1513,27 @@ analysis of PC1: \url{https://stefanocoretta.github.io/mv_uti/}.
 
 \end{figure}%
 
+Table~\ref{tbl-dlc-voff} shows the mean, standard deviation and
+95-80-65\% CrIs of the posterior difference between emphatic and plain
+consonants for each vowel. The CrIs indicate a robustly lower PC1 for
+/A, U/. For the other vowels, both a lower or slightly higher PC1 are
+possible and, if a difference is present at all, it would be of a lower
+magnitude than that in the /A, U/ context. At 80\% confidence, emphatic
+consonants also show a lower PC1 when followed by /O/. In sum, while we
+can argue for lower PC1 in the /A, U/ and possibly /O/ contexts (and
+hence, pharyngealisation in emphatic consonants followed by these
+vowels), the results are more uncertain regarding /E, I/.
+
 \begin{table}
 
-{\caption{{}{\label{tbl-emph-bm}}}
+{\caption{{Posterior difference of emphatic vs plain in each vowel
+context.}{\label{tbl-emph-bm}}}
 \vspace{-20pt}}
 
 \begin{longtable}[]{@{}lrrrrrrrr@{}}
 \toprule\noalign{}
-variable & mean & sd & 2.5\% & 97.5\% & 10\% & 90\% & 15\% & 85\% \\
+emph - plain & mean & SD & l-95\% & u-95\% & l-80\% & u-80\% & l-70\% &
+u-70\% \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}

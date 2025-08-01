@@ -804,7 +804,7 @@ Figure&nbsp;14: PC1/PC2 scores by language, consonant place of articulation and 
 </div>
 </div>
 </div>
-<p>Once one has established which patterns each PC is capturing, PC scores can be submitted to further statistical modelling, like for example regression models in which the PC scores are outcome variables and predictors are included to assess possible differences in PC scores, or in which the PC scores are predictors themselves.</p>
+<p>Once one has established which patterns each PC is capturing, PC scores can be submitted to further statistical modelling, like for example regression models in which the PC scores are outcome variables and predictors are included to assess possible differences in PC scores, or in which the PC scores are predictors themselves. We illustrate an example regression model at the end of the following section for the Lebanese Arabic emphaticness data.</p>
 </section>
 <section id="emphaticness" class="level2">
 <h2 class="anchored" data-anchor-id="emphaticness">Emphaticness</h2>
@@ -924,10 +924,49 @@ Figure&nbsp;19: Reconstructed tongue contours based on PC1/PC2.
 </div>
 </div>
 </div>
-<p>To illustrate how the PC scores can be further modelled using regressions, we fitted a Bayesian Gaussian regression model using brms <span class="citation" data-cites="burkner2017">(<a href="#ref-burkner2017" role="doc-biblioref">Bürkner 2017</a>)</span> with PC1 as the outcome, emphaticness (emphatic vs plain) and vowel (A, E, I, O, U) and their interaction as predictors. We also included by-participant varying intercepts and varying slopes for the emphaticness/vowel interaction. Both emphaticness and vowel were coded using sum contrasts. This is the R formula we used: <code>PC1 ~ emph_fac * vowel_fac + (emph_fac * vowel_fac | participant)</code>. We used the default priors as set by brms. Since a full introduction to regression modelling and Bayesian inference is beyond the scope of this paper, we refer the readers to the many resources now available. See the online version of the manuscript for the full code of the Bayesian analysis of PC1: <a href="https://stefanocoretta.github.io/mv_uti/" class="uri">https://stefanocoretta.github.io/mv_uti/</a>.</p>
+<p>To illustrate how the PC scores can be further modelled using regressions, we fitted a Bayesian Gaussian regression model using brms <span class="citation" data-cites="burkner2017">(<a href="#ref-burkner2017" role="doc-biblioref">Bürkner 2017</a>)</span> with PC1 as the outcome, emphaticness (emphatic vs plain) and vowel (A, E, I, O, U) and their interaction as predictors (frequentist methods are of course also possible). We also included by-participant varying intercepts and varying slopes for the emphaticness/vowel interaction. Both emphaticness and vowel were coded using sum contrasts. This is the R formula we used: <code>PC1 ~ emph_fac * vowel_fac + (emph_fac * vowel_fac | participant)</code>. We used the default priors as set by brms. Since a full introduction to regression modelling and Bayesian inference is beyond the scope of this paper, we refer the readers to the many resources now available. See the online version of the manuscript for the full code of the Bayesian analysis of PC1: <a href="https://stefanocoretta.github.io/mv_uti/" class="uri">https://stefanocoretta.github.io/mv_uti/</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Before fitting the model, we create a factor version of the columns <code>emph</code> and <code>vowel</code> so that we can set the contrasts to sum coding. We then fit a Bayesian Gaussian regression with brms.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pc_scores_bm <span class="ot">&lt;-</span> pc_scores <span class="sc">|&gt;</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make factors</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">emph_fac =</span> <span class="fu">factor</span>(emph, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"emphatic"</span>, <span class="st">"plain"</span>)),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">vowel_fac =</span> <span class="fu">factor</span>(vowel, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"E"</span>, <span class="st">"I"</span>, <span class="st">"O"</span>, <span class="st">"U"</span>))</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Set contrasts to sum coding</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(pc_scores_bm<span class="sc">$</span>emph_fac) <span class="ot">&lt;-</span> <span class="st">"contr.sum"</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(pc_scores_bm<span class="sc">$</span>vowel_fac) <span class="ot">&lt;-</span> <span class="st">"contr.sum"</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Attach brms package</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a Gaussian regression</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>emph_bm <span class="ot">&lt;-</span> <span class="fu">brm</span>(</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  PC1 <span class="sc">~</span> emph_fac <span class="sc">*</span> vowel_fac <span class="sc">+</span> (emph_fac <span class="sc">*</span> vowel_fac <span class="sc">|</span> participant),</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> gaussian,</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pc_scores_bm,</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uses 4 cores to run MCMC in parallel</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">cores =</span> <span class="dv">4</span>,</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set the seed for reproducibility</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">4235</span>,</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Save the model fit to file</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"data/cache/emph_bm"</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>Here’s the summary of the model (multilevel hyperparameters not shown). Because of the sum coding, the <code>Intercept</code> indicates the grand mean PC1 across emphaticness and vowel type. <code>emph_fac1</code> corresponds to the difference of emphatic vs the grand mean. If we double the posterior draws of <code>emph_fac1</code>, we get the posterior of the estimated difference between emphatic and plain.</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fixef</span>(emph_bm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                        Estimate  Est.Error         Q2.5       Q97.5
 Intercept            -0.10980004 0.25612082 -0.646389236  0.41870576
@@ -944,6 +983,23 @@ emph_fac1:vowel_fac4  0.05264575 0.04793634 -0.040416527  0.14856153</code></pre
 </div>
 <p>To proceed, we need to obtain the posterior draws from the model.</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>emph_bm_draws <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(emph_bm) <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">emph_plain =</span> <span class="dv">2</span> <span class="sc">*</span> b_emph_fac1</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>emph_bm_draws <span class="sc">|&gt;</span> </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(emph_plain) <span class="sc">|&gt;</span> </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_draws</span>(</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mean"</span>, <span class="st">"sd"</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 95%</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span><span class="fu">quantile</span>(.x, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>)),</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 80%</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span><span class="fu">quantile</span>(.x, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.9</span>)),</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 70%</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span><span class="fu">quantile</span>(.x, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.15</span>, <span class="fl">0.85</span>))</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(is.numeric, <span class="sc">~</span><span class="fu">round</span>(.x, <span class="dv">2</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 9
   variable    mean    sd `2.5%` `97.5%` `10%` `90%` `15%` `85%`
@@ -952,40 +1008,66 @@ emph_fac1:vowel_fac4  0.05264575 0.04793634 -0.040416527  0.14856153</code></pre
 </div>
 </div>
 <p>To plot the expected PC1 based on the model, we can conveniently get the expected predictions for each draw using <code>posterior_epred()</code> from brms. We also calculate the expected difference between emphatic and plain for each vowel, which we will use to output the summary table below (<a href="#tbl-emph-bm" class="quarto-xref">Table&nbsp;2</a>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define newdata to get predictions for</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>newdata <span class="ot">&lt;-</span> <span class="fu">expand_grid</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">emph_fac =</span> <span class="fu">c</span>(<span class="st">"emphatic"</span>, <span class="st">"plain"</span>),</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">vowel_fac =</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"E"</span>, <span class="st">"I"</span>, <span class="st">"O"</span>, <span class="st">"U"</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Get posterior draws for the newdata</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>emph_bm_epred <span class="ot">&lt;-</span> <span class="fu">posterior_epred</span>(emph_bm, <span class="at">re_formula =</span> <span class="cn">NA</span>, <span class="at">newdata =</span> newdata)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(emph_bm_epred) <span class="ot">&lt;-</span> <span class="fu">paste</span>(newdata<span class="sc">$</span>emph_fac, newdata<span class="sc">$</span>vowel_fac, <span class="at">sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate differences between emphatic and plain for each vowel</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>emph_bm_epred <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(emph_bm_epred) <span class="sc">|&gt;</span> </span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">A_diff =</span> emphatic_A <span class="sc">-</span> plain_A,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">E_diff =</span> emphatic_E <span class="sc">-</span> plain_E,</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">I_diff =</span> emphatic_I <span class="sc">-</span> plain_I,</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">O_diff =</span> emphatic_O <span class="sc">-</span> plain_O,</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">U_diff =</span> emphatic_U <span class="sc">-</span> plain_U</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p><a href="#fig-emph-bm" class="quarto-xref">Figure&nbsp;20</a> shows the posterior distributions of the expected PC1 scores for emphatic and plain consonants followed by each of the vowels, based on the Bayesian regression model. A lower PC1 score suggests pharyngealisation as established above. It can be observed that emphatic consonants have a lower PC1 score compared to plain consonants, across all vowels, albeit with different magnitudes in different vowels. Overall, the model suggests that the PC1 score of emphatic consonants is on average 0.04 to 0.88 units lower than plain consonants, at 95% confidence (mean effect = -0.48, SE = 0.22, 95% CrI [-0.88, -0.04], 80% CrI [-0.7, -0.28], 70% CrI [-0.65, -0.32]).</p>
 <div id="cell-fig-emph-bm" class="cell">
 <div class="cell-output-display">
-<div id="fig-emph-bm" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<div id="fig-emph-bm" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/fig-emph-bm-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="Figure&nbsp;20: "><img src="index_files/figure-html/fig-emph-bm-1.png" id="fig-emph-bm" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-emph-bm-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-20" title="Figure&nbsp;20: Posterior distributions of expected PC1 scores for emphatic and plain consonants, followed by different vowels, from a Bayesian regression model."><img src="index_files/figure-html/fig-emph-bm-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;20
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20: Posterior distributions of expected PC1 scores for emphatic and plain consonants, followed by different vowels, from a Bayesian regression model.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
+<p><a href="#tbl-dlc-voff" class="quarto-xref">Table&nbsp;1</a> shows the mean, standard deviation and 95-80-65% CrIs of the posterior difference between emphatic and plain consonants for each vowel. The CrIs indicate a robustly lower PC1 for /A, U/. For the other vowels, both a lower or slightly higher PC1 are possible and, if a difference is present at all, it would be of a lower magnitude than that in the /A, U/ context. At 80% confidence, emphatic consonants also show a lower PC1 when followed by /O/. In sum, while we can argue for lower PC1 in the /A, U/ and possibly /O/ contexts (and hence, pharyngealisation in emphatic consonants followed by these vowels), the results are more uncertain regarding /E, I/.</p>
 <div class="cell">
 <div id="tbl-emph-bm" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Posterior difference of emphatic vs plain in each vowel context.
 </figcaption>
 <div aria-describedby="tbl-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="do-not-create-environment caption-top table table-sm table-striped small">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th style="text-align: left;">variable</th>
+<th style="text-align: left;">emph - plain</th>
 <th style="text-align: right;">mean</th>
-<th style="text-align: right;">sd</th>
-<th style="text-align: right;">2.5%</th>
-<th style="text-align: right;">97.5%</th>
-<th style="text-align: right;">10%</th>
-<th style="text-align: right;">90%</th>
-<th style="text-align: right;">15%</th>
-<th style="text-align: right;">85%</th>
+<th style="text-align: right;">SD</th>
+<th style="text-align: right;">l-95%</th>
+<th style="text-align: right;">u-95%</th>
+<th style="text-align: right;">l-80%</th>
+<th style="text-align: right;">u-80%</th>
+<th style="text-align: right;">l-70%</th>
+<th style="text-align: right;">u-70%</th>
 </tr>
 </thead>
 <tbody>

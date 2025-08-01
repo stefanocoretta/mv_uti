@@ -311,7 +311,9 @@ PC1/PC2.}
 \ifnextchar[{\eatarg}{}
 [H]
 
-\caption{\label{fig-emph-bm}}
+\caption{\label{fig-emph-bm}Posterior distributions of expected PC1
+scores for emphatic and plain consonants, followed by different vowels,
+from a Bayesian regression model.}
 
 \centering{
 

@@ -1276,7 +1276,7 @@ Figure&nbsp;14: PC1/PC2 scores by language, consonant place of articulation and 
 </div>
 </div>
 </div></div>
-<p>Once one has established which patterns each PC is capturing, PC scores can be submitted to further statistical modelling, like for example regression models in which the PC scores are outcome variables and predictors are included to assess possible differences in PC scores, or in which the PC scores are predictors themselves.</p>
+<p>Once one has established which patterns each PC is capturing, PC scores can be submitted to further statistical modelling, like for example regression models in which the PC scores are outcome variables and predictors are included to assess possible differences in PC scores, or in which the PC scores are predictors themselves. We illustrate an example regression model at the end of the following section for the Lebanese Arabic emphaticness data.</p>
 </section>
 <section id="emphaticness" class="level2">
 <h2 class="anchored" data-anchor-id="emphaticness">Emphaticness</h2>
@@ -1544,7 +1544,17 @@ Figure&nbsp;20: Reconstructed tongue contours based on PC1/PC2.
 </div>
 </div>
 </div></div>
-<p>To illustrate how the PC scores can be further modelled using regressions, we fitted a Bayesian Gaussian regression model using brms <span class="citation" data-cites="burkner2017">(<a href="#ref-burkner2017" role="doc-biblioref">Bürkner 2017</a>)</span> with PC1 as the outcome, emphaticness (emphatic vs plain) and vowel (A, E, I, O, U) and their interaction as predictors. We also included by-participant varying intercepts and varying slopes for the emphaticness/vowel interaction. Both emphaticness and vowel were coded using sum contrasts. This is the R formula we used: <code>PC1 ~ emph_fac * vowel_fac + (emph_fac * vowel_fac | participant)</code>. We used the default priors as set by brms. Since a full introduction to regression modelling and Bayesian inference is beyond the scope of this paper, we refer the readers to the many resources now available. See the online version of the manuscript for the full code of the Bayesian analysis of PC1: <a href="https://stefanocoretta.github.io/mv_uti/" class="uri">https://stefanocoretta.github.io/mv_uti/</a>.</p>
+<p>To illustrate how the PC scores can be further modelled using regressions, we fitted a Bayesian Gaussian regression model using brms <span class="citation" data-cites="burkner2017">(<a href="#ref-burkner2017" role="doc-biblioref">Bürkner 2017</a>)</span> with PC1 as the outcome, emphaticness (emphatic vs plain) and vowel (A, E, I, O, U) and their interaction as predictors (frequentist methods are of course also possible). We also included by-participant varying intercepts and varying slopes for the emphaticness/vowel interaction. Both emphaticness and vowel were coded using sum contrasts. This is the R formula we used: <code>PC1 ~ emph_fac * vowel_fac + (emph_fac * vowel_fac | participant)</code>. We used the default priors as set by brms. Since a full introduction to regression modelling and Bayesian inference is beyond the scope of this paper, we refer the readers to the many resources now available. See the online version of the manuscript for the full code of the Bayesian analysis of PC1: <a href="https://stefanocoretta.github.io/mv_uti/" class="uri">https://stefanocoretta.github.io/mv_uti/</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Before fitting the model, we create a factor version of the columns <code>emph</code> and <code>vowel</code> so that we can set the contrasts to sum coding. We then fit a Bayesian Gaussian regression with brms.</p>
 <div class="cell-container"><div class="cell-decorator"><pre>In [50]:</pre></div><div class="cell">
 <div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>pc_scores_bm <span class="ot">&lt;-</span> pc_scores <span class="sc">|&gt;</span> </span>
@@ -1655,6 +1665,9 @@ Caused by warning:
 <span id="cb92-19"><a href="#cb92-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">U_diff =</span> emphatic_U <span class="sc">-</span> plain_U</span>
 <span id="cb92-20"><a href="#cb92-20" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div>
+</div>
+</div>
+<p><a href="#fig-emph-bm" class="quarto-xref">Figure&nbsp;21</a> shows the posterior distributions of the expected PC1 scores for emphatic and plain consonants followed by each of the vowels, based on the Bayesian regression model. A lower PC1 score suggests pharyngealisation as established above. It can be observed that emphatic consonants have a lower PC1 score compared to plain consonants, across all vowels, albeit with different magnitudes in different vowels. Overall, the model suggests that the PC1 score of emphatic consonants is on average 0.04 to 0.88 units lower than plain consonants, at 95% confidence (mean effect = -0.48, SE = 0.22, 95% CrI [-0.88, -0.04], 80% CrI [-0.7, -0.28], 70% CrI [-0.65, -0.32]).</p>
 <div class="cell-container"><div class="cell-decorator"><pre>In [54]:</pre></div><div id="cell-fig-emph-bm" class="cell">
 <div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>emph_bm_epred <span class="sc">|&gt;</span> </span>
 <span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(emphatic_A<span class="sc">:</span>plain_U) <span class="sc">|&gt;</span> </span>
@@ -1667,18 +1680,19 @@ Caused by warning:
 <span id="cb93-9"><a href="#cb93-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"PC1 score"</span>, <span class="at">y =</span> <span class="st">"Vowel"</span></span>
 <span id="cb93-10"><a href="#cb93-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-emph-bm" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<div id="fig-emph-bm" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca" class="">
-<a href="index_files/figure-html/fig-emph-bm-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="Figure&nbsp;21: "><img src="index_files/figure-html/fig-emph-bm-1.png" id="fig-emph-bm" class="img-fluid figure-img" width="672"></a>
+<a href="index_files/figure-html/fig-emph-bm-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-21" title="Figure&nbsp;21: Posterior distributions of expected PC1 scores for emphatic and plain consonants, followed by different vowels, from a Bayesian regression model."><img src="index_files/figure-html/fig-emph-bm-1.png" class="img-fluid figure-img" width="672"></a>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;21
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21: Posterior distributions of expected PC1 scores for emphatic and plain consonants, followed by different vowels, from a Bayesian regression model.
 </figcaption>
 </figure>
 </div>
 </div>
 </div></div>
+<p><a href="#tbl-dlc-voff" class="quarto-xref">Table&nbsp;1</a> shows the mean, standard deviation and 95-80-65% CrIs of the posterior difference between emphatic and plain consonants for each vowel. The CrIs indicate a robustly lower PC1 for /A, U/. For the other vowels, both a lower or slightly higher PC1 are possible and, if a difference is present at all, it would be of a lower magnitude than that in the /A, U/ context. At 80% confidence, emphatic consonants also show a lower PC1 when followed by /O/. In sum, while we can argue for lower PC1 in the /A, U/ and possibly /O/ contexts (and hence, pharyngealisation in emphatic consonants followed by these vowels), the results are more uncertain regarding /E, I/.</p>
 <div class="cell-container"><div class="cell-decorator"><pre>In [55]:</pre></div><div class="cell">
 
 <div class="cell-container"><div class="cell-decorator"><pre>In [56]:</pre></div><div><div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>emph_bm_epred <span class="sc">|&gt;</span></span>
@@ -1693,25 +1707,27 @@ Figure&nbsp;21
 <span id="cb94-10"><a href="#cb94-10" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span><span class="fu">quantile</span>(.x, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.15</span>, <span class="fl">0.85</span>))</span>
 <span id="cb94-11"><a href="#cb94-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
 <span id="cb94-12"><a href="#cb94-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(is.numeric, <span class="sc">~</span><span class="fu">round</span>(.x, <span class="dv">2</span>))) <span class="sc">|&gt;</span> </span>
-<span id="cb94-13"><a href="#cb94-13" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div><div id="tbl-emph-bm" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<span id="cb94-13"><a href="#cb94-13" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb94-14"><a href="#cb94-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"emph - plain"</span>, <span class="st">"mean"</span>, <span class="st">"SD"</span>, <span class="st">"l-95%"</span>, <span class="st">"u-95%"</span>, <span class="st">"l-80%"</span>, <span class="st">"u-80%"</span>, <span class="st">"l-70%"</span>, <span class="st">"u-70%"</span>)</span>
+<span id="cb94-15"><a href="#cb94-15" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div><div id="tbl-emph-bm" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Posterior difference of emphatic vs plain in each vowel context.
 </figcaption>
 <div aria-describedby="tbl-emph-bm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<table class="do-not-create-environment caption-top table table-sm table-striped small">
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th style="text-align: left;">variable</th>
+<th style="text-align: left;">emph - plain</th>
 <th style="text-align: right;">mean</th>
-<th style="text-align: right;">sd</th>
-<th style="text-align: right;">2.5%</th>
-<th style="text-align: right;">97.5%</th>
-<th style="text-align: right;">10%</th>
-<th style="text-align: right;">90%</th>
-<th style="text-align: right;">15%</th>
-<th style="text-align: right;">85%</th>
+<th style="text-align: right;">SD</th>
+<th style="text-align: right;">l-95%</th>
+<th style="text-align: right;">u-95%</th>
+<th style="text-align: right;">l-80%</th>
+<th style="text-align: right;">u-80%</th>
+<th style="text-align: right;">l-70%</th>
+<th style="text-align: right;">u-70%</th>
 </tr>
 </thead>
 <tbody>

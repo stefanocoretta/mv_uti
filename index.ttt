@@ -28,12 +28,14 @@ it01 & pugu & -44.9086 & 13.3162 & 5 & Dorsum\_1 \\
 \ifnextchar[{\eatarg}{}
 
 
-{\caption{{}{\label{tbl-emph-bm}}}
+{\caption{{Posterior difference of emphatic vs plain in each vowel
+context.}{\label{tbl-emph-bm}}}
 \vspace{-20pt}}
 
 \begin{longtable}[]{@{}lrrrrrrrr@{}}
 \toprule\noalign{}
-variable & mean & sd & 2.5\% & 97.5\% & 10\% & 90\% & 15\% & 85\% \\
+emph - plain & mean & SD & l-95\% & u-95\% & l-80\% & u-80\% & l-70\% &
+u-70\% \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
