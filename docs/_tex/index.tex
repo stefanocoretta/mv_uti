@@ -215,11 +215,11 @@ tongue imaging}
 
 \leftheader{Coretta and Sakr}
 
-\date{2025-07-31}
+\date{2025-08-01}
 
 
 \abstract{This tutorial paper introduces two approaches to modelling
-tongue conoutr data obtained with DeepLabCut using Multivariate
+tongue contour data obtained with DeepLabCut using Multivariate
 Generalised Additive Models (MGAMs) and Multivariate Functional
 Principal Component Analysis (MFPCA). For each method, we present a
 fully commented analysis of two illustrative data sets: VC
@@ -389,7 +389,9 @@ contour with fixed radii from the fan-line system. This makes
 DLC-tracked data resemble data obtained with electromagnetic
 articulography (EMA). The downside is that the tongue contour is
 represented by 11 freely moving points, which can move in any direction
-in the midsagittal two-dimensional space captured by UTI.
+in the midsagittal two-dimensional space captured by UTI, and this
+requires more advanced statistical approaches than those commonly
+employed to analyse tongue contour data.
 
 \begin{figure}
 
@@ -422,17 +424,28 @@ half of the tongue, simply because there are two Y values for the same X
 value, and the procedure, in that case, returns something like an
 average of the two values. Generalised Additive Models (introduced in
 the following section) work on the same principle and hence would
-produce the same type of error. While using polar coordinates would work
-mathematically, it is less ideal from an articulatory perspective: a
-polar-based fan-line system with a single origin fails to capture the
-the vectors of movement of the individual knots estimated by DLC.
-Figure~\ref{fig-vect} illustrates this point: the polar radii in grey
+produce the same type of error.
+
+While using polar coordinates would work mathematically, it is less
+ideal from an articulatory perspective: a polar-based fan-line system
+with a single origin fails to capture the the vectors of movement of the
+individual knots estimated by DLC. Figure~\ref{fig-vect} illustrates
+this point with DLC-tracked data from a Lebanese speaker. The figure
+shows the tracked points from the entire data set of that speaker and
+each of the 11 DLC-tracked knots is shown in a different colour. The
+knots appear to move along well defined vectors (with the exception of
+the fifth knot, which can be regarded as the pivot knot), represented in
+the figure by black segments. The vectors of articulatory movement make
+sense in light of the muscular anatomy of the tongue
+(\citeproc{ref-honda1996}{Honda, 1996}; \citeproc{ref-hoole1999}{Hoole,
+1999}; \citeproc{ref-pettersson1987}{Pettersson \& Wood, 1987};
+\citeproc{ref-wrench2024}{Wrench, 2024}). The polar radii in grey
 radiate from a manually selected origin with coordinates (100, 30).
 While the radii would correctly capture the position of each knot on the
-bi-dimensional space, the representation of displacement of each knot is
-constrained by the direction of the radii. We don't consider this
-constraint to be fatal, but Generalised Additive Models allow for a more
-accurate depiction of knot movement by removing such constraints.
+bi-dimensional space, the modelling of displacement is constrained by
+the direction of the radii. We don't consider this constraint to be
+fatal, but Generalised Additive Models allow for a more accurate
+depiction of knot movement by removing such constraints.
 
 \phantomsection\label{cell-fig-curl}
 \begin{figure}[H]
@@ -470,7 +483,11 @@ and cons of each method in Section~\ref{sec-procons}, but to summarise
 we are inclined to recommend Multivariate Functional Principal Component
 Analysis over Multivariate Generalised Additive Models due to the
 substantial computational overhead and reduced practical utility of the
-latter over the former.
+latter over the former. This tutorial illustrates how to conduct static
+analyses of tongue contours (i.e.~modelling contours at specific
+time-points), but the techniques discussed here can be extended to
+dynamic (time-varying) analyses as shown in Gubian
+(\citeproc{ref-gubian2025}{2025}).
 
 \section{Multivariate Generalised Additive Models}\label{sec-gam}
 
@@ -518,12 +535,19 @@ plot has knot number on the \emph{x}-axis and X/Y coordinates on the
 knots. These X/Y trajectories are the ones that can be modelled using
 MGAMs and Multiple Functional Principal Component Analysis (MFPCA): in
 both cases, the X/Y trajectories are modelled as two variables changing
-along knot number. In this section, we will illustrate GAMs applied to
-the X/Y trajectories along the knots and how we can reconstruct the
-tongue contour from the modelled trajectories. We will use data from two
-case studies of coarticulation: vowel consonant (VC) coarticulation
-based on C place in Italian and Polish, and consonantal articulation of
-plain vs emphatic consonants in Lebanese Arabic.
+along knot number. Note that a viable, but theoretically less robust,
+alternative is to model the data with the coordinates values as the
+outcome and the type of coordinate (X vs Y) as a predictor, as done for
+example in Wieling et al. (\citeproc{ref-wieling2016}{2016}) and Gubian
+(\citeproc{ref-gubian2025}{2025}) (this approach models the X and Y
+coordinates as completely independent, while an MVGAM also estimates
+residual correlations between the two, which is a desired, although not
+deal-breaking, property). In this section, we will illustrate GAMs
+applied to the X/Y trajectories along the knots and how we can
+reconstruct the tongue contour from the modelled trajectories. We will
+use data from two case studies of coarticulation: vowel consonant (VC)
+coarticulation based on C place in Italian and Polish, and consonantal
+articulation of plain vs emphatic consonants in Lebanese Arabic.
 
 \phantomsection\label{cell-fig-tongue-xy}
 \begin{figure}[H]
@@ -861,12 +885,12 @@ The second case study is about consonant ``emphaticness'' in Lebanese
 Arabic. The data is from Sakr (\citeproc{ref-sakr2025}{2025}). Lebanese
 Arabic is a variety of Arabic primarily spoken in Lebanon, where it is
 in constant contact with a number of Indo-European languages (primarily
-English and French, as vectors of education and business, see eg.
+English and French, as vectors of education and business, see e.g..
 \citeproc{ref-shaaban1999}{Shaaban \& Ghaith, 1999}), as well as the
 written standard form of Arabic known as Modern Standard Arabic (MSA).
 The relationship between Lebanese Arabic (LA) and MSA in Lebanon is one
-of diglossia (see eg. \citeproc{ref-lian2022}{Lian, 2022}), where LA is
-spoken in most contexts, but not written, and MSA is the written
+of diglossia (see e.g.. \citeproc{ref-lian2022}{Lian, 2022}), where LA
+is spoken in most contexts, but not written, and MSA is the written
 variety, and therefore also primarily used for legal and official
 purposes.
 
@@ -880,8 +904,8 @@ variation depending on phonological context
 \citeproc{ref-sakr2025}{Sakr, 2025}) or on sociolinguistic factors
 (\citeproc{ref-khattab2006}{Khattab et al., 2006}). Older sources
 instead report the secondary place of articulation as being the velum
-(\citeproc{ref-nasr1959}{Nasr, 1959}; see eg.
-\citeproc{ref-obrecht1968}{Obrecht, 1968}) or the uvula (see eg.
+(\citeproc{ref-nasr1959}{Nasr, 1959}; see e.g..
+\citeproc{ref-obrecht1968}{Obrecht, 1968}) or the uvula (see e.g..
 \citeproc{ref-bin-muqbil2006}{Bin-Muqbil, 2006};
 \citeproc{ref-ghazeli1977}{Ghazeli, 1977};
 \citeproc{ref-zawaydeh1999}{Zawaydeh, 1999}). Whatever the specifics of
@@ -981,19 +1005,20 @@ extension of PCA: while classical PCA works by finding common variance
 in a set of variables (and by reducing the variables to Principal
 Components that explain that common variance), FPCA is a PCA applied to
 a functional representation of varying numerical variables
-(\citeproc{ref-gubian2019}{Gubian, Harrington, et al., 2019};
-\citeproc{ref-gubian2019a}{Gubian, Pastätter, et al., 2019};
-\citeproc{ref-gubian2024}{Gubian, 2024}): a typical example is
-time-series data, with a variable changing over time. The trajectory of
-the time-varying variable is encoded into a function with a set of
+(\citeproc{ref-gubian2015}{Gubian et al., 2015};
+\citeproc{ref-gubian2019a}{Gubian et al., 2019};
+\citeproc{ref-gubian2024}{Gubian, 2024};
+\citeproc{ref-ramsay2005}{Ramsay \& Silverman, 2005}): a typical example
+is time-series data, with a variable changing over time. The trajectory
+of the time-varying variable is encoded into a function with a set of
 coefficients and the values of those coefficients are submitted to PCA.
 When more than one time-varying variable is needed, this is where
 Multivariate FPCA (MFPCA) come in (\citeproc{ref-gubian2024}{Gubian,
 2024}).
 
-MFPCA is an FPCA applied to two or more varying variables. Note that the
-variable does not have to be \emph{time}-varying. The variation can be
-on any linear variable: in the case of DLC-tracked UTI data, the
+MFPCA is an FPCA applied to two or more response variables. Note that
+the variable does not have to be \emph{time}-varying. The variation can
+be on any linear variable: in the case of DLC-tracked UTI data, the
 variation happens along the knot number. Look back at
 Figure~\ref{fig-tongue-xy}: the two varying variables are the X and Y
 coordinates, which are varying along the DLC knots. As with MGAMs, it is
@@ -1080,28 +1105,28 @@ series column (\texttt{knot}) and the column with the coordinate values
 
 Once we have our \texttt{multiFunData} object, we can use the
 \texttt{MFPCA()} function to compute an MFPCA. In this tutorial we will
-compute the first two PCs, but you can compute up to \(K-1\) PCs where
-\(K\) is the number of DLC knots in the data.
+compute the first two PCs, but in a multivariate (bivariate) FPCA you
+can compute up to \(2 \times K\) PCs where \(K\) is the number of DLC
+knots in the data.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Number of PC to compute}
 \NormalTok{n\_pc }\OtherTok{\textless{}{-}} \DecValTok{2}
+\CommentTok{\# You can compute up to 11 PCs.}
+\CommentTok{\# n\_pc \textless{}{-} 11}
 
 \CommentTok{\# Compute MFPCA}
 \NormalTok{mfpca }\OtherTok{\textless{}{-}} \FunctionTok{MFPCA}\NormalTok{(}
 \NormalTok{  curves\_fun\_2d,}
   \AttributeTok{M =}\NormalTok{ n\_pc,}
-  \AttributeTok{uniExpansions =} \FunctionTok{list}\NormalTok{(}\FunctionTok{list}\NormalTok{(}\AttributeTok{type =} \StringTok{"uFPCA"}\NormalTok{), }\FunctionTok{list}\NormalTok{(}\AttributeTok{type =} \StringTok{"uFPCA"}\NormalTok{))}
+  \AttributeTok{uniExpansions =} \FunctionTok{list}\NormalTok{(}\FunctionTok{list}\NormalTok{(}\AttributeTok{type =} \StringTok{"uFPCA"}\NormalTok{, }\AttributeTok{npc =}\NormalTok{ n\_pc), }\FunctionTok{list}\NormalTok{(}\AttributeTok{type =} \StringTok{"uFPCA"}\NormalTok{, }\AttributeTok{npc =}\NormalTok{ n\_pc))}
 \NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-We can quickly calculate the proportion of explained variance of each PC
-with the following code. Since we have calculated only two PCs, PC1 and
-PC2 together explain 100\% of the variance in our data. For each PC that
-is calculated, the higher the variance explained, the better the
-variance patterns in the data are captured.
+We can quickly calculate the relative proportion of explained variance
+of each PC with the following code.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1111,14 +1136,14 @@ variance patterns in the data are captured.
 \end{Shaded}
 
 \begin{verbatim}
-[1] 0.7108713 0.2891287
+[1] 0.7242321 0.2757679
 \end{verbatim}
 
 The best way to assess the effect of the PC scores on the shape of the
 tongue contours is to plot the predicted tongue contours based on a set
 of representative PC scores. In order to be able to plot the predicted
-contours, we need to calculate them from the MFPCA object. Gubian
-suggests plotting predicted curves at score intervals based on fractions
+contours, we need to calculate them from the MFPCA object. It is
+suggested to plot predicted curves at score intervals based on fractions
 of the scores standard deviation. This is what the following code does.
 
 \begin{Shaded}
@@ -1516,7 +1541,9 @@ directly). Moreover, there is no straightforward way to use traditional
 methods to assess (frequentist) statistical significance. From a
 practical point of view, a multivariate GAM ends up being a
 mathematically complex way of obtaining a sort of average tongue
-contour.
+contour. A further constraint is that mgcv offers only a multivariate
+Gaussian distribution, which might not always be an appropriate
+distribution (despite being a safe neutral assumption).
 
 Multivariate FPCA, on the other hand, are computationally efficient.
 Even with very large data sets, the computation of Principal Components
@@ -1584,7 +1611,7 @@ The authors report there are no competing interests to declare.
 statement}}{Data availability statement}}\label{data-availability-statement}
 \addcontentsline{toc}{section}{\textbf{Data availability statement}}
 
-All the materials (inlcuding data and code) are available in the
+All the materials (including data and code) are available in the
 research compendium of the tutorial at
 \url{https://github.com/stefanocoretta/mv_uti}. An online version of the
 manuscript is available at
@@ -1688,18 +1715,23 @@ arabic} {[}PhD thesis{]}.
 Gubian, M. (2024). \emph{Workshop on functional PCA for phonetics and
 prosody}. \url{https://github.com/uasolo/FPCA-phonetics-workshop}
 
-\bibitem[\citeproctext]{ref-gubian2019}
-Gubian, M., Harrington, J., Stevens, M., Schiel, F., \& Warren, P.
-(2019). Tracking the new zealand english NEAR/SQUARE merger using
-functional principal components analysis. \emph{Proceedings of
-INTERSPEECH 2019}, 296300.
-\url{https://doi.org/10.21437/interspeech.2019-2115}
+\bibitem[\citeproctext]{ref-gubian2025}
+Gubian, M. (2025). \emph{Analysis of uni- and multi-dimensional contours
+with {GAMs} and functional {PCA}: An application to ultrasound tongue
+imaging {[}version 1.0.0{]}}.
+\url{https://github.com/uasolo/FPCA-phonetics-workshop/tree/master/presentations/UTI}.
 
 \bibitem[\citeproctext]{ref-gubian2019a}
 Gubian, M., Pastätter, M., \& Pouplier, M. (2019). Zooming in on
 spatiotemporal v-to-c coarticulation with functional PCA.
 \emph{Proceedings of INTERSPEECH 2019}, 889893.
 \url{https://doi.org/10.21437/Interspeech.2019-2143}
+
+\bibitem[\citeproctext]{ref-gubian2015}
+Gubian, M., Torreira, F., \& Boves, L. (2015). Using Functional Data
+Analysis for investigating multidimensional dynamic phonetic contrasts.
+\emph{Journal of Phonetics}, \emph{49}, 16--40.
+\url{https://doi.org/10.1016/j.wocn.2014.10.001}
 
 \bibitem[\citeproctext]{ref-hastie1986}
 Hastie, T., \& Tibshirani, R. (1986). Generalized additive models.
@@ -1759,6 +1791,16 @@ Pedersen, E. J., Miller, D. L., Simpson, G. L., \& Ross, N. (2019).
 Hierarchical generalized additive models in ecology: An introduction
 with mgcv. \emph{PeerJ}, \emph{7}, e6876.
 \url{https://doi.org/10.7717/peerj.6876}
+
+\bibitem[\citeproctext]{ref-pettersson1987}
+Pettersson, T., \& Wood, S. (1987). Vowel reduction in bulgarian and its
+implications for theories of vowel production: A review of the problem.
+\emph{Folia Linguistica}, \emph{21}(2-4).
+\url{https://doi.org/10.1515/flin.1987.21.2-4.261}
+
+\bibitem[\citeproctext]{ref-ramsay2005}
+Ramsay, J. O., \& Silverman, B. W. (2005). \emph{Functional Data
+Analysis}. Springer New York. \url{https://doi.org/10.1007/b98888}
 
 \bibitem[\citeproctext]{ref-sakr2019}
 Sakr, G. (2019). \emph{A Laboratory Phonology Investigation Into The
@@ -1823,6 +1865,12 @@ Wieling, M. (2018). Analyzing dynamic phonetic data using generalized
 additive mixed modeling: A tutorial focusing on articulatory differences
 between L1 and L2 speakers of english. \emph{Journal of Phonetics},
 \emph{70}, 86116. \url{https://doi.org/10.1016/j.wocn.2018.03.002}
+
+\bibitem[\citeproctext]{ref-wieling2016}
+Wieling, M., Tomaschek, F., Arnold, D., Tiede, M., Bröker, F., Thiele,
+S., Wood, S. N., \& Baayen, R. H. (2016). Investigating dialectal
+differences using articulography. \emph{Journal of Phonetics},
+\emph{59}, 122--143. \url{https://doi.org/10.1016/j.wocn.2016.09.004}
 
 \bibitem[\citeproctext]{ref-wood2006}
 Wood, S. (2006). \emph{Generalized additive models: An introduction with

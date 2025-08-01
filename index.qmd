@@ -568,7 +568,7 @@ curves_fun_2d <- lapply(
   multiFunData()
 ```
 
-Once we have our `multiFunData` object, we can use the `MFPCA()` function to compute an MFPCA. In this tutorial we will compute the first two PCs, but you can compute up to $K-1$ PCs where $K$ is the number of DLC knots in the data.
+Once we have our `multiFunData` object, we can use the `MFPCA()` function to compute an MFPCA. In this tutorial we will compute the first two PCs, but in a multivariate (bivariate) FPCA you can compute up to $2 \times K$ PCs where $K$ is the number of DLC knots in the data.
 
 ```{r}
 #| label: voff-mfpca
@@ -576,16 +576,18 @@ Once we have our `multiFunData` object, we can use the `MFPCA()` function to com
 
 # Number of PC to compute
 n_pc <- 2
+# You can compute up to 11 PCs.
+# n_pc <- 11
 
 # Compute MFPCA
 mfpca <- MFPCA(
   curves_fun_2d,
   M = n_pc,
-  uniExpansions = list(list(type = "uFPCA"), list(type = "uFPCA"))
+  uniExpansions = list(list(type = "uFPCA", npc = n_pc), list(type = "uFPCA", npc = n_pc))
 )
 ```
 
-We can quickly calculate the proportion of explained variance of each PC with the following code. Since we have calculated only two PCs, PC1 and PC2 together explain 100% of the variance in our data. For each PC that is calculated, the higher the variance explained, the better the variance patterns in the data are captured.
+We can quickly calculate the relative proportion of explained variance of each PC with the following code.
 
 ```{r}
 #| label: prop-var
