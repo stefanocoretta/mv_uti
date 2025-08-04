@@ -20,11 +20,15 @@ format:
           display: none;
         }
         </style>
+    number-sections: true
   apaquarto-pdf:
     # Can be jou (journal), man (manuscript), stu (student), or doc (document)
     documentmode: man
     keep-tex: true
-  docx: default
+    mainfont: Charis
+    number-sections: true
+  docx:
+    number-sections: true
 
 execute:
   freeze: auto
