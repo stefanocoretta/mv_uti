@@ -947,9 +947,9 @@ pc_curves_2 <- pc_scores_mean |>
   reframe(
     funData2long1(
       mfpca$meanFunction[[dim]] +
-        # We add PC1 score
+        # We add PC1
         PC1 * mfpca$functions[[dim]][1] +
-        # and we add PC2 score as well
+        # and we add PC2 as well
         PC2 * mfpca$functions[[dim]][2],
       time = "knot", value = "value"
     )
