@@ -93,7 +93,7 @@ dlc_voff_f |>
 
 ```{r}
 #| label: fig-vect
-#| fig-cap: "Illustrating vectors of articulatory movement vs polar coordinates."
+#| fig-cap: "Illustrating vectors of articulatory movement vs polar coordinates. Coloured points are individual DLC tracked points (knots) on the tongue surface (each knot is in a different colour, for a total of 11 knots). The white radial coordinates are chosen approximatly to illustrate that they do not follow the movement vectors of the knots. The approximated movement vectors are represented by the dark lines (one for knot). The radial coordinates and movement vectors are based on eye-balling, not on calculation."
 #| warning: false
 
 dlc_emph_f <- readRDS("data/sakr2025/dlc_emph_f.rds")
@@ -165,7 +165,6 @@ The same data is shown in @fig-tongue-xy in a different format.
 Instead of a Cartesian coordinate system of X and Y values, the plot has knot number on the *x*-axis and X/Y coordinates on the *y*-axis.
 The X/Y coordinates thus form "trajectories" along the knots.
 These X/Y trajectories can be modelled using MGAMs and Multiple Functional Principal Component Analysis (MFPCA): in both cases, the X/Y trajectories are modelled as two variables changing along knot number.
-Note that a viable, but theoretically less robust, alternative is to model the data with the coordinates values as the outcome and the type of coordinate (X vs Y) as a predictor, as done for example in @wieling2016 and @gubian2025 (this approach models the X and Y coordinates as completely independent, while an MVGAM also estimates residual correlations between the two, which is a desired, although not deal-breaking, property).
 In this section, we will illustrate GAMs applied to the X/Y trajectories along the knots and how we can reconstruct the tongue contour from the modelled trajectories.
 We will use data from two case studies of coarticulation: vowel-consonant (VC) coarticulation based on consonant place in Italian and Polish, and consonantal articulation of plain vs emphatic consonants in Lebanese Arabic.
 
@@ -252,6 +251,7 @@ The required family is `mvn` for "multivariate normal": `mvn(d = 2)` indicates a
 In the model below, we are fitting a multivariate GAM to the *z*-scored X and Y coordinates.
 For both outcome variables, we include a smooth over knot (`s(knot, ...)`) with a `by` variable `vow_place_lang`: this variable is built from an interaction of vowel, place and language.[^1]
 We set `k` to 5: this will usually be sufficient for X/Y coordinates of tongue contours, since they are by nature not very "wiggly" (which would require a higher `k`).
+However, users are recommended to check whether `k` should be increased with the function `gam.check()` from the mgcv package (see documentation of the function for details).
 We also include a factor smooth over knot for speaker (the equivalent of a non-linear random effect) with `s(knot, speaker, ...)`: since language is a between-speaker variable, we use the interaction of vowel and place, `vow_place`, as the `by` variable.
 
 [^1]: Note that interactions between categorical variables in the classical sense are not possible in GAMs.
@@ -488,11 +488,11 @@ if (file.exists(fi)) {
   emph_gam <- gam(
     list(
       X_z ~ vow_emph +
-        s(knot, by = vow_emph, k = 5) +
-        s(knot, participant, by = vow_emph, bs = "fs", m = 1, k = 5),
+        s(knot, by = vow_emph, k = 9) +
+        s(knot, participant, by = vow_emph, bs = "fs", m = 1, k = 9),
       Y_z ~ vow_emph +
-        s(knot, by = vow_emph, k = 5) +
-        s(knot, participant, by = vow_emph, bs = "fs", m = 1, k = 5)
+        s(knot, by = vow_emph, k = 9) +
+        s(knot, participant, by = vow_emph, bs = "fs", m = 1, k = 9)
     ),
     data = dlc_emph_f,
     family = mvn(d = 2)
@@ -512,26 +512,26 @@ frame_emph <- expand_grid(
 )
 
 excl <- c(
-  "s(Knot,participant):vow_emphA.Emphatic",
-  "s(Knot,participant):vow_emphE.Emphatic",
-  "s(Knot,participant):vow_emphI.Emphatic",
-  "s(Knot,participant):vow_emphO.Emphatic",
-  "s(Knot,participant):vow_emphU.Emphatic",
-  "s.1(Knot,participant):vow_emphA.Emphatic",
-  "s.1(Knot,participant):vow_emphE.Emphatic",
-  "s.1(Knot,participant):vow_emphI.Emphatic",
-  "s.1(Knot,participant):vow_emphO.Emphatic",
-  "s.1(Knot,participant):vow_emphU.Emphatic",
-  "s(Knot,participant):vow_emphA.Plain",
-  "s(Knot,participant):vow_emphE.Plain",
-  "s(Knot,participant):vow_emphI.Plain",
-  "s(Knot,participant):vow_emphO.Plain",
-  "s(Knot,participant):vow_emphU.Plain",
-  "s.1(Knot,participant):vow_emphA.Plain",
-  "s.1(Knot,participant):vow_emphE.Plain",
-  "s.1(Knot,participant):vow_emphI.Plain",
-  "s.1(Knot,participant):vow_emphO.Plain",
-  "s.1(Knot,participant):vow_emphU.Plain"
+  "s(knot,participant):vow_emphA.emphatic",
+  "s(knot,participant):vow_emphE.emphatic",
+  "s(knot,participant):vow_emphI.emphatic",
+  "s(knot,participant):vow_emphO.emphatic",
+  "s(knot,participant):vow_emphU.emphatic",
+  "s.1(knot,participant):vow_emphA.emphatic",
+  "s.1(knot,participant):vow_emphE.emphatic",
+  "s.1(knot,participant):vow_emphI.emphatic",
+  "s.1(knot,participant):vow_emphO.emphatic",
+  "s.1(knot,participant):vow_emphU.emphatic",
+  "s(knot,participant):vow_emphA.plain",
+  "s(knot,participant):vow_emphE.plain",
+  "s(knot,participant):vow_emphI.plain",
+  "s(knot,participant):vow_emphO.plain",
+  "s(knot,participant):vow_emphU.plain",
+  "s.1(knot,participant):vow_emphA.plain",
+  "s.1(knot,participant):vow_emphE.plain",
+  "s.1(knot,participant):vow_emphI.plain",
+  "s.1(knot,participant):vow_emphO.plain",
+  "s.1(knot,participant):vow_emphU.plain"
 )
 
 emph_gam_p <- predict(emph_gam, frame_emph, se.fit = TRUE, exclude = excl) |>
@@ -657,7 +657,7 @@ dlc_voff_long <- dlc_voff_f |>
   pivot_longer(c(X_z, Y_z), names_to = "dim")
 ```
 
-In the second step, we create a `multiFunData` object: this is a special type of list object, with the observations of the two coordinates (`X_z` and `Y_z`) as two matrices of dimension $N \times 11$, where $N$ is the number of tongue contours and $11$ is for the 11 knots returned by DLC.
+In the second step, we create a `multiFunData` object: this is a special type of list object, with the observations of the two coordinates (`X_z` and `Y_z`) as two matrices of dimension $N \times 22$, where $N$ is the number of tongue contours and $22$ is for the 11 knots for each of the two coordinates (X and Y) returned by DLC.
 Three columns in the data are used to create the `multiFunData` object: one column with the id of each contour (in our data, `frame_id`), a time or series column (`knot`) and the column with the coordinate values (`value`).
 
 ```{r}
@@ -683,39 +683,43 @@ curves_fun_2d <- lapply(
 ```
 
 Once we have our `multiFunData` object, we can use the `MFPCA()` function to compute an MFPCA.
-In this tutorial we will compute the first two PCs, but you can compute up to the number of DLC knots in the data, i.e. 11.
+Since the data has 11 knots for each dimension, the total number of univariate PCs that can be calculated is 11 (`n_pc` in the code below).
+The argument `M` is the number of univariate PCs times the number of dimensions, here 2 (X and Y).
 
 ```{r}
 #| label: voff-mfpca
 #| echo: true
 
-# Number of PC to compute
-n_pc <- 2
-# You can compute up to 11 PCs.
-# n_pc <- 11
+# Maximum number of univarite PCs, here 11 knots
+n_pc <- 11
+# Number of multivariate functional PC, i.e. number of dimensions * n_pc
+M <- 2 * n_pc
 
 # Compute MFPCA
 mfpca <- MFPCA(
   curves_fun_2d,
-  M = n_pc,
+  M = M,
   uniExpansions = list(list(type = "uFPCA", npc = n_pc), list(type = "uFPCA", npc = n_pc))
 )
 ```
 
-We can quickly calculate the relative proportion of explained variance of each PC with the following code.
+We can quickly calculate the relative proportion of explained variance of all the PCs with the following code.
+Note that higher order PCs tend to explain less and less variance (as it can be seen in the output of the following code).
+The first two PCs alone account for about 70% of the variance.
 
 ```{r}
 #| label: prop-var
 #| echo: true
 
 # Proportion of explained variance
-mfpca$values  / sum(mfpca$values)
+(mfpca$values  / sum(mfpca$values)) |> round(2)
 ```
 
-The best way to assess the effect of the PC scores on the shape of the tongue contours is to plot the predicted tongue contours based on a set of representative PC scores.
+The best way to assess the effect of the PCs on the shape of the tongue contours is to plot the predicted tongue contours based on a set of representative PC scores.
 In order to be able to plot the predicted contours, we need to calculate them from the MFPCA object.
 It is suggested to plot predicted curves at score intervals based on fractions of the scores' standard deviation.
 This is what the following code does.
+For illustration, we focus on PC1 and PC2 only.
 
 ```{r}
 #| label: pc-curves
@@ -726,7 +730,8 @@ sd_fun <- sqrt(mfpca$values)
 
 # PC curves to be plotted
 pc_curves <- expand_grid(
-  PC = 1:n_pc,
+  # PC 1 and 2 only
+  PC = 1:2,
   dim = 1:2,
   # Set the SD fraction, from -1 SD to +1 SD, with increments of 0.25
   sd_frac = seq(-1, 1, by = 0.25)
@@ -753,8 +758,8 @@ This is the same structure as @fig-tongue-xy, with the knot number on the *x*-ax
 Of course, what we are after is the X/Y plot of the tongue contours, rather than the knot/coordinate plot as needed to fit an MFPCA.
 For the sake of clarity, we first plot the predicted curves for X and Y separately.
 @fig-pc-curves shows these.
-The plot is composed of four panels: the top two are the predicted curves along knot number for the Y coordinates (based on PC1 in the left panel and PC2 in the right panel).
-Interpreting the effect of the PCs on the X and Y coordinates separately allows one to observe vertical (Y coordinate) and horizontal (X coordinate) differences in tongue position independently.
+The plot is composed of four panels: the top two are the predicted curves along knot number for the Y coordinates (based on PC1 score in the left panel and PC2 score in the right panel).
+Interpreting the effect of the PCs scores on the X and Y coordinates separately allows one to observe vertical (Y coordinate) and horizontal (X coordinate) differences in tongue position independently.
 However, note that the vectors of muscle contractions in the tongue are not simply along a vertical/horizontal axis, as mentioned in [@sec-introduction; @honda1996; @wrench2024].
 Looking at a full tongue contour (in an X/Y coordinates plot) will generally prove to be more straightforward.
 
@@ -794,7 +799,7 @@ pc_curves_wide <- pc_curves |>
 ```
 
 @fig-contours plots the predicted contours based on the PC scores (specifically, fractions of the standard deviation of the PC scores).
-The *x* and *y*-axes correspond to the X and Y coordinates of the tongue contour, with the effect of PC1 in the left panel and the effect of PC2 in the right panel.
+The *x* and *y*-axes correspond to the X and Y coordinates of the tongue contour, with the effect of PC1 score in the left panel and the effect of PC2 score in the right panel.
 A higher PC1 score (green lines in the left panel) suggests lowering of the tongue body/dorsum and raising of the tongue tip.
 Since the data contains velar and coronal consonants, we take this to be capturing the velar/coronal place of articulation.
 A higher PC2 score (green lines in the right panel) corresponds to an overall higher tongue position.
@@ -819,14 +824,14 @@ pc_curves_wide |>
 ```
 
 Given the patterns in @fig-contours, we can expect to see differences in PC2 scores based on the vowel if there is VC coarticulation.
-We can obtain the PC scores of each observation in the data with the following code.
+We can obtain the PC scores (named `sN` where `N` is the PC order from 1 to 22) of each observation in the data with the following code.
 
 ```{r}
 #| label: pc-scores
 #| echo: true
 
 pc_scores <- mfpca$scores |>
-  `colnames<-`(paste0("PC", 1:n_pc)) |>
+  `colnames<-`(paste0("s", 1:M)) |>
   as_tibble() |>
   bind_cols(dlc_voff_long |> distinct(frame_id, vowel, c2_place, language))
 ```
@@ -841,8 +846,8 @@ This is not entirely surprising, since while coronal stops allow for adjustments
 #| fig-cap: "PC1/PC2 scores by language, consonant place of articulation and vowel."
 
 pc_scores |> 
-  filter(PC2 < 0.5) |>
-  ggplot(aes(x = PC1, y = PC2, color = vowel)) +
+  filter(s2 < 0.5) |>
+  ggplot(aes(x = s1, y = s2, color = vowel)) +
   geom_point() +
   stat_ellipse() +
   facet_grid(cols = vars(c2_place), rows = vars(language)) +
@@ -897,13 +902,14 @@ curves_fun_2d <- lapply(
 #| include: false
 
 # Number of PC to compute
-n_pc <- 2
+n_pc <- 11
+M <- 2 * n_pc
 
 # Compute MFPCA
 mfpca <- MFPCA(
   curves_fun_2d,
-  M = n_pc,
-  uniExpansions = list(list(type = "uFPCA"), list(type = "uFPCA"))
+  M = M,
+  uniExpansions = list(list(type = "uFPCA", npc = n_pc), list(type = "uFPCA", npc = n_pc))
 )
 ```
 
@@ -912,7 +918,7 @@ mfpca <- MFPCA(
 #| include: false
 
 # Proportion of explained variance
-mfpca$values  / sum(mfpca$values)
+(mfpca$values  / sum(mfpca$values)) |> round(2)
 ```
 
 ```{r}
@@ -924,7 +930,8 @@ sd_fun <- sqrt(mfpca$values)
 
 # PC curves to be plotted
 pc_curves <- expand_grid(
-  PC = 1:n_pc,
+  # PC 1 and 2 only
+  PC = 1:2,
   dim = 1:2,
   # Set the SD fraction, from -1 SD to +1 SD, with increments by 0.25
   sd_frac = seq(-1, 1, by = 0.25)
@@ -1008,7 +1015,7 @@ pc_curves_wide |>
 #| include: false
 
 pc_scores <- mfpca$scores |>
-  `colnames<-`( paste0("PC", 1:n_pc)) |>
+  `colnames<-`( paste0("s", 1:M)) |>
   as_tibble() |>
   bind_cols(dlc_emph_long |> distinct(frame_id, emph, vowel, participant))
 ```
@@ -1027,7 +1034,7 @@ Uvularisation/velarisation, rather than pharyngealisation, in the /E, I/ context
 #| fig-cap: "PC1 and PC2 scores by vowel, consonant type and speaker."
 
 pc_scores |> 
-  ggplot(aes(x = PC1, y = PC2, colour = emph, label = vowel)) +
+  ggplot(aes(x = s1, y = s2, colour = emph, label = vowel)) +
   geom_point(alpha = 0.5) +
   scale_color_brewer(palette = "Dark2") +
   stat_ellipse() +
@@ -1035,14 +1042,14 @@ pc_scores |>
 ```
 
 @fig-emph-pc1 and @fig-emph-pc2 illustrate one way to plot the PC scores individually for PC1 and PC2.
-We won't include here a full description of the plots, since they should be self-explanatory, but we flag to the reader that these type of plots can be helpful in illustrating specific patterns in PC1 or PC2.
+We won't include here a full description of the plots, since they should be self-explanatory, but we flag to the reader that these type of plots can be helpful in illustrating specific patterns in PC1 or PC2 scores.
 
 ```{r}
 #| label: fig-emph-pc1
 #| fig-cap: "PC1 scores of emphatic and plain consonants by speaker and vowel."
 
 pc_scores |> 
-  ggplot(aes(vowel, PC1, colour = emph)) +
+  ggplot(aes(vowel, s1, colour = emph)) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2), alpha = 0.25) +
   scale_color_brewer(palette = "Dark2") +
     facet_wrap(vars(participant))
@@ -1053,7 +1060,7 @@ pc_scores |>
 #| fig-cap: "PC2 scores of emphatic and plain consonants by speaker and vowel."
 
 pc_scores |> 
-  ggplot(aes(vowel, PC2, colour = emph)) +
+  ggplot(aes(vowel, s2, colour = emph)) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2), alpha = 0.25) +
   scale_color_brewer(palette = "Dark2") +
   facet_wrap(vars(participant))
@@ -1075,8 +1082,8 @@ pc_scores_mean <- pc_scores |>
   group_by(vowel, emph) |> 
   # Sumarise data to obtain means
   summarise(
-    PC1 = mean(PC1),
-    PC2 = mean(PC2),
+    s1 = mean(s1),
+    s2 = mean(s2),
     .groups = "drop"
   ) |> 
   # Add "dimensions", i.e. X and Y coordinates
@@ -1103,9 +1110,9 @@ pc_curves_2 <- pc_scores_mean |>
     funData2long1(
       mfpca$meanFunction[[dim]] +
         # We add PC1
-        PC1 * mfpca$functions[[dim]][1] +
+        s1 * mfpca$functions[[dim]][1] +
         # and we add PC2 as well
-        PC2 * mfpca$functions[[dim]][2],
+        s2 * mfpca$functions[[dim]][2],
       time = "knot", value = "value"
     )
   ) |> 
@@ -1163,7 +1170,7 @@ library(brms)
 
 # Fit a Gaussian regression
 emph_bm <- brm(
-  PC1 ~ emph_fac * vowel_fac + (emph_fac * vowel_fac | participant),
+  s1 ~ emph_fac * vowel_fac + (emph_fac * vowel_fac | participant),
   family = gaussian,
   data = pc_scores_bm,
   # Uses 4 cores to run MCMC in parallel
@@ -1171,7 +1178,8 @@ emph_bm <- brm(
   # Set the seed for reproducibility
   seed = 4235,
   # Save the model fit to file
-  file = "data/cache/emph_bm"
+  file = "data/cache/emph_bm",
+  control = list(adapt_delta = 0.99)
 )
 ```
 
@@ -1209,7 +1217,7 @@ emph_bm_draws |>
     # 70%
     ~quantile(.x, probs = c(0.15, 0.85))
   ) |> 
-  mutate(across(is.numeric, ~round(.x, 2)))
+  mutate(across(where(is.numeric), ~round(.x, 2)))
 ```
 
 To plot the expected PC1 based on the model, we can conveniently get the expected predictions for each draw using `posterior_epred()` from brms.
@@ -1265,7 +1273,7 @@ emph_bm_epred |>
   )
 ```
 
-@tbl-dlc-voff shows the mean, standard deviation and 95-80-65% CrIs of the posterior difference between emphatic and plain consonants for each vowel.
+@tbl-emph-bm shows the mean, standard deviation and 95-80-65% CrIs of the posterior difference between emphatic and plain consonants for each vowel.
 The CrIs indicate a robustly lower PC1 for /A, U/.
 For the other vowels, both a lower or slightly higher PC1 are possible and, if a difference is present at all, it would be of a lower magnitude than that in the /A, U/ context.
 At 80% confidence, emphatic consonants also show a lower PC1 when followed by /O/.
@@ -1301,11 +1309,12 @@ Multivariate GAMs can model tongue contours in specific contexts and combination
 The rather complex model structure required to fit multivariate GAMs to tongue data comes at a computational cost and an interpretative cost.
 Computationally, multivariate GAMs can take hours to estimate even the most simple models.
 Interpretationally, comparing different tongue contours quantitatively based on the output of a multivariate GAM is non-trivial, given that the tongue contour is in fact a curve reconstructed from the smooths of the X and Y coordinates along knot (in other words, the model does not model tongue contours directly).
-Moreover, there is no straightforward way to use traditional methods to assess (frequentist) statistical significance.
+Moreover, in the specific implementation of multivariate GAMs employed by mgcv, there is no straightforward way to use traditional methods to assess (frequentist) statistical significance.
 From a practical point of view, a multivariate GAM ends up being a mathematically complex way of obtaining a sort of average tongue contour.
-A further constraint is that mgcv offers only a multivariate Gaussian distribution, which might not always be an appropriate distribution (despite being a safe neutral assumption).
+A further constraint is that mgcv offers only a multivariate Gaussian distribution, which might not always be an appropriate distribution [despite being a neutral assumption in the sense that it is appropriate when one is interested only in estimating a mean and standard deviation, see @mcelreath2020, p 75].
+We recommend users to check model assumptions with `gam.check()` from the mgcv package.
 
-Multivariate FPCA, on the other hand, is computationally efficient.
+Multivariate FPCA, on the other hand, is computationally efficient (when factoring out time for further analyses, like in the case above where we fitted a regression model to the PC1 scores).
 Even with very large data sets, the computation of Principal Components is relatively quick.
 Moreover, the obtained PCs can be interpreted straightforwardly by plotting the effect of changing the PC score on the reconstructed tongue contour (as we did for example in @fig-contours).
 One possible disadvantage of multivariate FPCA is that it is usually not known what type of variation each obtained PC captures.
@@ -1317,6 +1326,8 @@ It can happen that the variation one is after is so minimal relative to other, m
 It is possible that qualitatively homogeneous data sets might return PCs that have the same or very similar interpretations.
 This has not been systematically tested, perhaps with the exception of simple PCA run on vowel formant data, which suggests that the first two PCs capture the two diagonals [@faber1995; @hoole1999; @strycharczuk2021; @strycharczuk2025], which make sense in light of the tongue position and shape model expounded by @honda1996.
 Another advantage of MFPCA is that, provided that the PCs have captured relevant characteristics, the PCs can be submitted to further modelling using regression with the inclusion of relevant predictors (like different categorical variables of interest) as we have illustrated in the previous section.
+
+Note that a viable, but theoretically less robust, alternative is to model the data with the coordinates values as the outcome and the type of coordinate (X vs Y) as a predictor, as done for example in @wieling2016 and @gubian2025 (this approach models the X and Y coordinates as completely independent, while an MVGAM also estimates residual correlations between the two, which is a desired, although not deal-breaking, property).
 
 Based on the advantages and disadvantages of each of multivariate GAMs and FPCA, we suggest to researchers to use MFPCA as the preferred and default approach to analyse DLC-tracked tongue contour data and to resort to multivariate GAMs if MFPCA fails to capture relevant variation.
 

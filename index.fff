@@ -36,7 +36,13 @@ the root. The estimated smooths in red fail to capture the curl.}
 [H]
 
 \caption{\label{fig-vect}Illustrating vectors of articulatory movement
-vs polar coordinates.}
+vs polar coordinates. Coloured points are individual DLC tracked points
+(knots) on the tongue surface (each knot is in a different colour, for a
+total of 11 knots). The white radial coordinates are chosen approximatly
+to illustrate that they do not follow the movement vectors of the knots.
+The approximated movement vectors are represented by the dark lines (one
+for knot). The radial coordinates and movement vectors are based on
+eye-balling, not on calculation.}
 
 \centering{
 
